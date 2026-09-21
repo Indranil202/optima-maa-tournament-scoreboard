@@ -1,0 +1,85 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 380 240">
+  <defs>
+    <linearGradient id="w3Robe" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#1a472a"/><stop offset="100%" stop-color="#2ecc71"/>
+    </linearGradient>
+    <linearGradient id="w3Broom" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#5C3310"/><stop offset="100%" stop-color="#3E1F00"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Broom — curved racing style -->
+  <path d="M30 120 Q180 105 330 118" stroke="url(#w3Broom)" stroke-width="7" fill="none" stroke-linecap="round"/>
+  <path d="M30 120 Q180 107 330 118" stroke="#8B6540" stroke-width="2" fill="none" opacity="0.35"/>
+  <!-- Bristles — fan spread -->
+  <path d="M330 118 Q352 108 370 95 Q358 115 370 140 Q352 130 330 118Z" fill="#3E1F00"/>
+  <path d="M332 116 Q358 104 375 90" stroke="#2c1810" stroke-width="1" fill="none" opacity="0.5"/>
+  <path d="M332 120 Q360 132 375 148" stroke="#2c1810" stroke-width="1" fill="none" opacity="0.5"/>
+  <!-- Gold rings on broom -->
+  <circle cx="90" cy="115" r="5" fill="none" stroke="#d4a017" stroke-width="1.5" opacity="0.6"/>
+  <circle cx="110" cy="113" r="4" fill="none" stroke="#d4a017" stroke-width="1" opacity="0.4"/>
+
+  <!-- Body — upright casting pose -->
+  <g transform="rotate(-5 160 85)">
+    <path d="M130 65 Q145 48 165 44 L180 45 Q198 52 200 70 L202 115 Q185 122 160 120 Q138 118 132 108Z" fill="url(#w3Robe)"/>
+    <!-- Silver trim -->
+    <path d="M138 78 L195 78" stroke="#aaa" stroke-width="1.2" opacity="0.4"/>
+    <path d="M140 95 L193 95" stroke="#aaa" stroke-width="0.8" opacity="0.3"/>
+    <!-- Snake emblem -->
+    <path d="M165 82 Q162 90 168 95 Q174 90 170 82" stroke="#d4a017" stroke-width="1.5" fill="none" opacity="0.6"/>
+  </g>
+
+  <!-- Legs crossed, sitting sideways -->
+  <path d="M155 120 Q170 130 185 125 L195 118" stroke="#164a29" stroke-width="7" fill="none" stroke-linecap="round"/>
+  <path d="M150 122 Q140 132 135 128" stroke="#164a29" stroke-width="6" fill="none" stroke-linecap="round"/>
+
+  <!-- Cape flowing back -->
+  <path d="M190 78 Q210 95 232 112 Q222 118 212 124 Q228 135 248 145 Q228 138 215 130 Q205 118 198 105Z" fill="#2ecc71" opacity="0.55">
+    <animate attributeName="d" dur="2s" repeatCount="indefinite" values="
+      M190 78 Q210 95 232 112 Q222 118 212 124 Q228 135 248 145 Q228 138 215 130 Q205 118 198 105Z;
+      M190 78 Q215 98 238 115 Q228 122 218 130 Q238 142 258 152 Q238 145 222 135 Q210 122 200 108Z;
+      M190 78 Q210 95 232 112 Q222 118 212 124 Q228 135 248 145 Q228 138 215 130 Q205 118 198 105Z"/>
+  </path>
+
+  <!-- Head -->
+  <circle cx="148" cy="42" r="15" fill="#d4a574"/>
+  <!-- Eyes — determined look -->
+  <ellipse cx="142" cy="40" rx="3" ry="2.5" fill="#1a472a"/>
+  <ellipse cx="155" cy="40" rx="3" ry="2.5" fill="#1a472a"/>
+  <circle cx="141" cy="39" r="1" fill="#fff" opacity="0.5"/>
+  <circle cx="154" cy="39" r="1" fill="#fff" opacity="0.5"/>
+  <!-- Smirk -->
+  <path d="M144 48 Q150 52 156 48" stroke="#8b5e3c" stroke-width="1.2" fill="none"/>
+
+  <!-- Pointed wizard hat -->
+  <path d="M130 42 Q128 25 138 8 Q148 0 155 12 Q158 25 162 38 Q155 34 148 33 Q140 34 130 42Z" fill="#1a472a"/>
+  <path d="M130 42 Q140 36 155 36 Q162 38 162 38" fill="#d4a017" opacity="0.35"/>
+  <!-- Star on hat -->
+  <circle cx="147" cy="18" r="3" fill="#d4a017" opacity="0.7"/>
+
+  <!-- Wand arm extended — casting spell -->
+  <path d="M132 70 L108 55 L85 35" stroke="#d4a574" stroke-width="4.5" fill="none" stroke-linecap="round"/>
+  <!-- Wand -->
+  <line x1="85" y1="35" x2="60" y2="15" stroke="#5C3310" stroke-width="2.5" stroke-linecap="round"/>
+  <circle cx="58" cy="13" r="4" fill="#d4a017" opacity="0.8"/>
+  <!-- Spell sparks -->
+  <circle cx="52" cy="8" r="2" fill="#2ecc71" opacity="0.7">
+    <animate attributeName="opacity" dur="0.8s" repeatCount="indefinite" values="0.7;0.2;0.7"/>
+    <animate attributeName="r" dur="0.8s" repeatCount="indefinite" values="2;3.5;2"/>
+  </circle>
+  <circle cx="45" cy="18" r="1.5" fill="#d4a017" opacity="0.6">
+    <animate attributeName="opacity" dur="1s" repeatCount="indefinite" values="0.6;0.1;0.6"/>
+  </circle>
+  <circle cx="63" cy="5" r="1.5" fill="#fff" opacity="0.5">
+    <animate attributeName="opacity" dur="0.6s" repeatCount="indefinite" values="0.5;0;0.5"/>
+  </circle>
+
+  <!-- Other arm on broom -->
+  <path d="M175 72 L160 100 L145 112" stroke="#d4a574" stroke-width="4.5" fill="none" stroke-linecap="round"/>
+  <circle cx="143" cy="114" r="4" fill="#1a472a"/>
+
+  <!-- Speed lines -->
+  <line x1="260" y1="85" x2="340" y2="82" stroke="#fff" stroke-width="0.8" opacity="0.12"/>
+  <line x1="250" y1="100" x2="345" y2="97" stroke="#fff" stroke-width="1" opacity="0.1"/>
+  <line x1="255" y1="135" x2="335" y2="132" stroke="#fff" stroke-width="0.7" opacity="0.08"/>
+</svg>

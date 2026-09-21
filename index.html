@@ -4175,7 +4175,7 @@ var OPTIMA_GLB_DATA = {
 var GAS_API_URL = 'https://script.google.com/macros/s/AKfycbzwdiELyvf0ZRE_3bCg-qiH8yAf5kWcx_cAqXiUTFq2VGPF8lOKapPLX6NmQwwY6ZUW/exec';
 
 // â”€â”€â”€ Cache settings â”€â”€â”€
-var CACHE_TTL = 5 * 60 * 1000;  // 5 minutes â€” fresh data re-fetched after this
+var CACHE_TTL = 1 * 60 * 1000;  // 1 minute â€” fresh data re-fetched after this
 
 // â”€â”€â”€ Backend caller with smart caching â”€â”€â”€
 // 1st visit:  fetch â†’ show â†’ cache
@@ -4202,6 +4202,7 @@ function callBackend(action, onSuccess, onFailure) {
       // Stale â€” refresh silently in background (no failure callback = silent)
       fetchFromGAS(action, function(fresh) {
         saveCache(cacheKey, tsKey, fresh);
+        if (onSuccess) onSuccess(fresh);
       }, null);
       return;
     }

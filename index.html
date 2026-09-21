@@ -1219,6 +1219,9 @@ body::after {
 .ls-team.winner .ls-team-name { color: var(--neon-green); }
 .ls-team.winner .ls-team-house { color: var(--neon-green); opacity: 0.7; }
 .ls-team.loser .ls-team-name { color: var(--text-muted); }
+.ls-player-name { font-size: 0.82rem; font-weight: 600; }
+.ls-partner { font-size: 0.72rem; font-weight: 500; opacity: 0.8; margin-top: -2px; }
+.ls-partner::before { content: '& '; font-weight: 400; opacity: 0.6; }
 
 .ls-score-box { display: flex; align-items: center; gap: 5px; flex-shrink: 0; }
 .ls-score-num {
@@ -1406,6 +1409,152 @@ body::after {
   .ms-kpi-val { font-size: 1.1rem; }
   .ms-card { padding: 0.8rem; }
   .ms-card-tname { font-size: 0.8rem; }
+}
+
+/* ─── GAME-WISE TABLES (Live Scores + Schedule) ─── */
+.gt-panel {
+  margin-bottom: 1.5rem; border-radius: var(--radius);
+  background: var(--bg-card); border: 1px solid var(--border-glass);
+  overflow: hidden; transition: var(--transition);
+}
+.gt-panel:hover { border-color: rgba(212,160,23,0.15); }
+.gt-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 12px 16px; cursor: pointer; user-select: none;
+  background: rgba(212,160,23,0.03); border-bottom: 1px solid var(--border-glass);
+  transition: var(--transition);
+}
+.gt-header:hover { background: rgba(212,160,23,0.06); }
+.gt-header-left {
+  display: flex; align-items: center; gap: 10px; font-family: var(--font-heading);
+  font-size: 0.95rem; font-weight: 700; color: var(--text-primary);
+}
+.gt-header-left i { color: var(--neon-blue); font-size: 1rem; }
+.gt-header-left .gt-seg {
+  font-size: 0.6rem; font-weight: 600; padding: 2px 8px; border-radius: 4px;
+  text-transform: uppercase; letter-spacing: 0.5px;
+}
+.gt-seg.indoor { background: rgba(56,189,248,0.1); color: var(--neon-blue); }
+.gt-seg.outdoor { background: rgba(74,222,128,0.1); color: var(--neon-green); }
+.gt-seg.online { background: rgba(168,85,247,0.1); color: var(--neon-purple); }
+.gt-seg.cultural { background: rgba(251,191,36,0.1); color: var(--gold); }
+.gt-seg.inhouse { background: rgba(248,113,113,0.1); color: var(--neon-red); }
+.gt-header-right {
+  display: flex; align-items: center; gap: 8px;
+}
+.gt-count {
+  font-size: 0.68rem; background: var(--bg-glass); border: 1px solid var(--border-glass);
+  padding: 2px 10px; border-radius: 50px; color: var(--text-muted); font-weight: 500;
+}
+.gt-live-badge {
+  font-size: 0.6rem; font-weight: 700; padding: 2px 8px; border-radius: 4px;
+  background: rgba(248,113,113,0.15); color: var(--neon-red); text-transform: uppercase;
+  animation: dotPulse 1s infinite;
+}
+.gt-chevron {
+  font-size: 0.7rem; color: var(--text-muted); transition: transform 0.3s ease;
+}
+.gt-panel.collapsed .gt-chevron { transform: rotate(-90deg); }
+.gt-panel.collapsed .gt-body { display: none; }
+.gt-body { overflow-x: auto; }
+.gt-table {
+  width: 100%; border-collapse: collapse; font-size: 0.8rem;
+}
+.gt-table thead th {
+  padding: 8px 12px; text-align: left; font-size: 0.68rem; font-weight: 700;
+  text-transform: uppercase; letter-spacing: 0.8px; color: var(--text-muted);
+  background: rgba(212,160,23,0.02); border-bottom: 1px solid var(--border-glass);
+  white-space: nowrap; position: sticky; top: 0; z-index: 1;
+}
+.gt-table thead th.center { text-align: center; }
+.gt-table thead th.right { text-align: right; }
+.gt-table tbody tr {
+  border-bottom: 1px solid rgba(255,255,255,0.03);
+  transition: background 0.2s ease;
+}
+.gt-table tbody tr:hover { background: rgba(212,160,23,0.03); }
+.gt-table tbody tr:last-child { border-bottom: none; }
+.gt-table tbody td {
+  padding: 10px 12px; vertical-align: middle; color: var(--text-primary);
+}
+.gt-table tbody td.center { text-align: center; }
+.gt-table tbody td.right { text-align: right; }
+.gt-table tbody td.mono { font-family: var(--font-mono); font-size: 0.72rem; color: var(--text-muted); }
+.gt-row-live {
+  background: rgba(248,113,113,0.04); animation: gtLivePulse 2.5s infinite;
+}
+@keyframes gtLivePulse {
+  0%, 100% { background: rgba(248,113,113,0.04); }
+  50% { background: rgba(248,113,113,0.08); }
+}
+.gt-side {
+  display: flex; align-items: center; gap: 8px; min-width: 0;
+}
+.gt-side.right { justify-content: flex-end; flex-direction: row-reverse; }
+.gt-side-dot {
+  width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0;
+}
+.gt-side-info { display: flex; flex-direction: column; gap: 1px; min-width: 0; }
+.gt-side-name {
+  font-weight: 600; font-size: 0.82rem; white-space: nowrap;
+  overflow: hidden; text-overflow: ellipsis;
+}
+.gt-side-sub {
+  font-size: 0.65rem; color: var(--text-muted); font-weight: 500;
+}
+.gt-side-partner { font-size: 0.68rem; opacity: 0.7; }
+.gt-side-partner::before { content: '& '; font-weight: 400; opacity: 0.6; }
+.gt-score {
+  font-family: var(--font-heading); font-weight: 700; font-size: 1rem;
+  white-space: nowrap; text-align: center; letter-spacing: 1px;
+}
+.gt-score-sep { color: var(--text-muted); font-weight: 300; margin: 0 2px; }
+.gt-score .win { color: var(--neon-green); }
+.gt-score .lose { color: var(--text-muted); font-weight: 500; }
+.gt-score-vs {
+  font-size: 0.75rem; font-weight: 700; color: var(--text-muted); opacity: 0.5;
+  letter-spacing: 2px;
+}
+.gt-phase {
+  font-size: 0.6rem; font-weight: 700; padding: 2px 7px; border-radius: 4px;
+  text-transform: uppercase; letter-spacing: 0.5px; white-space: nowrap;
+  display: inline-flex; align-items: center; gap: 3px;
+}
+.gt-phase.final { background: rgba(251,191,36,0.15); color: var(--gold); }
+.gt-phase.semifinal { background: rgba(56,189,248,0.12); color: var(--neon-blue); }
+.gt-phase.third { background: rgba(168,85,247,0.15); color: var(--neon-purple); }
+.gt-status {
+  display: inline-flex; align-items: center; gap: 5px; font-size: 0.72rem;
+  font-weight: 600; white-space: nowrap;
+}
+.gt-status-dot {
+  width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0;
+}
+.gt-status.completed .gt-status-dot { background: var(--neon-green); }
+.gt-status.completed { color: var(--neon-green); }
+.gt-status.live .gt-status-dot { background: var(--neon-red); animation: dotPulse 1s infinite; }
+.gt-status.live { color: var(--neon-red); }
+.gt-status.scheduled .gt-status-dot { background: var(--neon-yellow); }
+.gt-status.scheduled { color: var(--text-muted); }
+.gt-date { font-size: 0.75rem; white-space: nowrap; }
+.gt-time { font-size: 0.75rem; white-space: nowrap; font-weight: 600; }
+.gt-venue { font-size: 0.72rem; color: var(--text-muted); white-space: nowrap; }
+.gt-matchid { font-family: var(--font-mono); font-size: 0.65rem; color: var(--text-muted); opacity: 0.6; }
+.gt-winner .gt-side-name { color: var(--neon-green); }
+.gt-loser .gt-side-name { color: var(--text-muted); }
+@media (max-width: 768px) {
+  .gt-table { font-size: 0.75rem; }
+  .gt-table thead th, .gt-table tbody td { padding: 8px 8px; }
+  .gt-side-name { font-size: 0.76rem; }
+  .gt-score { font-size: 0.88rem; }
+  .gt-header-left { font-size: 0.85rem; }
+  .gt-header-left .gt-seg { display: none; }
+}
+@media (max-width: 480px) {
+  .gt-table thead th, .gt-table tbody td { padding: 6px 6px; }
+  .gt-side-name { font-size: 0.72rem; max-width: 80px; }
+  .gt-score { font-size: 0.8rem; }
+  .gt-phase { font-size: 0.55rem; padding: 1px 5px; }
 }
 
 /* â”€â”€â”€ GAME CARDS â”€â”€â”€ */
@@ -4524,7 +4673,7 @@ var App = {
         });
         break;
       case 'scores':
-        document.querySelectorAll('.ls-match-card').forEach(function(c) { c.style.display = c.textContent.toLowerCase().includes(t) ? '' : 'none'; });
+        document.querySelectorAll('#lsMatchCards .gt-row').forEach(function(c) { c.style.display = c.textContent.toLowerCase().includes(t) ? '' : 'none'; });
         break;
       case 'rankings':
         document.querySelectorAll('#rankings .score-table tbody tr, #rankings .detail-table tbody tr').forEach(function(r) { r.style.display = r.textContent.toLowerCase().includes(t) ? '' : 'none'; });
@@ -4997,13 +5146,20 @@ var App = {
         var isTeamGame = !!HOUSE_COLORS[team1raw] || !!HOUSE_COLORS[team2raw];
         var score = parseScore(row[3]);
 
+        // Player names from extended columns (F-I = indices 5-8)
+        var p1a = cleanName(row[5] || '');
+        var p1b = cleanName(row[6] || '');
+        var p2a = cleanName(row[7] || '');
+        var p2b = cleanName(row[8] || '');
+
         var match = {
           id: mid, gameCode: parsed.gameCode, gameName: gameMeta.name,
           gameIcon: gameMeta.icon, segment: gameMeta.segment, category: catName,
           matchNum: parsed.matchNum, phase: phase, status: status,
           team1: isTeamGame ? team1raw : cleanName(team1raw),
           team2: isTeamGame ? team2raw : cleanName(team2raw),
-          house1: house1, house2: house2, score: score, isTeamGame: isTeamGame
+          house1: house1, house2: house2, score: score, isTeamGame: isTeamGame,
+          p1a: p1a, p1b: p1b, p2a: p2a, p2b: p2b
         };
         matches.push(match);
 
@@ -5047,83 +5203,144 @@ var App = {
       if (stats.completed > 0) fHtml += '<button class="ls-filter-pill" data-status="completed">Completed (' + stats.completed + ')</button>';
       fHtml += '</div>';
 
-      // Build match cards grouped by game + category
+      // ═══ Build game-wise tables (grouped by base game) ═══
+      // Regroup: gameCode → { name, icon, segment, matches[] }
+      var gameTables = {};
+      matches.forEach(function(m) {
+        if (!gameTables[m.gameCode]) {
+          gameTables[m.gameCode] = { name: m.gameName, icon: m.gameIcon, segment: m.segment, matches: [] };
+        }
+        gameTables[m.gameCode].matches.push(m);
+      });
+
+      // Helper: render side cell (team or player)
+      function gtSide(m, side, align) {
+        var isRight = align === 'right';
+        var cls = 'gt-side' + (isRight ? ' right' : '');
+        var team = side === 'a' ? m.team1 : m.team2;
+        var house = side === 'a' ? m.house1 : m.house2;
+        var p1 = side === 'a' ? m.p1a : m.p2a;
+        var p2 = side === 'a' ? m.p1b : m.p2b;
+        var hColor = HOUSE_COLORS[house] || HOUSE_COLORS[team] || '#555';
+        var isWinner = m.score && m.status === 'completed' && ((side === 'a' && m.score.winner === 'a') || (side === 'b' && m.score.winner === 'b'));
+        var isLoser = m.score && m.status === 'completed' && !isWinner && m.score.winner !== 'draw';
+        var tdCls = isWinner ? ' gt-winner' : isLoser ? ' gt-loser' : '';
+
+        var h = '<td class="' + tdCls + '"><div class="' + cls + '">';
+        h += '<span class="gt-side-dot" style="background:' + hColor + '"></span>';
+        h += '<div class="gt-side-info">';
+        if (m.isTeamGame) {
+          h += '<span class="gt-side-name">' + team + '</span>';
+        } else if (p1) {
+          h += '<span class="gt-side-name">' + p1 + '</span>';
+          if (p2) h += '<span class="gt-side-partner">' + p2 + '</span>';
+          if (house) h += '<span class="gt-side-sub">' + house + '</span>';
+        } else {
+          h += '<span class="gt-side-name">' + team + '</span>';
+          if (house && house !== team) h += '<span class="gt-side-sub">' + house + '</span>';
+        }
+        h += '</div></div></td>';
+        return h;
+      }
+
+      // Helper: render score cell
+      function gtScore(m) {
+        var h = '<td class="center"><div class="gt-score">';
+        if (m.score) {
+          var w = m.score.winner;
+          var ac = w === 'a' ? 'win' : w === 'b' ? 'lose' : '';
+          var bc = w === 'b' ? 'win' : w === 'a' ? 'lose' : '';
+          h += '<span class="' + ac + '">' + m.score.a + '</span>';
+          h += '<span class="gt-score-sep"> - </span>';
+          h += '<span class="' + bc + '">' + m.score.b + '</span>';
+        } else {
+          h += '<span class="gt-score-vs">VS</span>';
+        }
+        h += '</div></td>';
+        return h;
+      }
+
       var cHtml = '';
-      var groupKeys = Object.keys(gameGroups).sort();
-      groupKeys.forEach(function(gk) {
-        var grp = gameGroups[gk];
-        cHtml += '<div class="ls-game-group" data-game="' + grp.gameCode + '">';
-        cHtml += '<div class="ls-game-group-title"><i class="fas ' + grp.icon + '"></i> ' + grp.gameName + ' \u2014 ' + grp.category + ' <span class="ls-count">' + grp.matches.length + ' matches</span></div>';
-        cHtml += '<div class="ls-cards-grid">';
+      var sortedGameCodes = Object.keys(gameTables).sort(function(a, b) {
+        return gameTables[a].name.localeCompare(gameTables[b].name);
+      });
 
-        grp.matches.forEach(function(m) {
-          var cc = 'ls-match-card';
-          if (m.phase === 'Final') cc += ' phase-final';
-          else if (m.phase === '3rd Place') cc += ' phase-3rd';
-          else if (m.phase === 'Semifinal') cc += ' phase-semi';
-          if (m.status === 'live') cc += ' status-live';
+      sortedGameCodes.forEach(function(gc) {
+        var gt = gameTables[gc];
+        var liveCount = gt.matches.filter(function(m) { return m.status === 'live'; }).length;
+        var segKey = (gt.segment === 'indoor' || gt.segment === 'online') ? gt.segment : (gt.segment || 'indoor');
 
-          var t1c = 'ls-team team-a', t2c = 'ls-team team-b';
-          var s1c = 'ls-score-num', s2c = 'ls-score-num';
-          if (m.score && m.status === 'completed') {
-            if (m.score.winner === 'a') { t1c += ' winner'; t2c += ' loser'; s1c += ' win'; s2c += ' lose'; }
-            else if (m.score.winner === 'b') { t1c += ' loser'; t2c += ' winner'; s1c += ' lose'; s2c += ' win'; }
-          }
+        cHtml += '<div class="gt-panel" data-game="' + gc + '">';
+        cHtml += '<div class="gt-header" onclick="this.parentElement.classList.toggle('collapsed')">';
+        cHtml += '<div class="gt-header-left"><i class="fas ' + gt.icon + '"></i>' + gt.name;
+        cHtml += '<span class="gt-seg ' + segKey + '">' + gt.segment + '</span></div>';
+        cHtml += '<div class="gt-header-right">';
+        if (liveCount > 0) cHtml += '<span class="gt-live-badge"><i class="fas fa-circle" style="font-size:5px;vertical-align:middle;margin-right:3px"></i> ' + liveCount + ' Live</span>';
+        cHtml += '<span class="gt-count">' + gt.matches.length + ' matches</span>';
+        cHtml += '<i class="fas fa-chevron-down gt-chevron"></i>';
+        cHtml += '</div></div>';
 
-          cHtml += '<div class="' + cc + '" data-status="' + m.status + '" data-game="' + m.gameCode + '">';
+        cHtml += '<div class="gt-body"><table class="gt-table">';
+        cHtml += '<thead><tr>';
+        cHtml += '<th style="width:36px">#</th>';
+        cHtml += '<th>Event</th>';
+        cHtml += '<th>Phase</th>';
+        cHtml += '<th>Side A</th>';
+        cHtml += '<th class="center" style="width:80px">Score</th>';
+        cHtml += '<th class="right">Side B</th>';
+        cHtml += '<th class="center">Status</th>';
+        cHtml += '</tr></thead><tbody>';
 
-          // Header
-          cHtml += '<div class="ls-card-header"><div class="ls-card-game"><i class="fas ' + m.gameIcon + '"></i><span class="ls-card-game-name">' + m.gameName + '</span><span class="ls-card-category"> \u00B7 ' + m.category + '</span></div><div class="ls-card-badges">';
+        // Sort: live first, then scheduled, then completed; within same status by matchNum
+        gt.matches.sort(function(a, b) {
+          var order = { live: 0, scheduled: 1, completed: 2 };
+          var oa = order[a.status] != null ? order[a.status] : 1;
+          var ob = order[b.status] != null ? order[b.status] : 1;
+          if (oa !== ob) return oa - ob;
+          // Group by category
+          if (a.category !== b.category) return a.category.localeCompare(b.category);
+          return a.matchNum - b.matchNum;
+        });
+
+        gt.matches.forEach(function(m, idx) {
+          var rowCls = 'gt-row';
+          if (m.status === 'live') rowCls += ' gt-row-live';
+          cHtml += '<tr class="' + rowCls + '" data-status="' + m.status + '" data-game="' + m.gameCode + '">';
+
+          // # column
+          cHtml += '<td class="mono">' + (idx + 1) + '</td>';
+
+          // Event (category)
+          cHtml += '<td>' + m.category + '</td>';
+
+          // Phase
+          cHtml += '<td>';
           if (m.phase) {
             var pc = m.phase === 'Final' ? 'final' : m.phase === 'Semifinal' ? 'semifinal' : 'third';
-            var pi = m.phase === 'Final' ? '<i class="fas fa-trophy"></i> ' : m.phase === 'Semifinal' ? '<i class="fas fa-bolt"></i> ' : '<i class="fas fa-medal"></i> ';
-            cHtml += '<span class="ls-phase-badge ' + pc + '">' + pi + m.phase + '</span>';
+            var pi = m.phase === 'Final' ? 'fa-trophy' : m.phase === 'Semifinal' ? 'fa-bolt' : 'fa-medal';
+            cHtml += '<span class="gt-phase ' + pc + '"><i class="fas ' + pi + '"></i> ' + m.phase + '</span>';
+          } else {
+            cHtml += '<span class="gt-matchid">M' + m.matchNum + '</span>';
           }
-          cHtml += '<span class="ls-status-dot ' + m.status + '" title="' + m.status + '"></span></div></div>';
+          cHtml += '</td>';
 
-          // Body
-          cHtml += '<div class="ls-card-body">';
-
-          // Team A
-          var h1color = HOUSE_COLORS[m.house1] || HOUSE_COLORS[m.team1] || '#666';
-          var h1short = HOUSE_SHORT[m.house1] || HOUSE_SHORT[m.team1] || '';
-          cHtml += '<div class="' + t1c + '"><div class="ls-team-name">' + m.team1 + '</div>';
-          if (!m.isTeamGame && m.house1) {
-            cHtml += '<div class="ls-team-house"><span class="ls-house-dot" style="background:' + h1color + '"></span>' + h1short + '</div>';
-          } else if (m.isTeamGame) {
-            cHtml += '<div class="ls-team-house"><span class="ls-house-dot" style="background:' + h1color + '"></span>' + h1short + '</div>';
-          }
-          cHtml += '</div>';
+          // Side A
+          cHtml += gtSide(m, 'a', 'left');
 
           // Score
-          cHtml += '<div class="ls-score-box">';
-          if (m.score) {
-            cHtml += '<span class="' + s1c + '">' + m.score.a + '</span><span class="ls-score-sep">\u2014</span><span class="' + s2c + '">' + m.score.b + '</span>';
-          } else if (m.status === 'scheduled') {
-            cHtml += '<span class="ls-score-num" style="color:var(--text-muted);font-size:0.9rem">VS</span>';
-          } else {
-            cHtml += '<span class="ls-score-num" style="color:var(--text-muted)">\u2014</span>';
-          }
-          cHtml += '</div>';
+          cHtml += gtScore(m);
 
-          // Team B
-          var h2color = HOUSE_COLORS[m.house2] || HOUSE_COLORS[m.team2] || '#666';
-          var h2short = HOUSE_SHORT[m.house2] || HOUSE_SHORT[m.team2] || '';
-          cHtml += '<div class="' + t2c + '"><div class="ls-team-name">' + m.team2 + '</div>';
-          if (!m.isTeamGame && m.house2) {
-            cHtml += '<div class="ls-team-house"><span class="ls-house-dot" style="background:' + h2color + '"></span>' + h2short + '</div>';
-          } else if (m.isTeamGame) {
-            cHtml += '<div class="ls-team-house"><span class="ls-house-dot" style="background:' + h2color + '"></span>' + h2short + '</div>';
-          }
-          cHtml += '</div>';
+          // Side B
+          cHtml += gtSide(m, 'b', 'right');
 
-          cHtml += '</div>'; // body
+          // Status
+          var statusLabel = m.status.charAt(0).toUpperCase() + m.status.slice(1);
+          cHtml += '<td class="center"><span class="gt-status ' + m.status + '"><span class="gt-status-dot"></span>' + statusLabel + '</span></td>';
 
-          // Footer
-          cHtml += '<div class="ls-card-footer"><span class="ls-match-id">' + m.id + '</span><span>' + m.status.charAt(0).toUpperCase() + m.status.slice(1) + '</span></div>';
-          cHtml += '</div>'; // card
+          cHtml += '</tr>';
         });
-        cHtml += '</div></div>'; // grid, group
+
+        cHtml += '</tbody></table></div></div>';
       });
 
       document.getElementById('liveScoresContent').innerHTML = fHtml + '<div id="lsMatchCards">' + cHtml + '</div>';
@@ -5157,16 +5374,15 @@ var App = {
     var gf = gameBtn ? gameBtn.getAttribute('data-game') : 'all';
     var sf = statusBtn ? statusBtn.getAttribute('data-status') : 'all';
 
-    document.querySelectorAll('.ls-game-group').forEach(function(grp) {
-      var grpGame = grp.getAttribute('data-game');
-      grp.style.display = (gf === 'all' || grpGame === gf) ? '' : 'none';
+    // Show/hide game table panels
+    document.querySelectorAll('#lsMatchCards .gt-panel').forEach(function(panel) {
+      var pg = panel.getAttribute('data-game');
+      panel.style.display = (gf === 'all' || pg === gf) ? '' : 'none';
     });
-    document.querySelectorAll('.ls-match-card').forEach(function(card) {
-      var cardStatus = card.getAttribute('data-status');
-      var cardGame = card.getAttribute('data-game');
-      var showGame = (gf === 'all' || cardGame === gf);
-      var showStatus = (sf === 'all' || cardStatus === sf);
-      card.style.display = (showGame && showStatus) ? '' : 'none';
+    // Show/hide individual table rows by status
+    document.querySelectorAll('#lsMatchCards .gt-row').forEach(function(row) {
+      var rs = row.getAttribute('data-status');
+      row.style.display = (sf === 'all' || rs === sf) ? '' : 'none';
     });
   },
 
@@ -5595,6 +5811,12 @@ var App = {
             gameSet[parsed.gameCode] = gameMeta.name;
             if (venue) venueSet[venue] = true;
 
+            // Player names from extended columns (H-K = indices 7-10)
+            var mp1a = (row[7] || '').toString().trim();
+            var mp1b = (row[8] || '').toString().trim();
+            var mp2a = (row[9] || '').toString().trim();
+            var mp2b = (row[10] || '').toString().trim();
+
             matches.push({
               id: mid, rawId: rawId, gameCode: parsed.gameCode, gameName: gameMeta.name,
               gameIcon: gameMeta.icon, segment: gameMeta.segment, category: catName,
@@ -5602,7 +5824,8 @@ var App = {
               team1: (row[3] || '').toString().trim(),
               team2: (row[4] || '').toString().trim(),
               date: row[1], time: row[2], venue: venue,
-              dk: dateKey(row[1])
+              dk: dateKey(row[1]),
+              p1a: mp1a, p1b: mp1b, p2a: mp2a, p2b: mp2b
             });
           });
 
@@ -5638,69 +5861,138 @@ var App = {
           }
           document.getElementById('msFilters').innerHTML = fHtml;
 
-          // Group by date
-          matches.sort(function(a,b) { return a.dk < b.dk ? -1 : a.dk > b.dk ? 1 : (a.matchNum - b.matchNum); });
-          var dateGroups = {};
+          // ═══ Build game-wise tables for Schedule ═══
+          // Group by game code
+          var msGameTables = {};
           matches.forEach(function(m) {
-            if (!dateGroups[m.dk]) dateGroups[m.dk] = { display: fmtDate(m.date), matches: [] };
-            dateGroups[m.dk].matches.push(m);
+            if (!msGameTables[m.gameCode]) {
+              msGameTables[m.gameCode] = { name: m.gameName, icon: m.gameIcon, segment: m.segment, matches: [] };
+            }
+            msGameTables[m.gameCode].matches.push(m);
           });
 
-          // Build timeline
+          // Helper: render side cell for schedule
+          function msSide(m, side, align) {
+            var isRight = align === 'right';
+            var cls = 'gt-side' + (isRight ? ' right' : '');
+            var team = side === 'a' ? m.team1 : m.team2;
+            var p1 = side === 'a' ? m.p1a : m.p2a;
+            var p2 = side === 'a' ? m.p1b : m.p2b;
+            var isTeam = !!HOUSE_COLORS[m.team1] || !!HOUSE_COLORS[m.team2];
+            var house = '';
+            if (HOUSE_COLORS[team]) { house = team; }
+            else if (self._memberMap) {
+              var lk = (p1 || team).toLowerCase();
+              house = self._memberMap[lk] || '';
+            }
+            var hColor = HOUSE_COLORS[house] || '#555';
+
+            var h = '<td><div class="' + cls + '">';
+            h += '<span class="gt-side-dot" style="background:' + hColor + '"></span>';
+            h += '<div class="gt-side-info">';
+            if (isTeam) {
+              h += '<span class="gt-side-name">' + team + '</span>';
+            } else if (p1) {
+              h += '<span class="gt-side-name">' + p1 + '</span>';
+              if (p2) h += '<span class="gt-side-partner">' + p2 + '</span>';
+              if (house) h += '<span class="gt-side-sub">' + house + '</span>';
+            } else {
+              h += '<span class="gt-side-name">' + (team || 'TBD') + '</span>';
+              if (house && house !== team) h += '<span class="gt-side-sub">' + house + '</span>';
+            }
+            h += '</div></div></td>';
+            return h;
+          }
+
           var tHtml = '';
-          Object.keys(dateGroups).sort().forEach(function(dk) {
-            var dg = dateGroups[dk];
-            tHtml += '<div class="ms-date-group" data-date="' + dk + '">';
-            tHtml += '<div class="ms-date-header"><span class="ms-date-badge"><i class="fas fa-calendar-day"></i> ' + dg.display + '</span>' + dayTag(dk) + '</div>';
-            tHtml += '<div class="ms-cards-grid">';
+          var sortedMsGames = Object.keys(msGameTables).sort(function(a, b) {
+            return msGameTables[a].name.localeCompare(msGameTables[b].name);
+          });
 
-            dg.matches.forEach(function(m) {
-              var cc = 'ms-card';
-              if (m.status === 'live') cc += ' ms-live';
-              if (m.phase === 'Final') cc += ' ms-final';
-              else if (m.phase === 'Semifinal') cc += ' ms-semi';
-              else if (m.phase === '3rd Place') cc += ' ms-third';
+          sortedMsGames.forEach(function(gc) {
+            var gt = msGameTables[gc];
+            var liveCount = gt.matches.filter(function(m) { return m.status === 'live'; }).length;
+            var segKey = (gt.segment === 'indoor' || gt.segment === 'online') ? gt.segment : (gt.segment || 'indoor');
 
-              var h1c = HOUSE_COLORS[m.team1] || '#666';
-              var h2c = HOUSE_COLORS[m.team2] || '#666';
-              var h1s = HOUSE_SHORT[m.team1] || '';
-              var h2s = HOUSE_SHORT[m.team2] || '';
+            tHtml += '<div class="gt-panel ms-gt-panel" data-game="' + gc + '">';
+            tHtml += '<div class="gt-header" onclick="this.parentElement.classList.toggle('collapsed')">';
+            tHtml += '<div class="gt-header-left"><i class="fas ' + gt.icon + '"></i>' + gt.name;
+            tHtml += '<span class="gt-seg ' + segKey + '">' + gt.segment + '</span></div>';
+            tHtml += '<div class="gt-header-right">';
+            if (liveCount > 0) tHtml += '<span class="gt-live-badge"><i class="fas fa-circle" style="font-size:5px;vertical-align:middle;margin-right:3px"></i> ' + liveCount + ' Live</span>';
+            tHtml += '<span class="gt-count">' + gt.matches.length + ' matches</span>';
+            tHtml += '<i class="fas fa-chevron-down gt-chevron"></i>';
+            tHtml += '</div></div>';
 
-              tHtml += '<div class="' + cc + '" data-status="' + m.status + '" data-game="' + m.gameCode + '" data-venue="' + (m.venue || '') + '">';
+            tHtml += '<div class="gt-body"><table class="gt-table">';
+            tHtml += '<thead><tr>';
+            tHtml += '<th style="width:36px">#</th>';
+            tHtml += '<th>Event</th>';
+            tHtml += '<th>Phase</th>';
+            tHtml += '<th>Date</th>';
+            tHtml += '<th>Time</th>';
+            tHtml += '<th>Side A</th>';
+            tHtml += '<th style="width:30px;text-align:center">VS</th>';
+            tHtml += '<th>Side B</th>';
+            tHtml += '<th>Venue</th>';
+            tHtml += '<th class="center">Status</th>';
+            tHtml += '</tr></thead><tbody>';
 
-              // Top: game + badges
-              tHtml += '<div class="ms-card-top">';
-              tHtml += '<div class="ms-card-game"><i class="fas ' + m.gameIcon + '"></i>' + m.gameName + '<span class="ms-card-cat"> &middot; ' + m.category + '</span></div>';
-              tHtml += '<div class="ms-card-badges">';
-              if (m.phase) {
-                var pc = m.phase === 'Final' ? 'final' : m.phase === 'Semifinal' ? 'semifinal' : 'third';
-                var pi = m.phase === 'Final' ? '<i class="fas fa-trophy"></i> ' : m.phase === 'Semifinal' ? '<i class="fas fa-bolt"></i> ' : '<i class="fas fa-medal"></i> ';
-                tHtml += '<span class="ls-phase-badge ' + pc + '">' + pi + m.phase + '</span>';
-              }
-              tHtml += '<span class="ls-status-dot ' + m.status + '" title="' + m.status + '"></span>';
-              tHtml += '</div></div>';
-
-              // Teams
-              tHtml += '<div class="ms-card-teams">';
-              tHtml += '<div class="ms-card-team"><div class="ms-card-tname">' + m.team1 + '</div>';
-              if (h1s) tHtml += '<div class="ms-card-thouse"><span class="ls-house-dot" style="background:' + h1c + '"></span>' + h1s + '</div>';
-              tHtml += '</div>';
-              tHtml += '<div class="ms-card-vs">VS</div>';
-              tHtml += '<div class="ms-card-team right"><div class="ms-card-tname">' + m.team2 + '</div>';
-              if (h2s) tHtml += '<div class="ms-card-thouse"><span class="ls-house-dot" style="background:' + h2c + '"></span>' + h2s + '</div>';
-              tHtml += '</div></div>';
-
-              // Meta: time, venue, match ID
-              tHtml += '<div class="ms-card-meta">';
-              if (m.time) tHtml += '<span><i class="fas fa-clock"></i>' + fmtTime(m.time) + '</span>';
-              if (m.venue) tHtml += '<span><i class="fas fa-location-dot"></i>' + m.venue + '</span>';
-              tHtml += '<span class="ms-match-id">' + m.id + '</span>';
-              tHtml += '</div>';
-
-              tHtml += '</div>'; // card
+            // Sort by date, then match number
+            gt.matches.sort(function(a, b) {
+              if (a.dk !== b.dk) return a.dk < b.dk ? -1 : 1;
+              if (a.category !== b.category) return a.category.localeCompare(b.category);
+              return a.matchNum - b.matchNum;
             });
 
-            tHtml += '</div></div>'; // grid, group
+            gt.matches.forEach(function(m, idx) {
+              var rowCls = 'ms-gt-row';
+              if (m.status === 'live') rowCls += ' gt-row-live';
+              tHtml += '<tr class="' + rowCls + '" data-status="' + m.status + '" data-game="' + m.gameCode + '" data-venue="' + (m.venue || '') + '">';
+
+              // #
+              tHtml += '<td class="mono">' + (idx + 1) + '</td>';
+
+              // Event
+              tHtml += '<td>' + m.category + '</td>';
+
+              // Phase
+              tHtml += '<td>';
+              if (m.phase) {
+                var pc = m.phase === 'Final' ? 'final' : m.phase === 'Semifinal' ? 'semifinal' : 'third';
+                var pi = m.phase === 'Final' ? 'fa-trophy' : m.phase === 'Semifinal' ? 'fa-bolt' : 'fa-medal';
+                tHtml += '<span class="gt-phase ' + pc + '"><i class="fas ' + pi + '"></i> ' + m.phase + '</span>';
+              } else {
+                tHtml += '<span class="gt-matchid">M' + m.matchNum + '</span>';
+              }
+              tHtml += '</td>';
+
+              // Date
+              tHtml += '<td class="gt-date">' + fmtDate(m.date) + '</td>';
+
+              // Time
+              tHtml += '<td class="gt-time">' + (m.time ? fmtTime(m.time) : '') + '</td>';
+
+              // Side A
+              tHtml += msSide(m, 'a', 'left');
+
+              // VS
+              tHtml += '<td class="center" style="font-size:0.65rem;font-weight:700;color:var(--text-muted);opacity:0.5">VS</td>';
+
+              // Side B
+              tHtml += msSide(m, 'b', 'right');
+
+              // Venue
+              tHtml += '<td class="gt-venue">' + (m.venue || '') + '</td>';
+
+              // Status
+              var statusLabel = m.status.charAt(0).toUpperCase() + m.status.slice(1);
+              tHtml += '<td class="center"><span class="gt-status ' + m.status + '"><span class="gt-status-dot"></span>' + statusLabel + '</span></td>';
+
+              tHtml += '</tr>';
+            });
+
+            tHtml += '</tbody></table></div></div>';
           });
 
           document.getElementById('msTimeline').innerHTML = tHtml;
@@ -5737,19 +6029,18 @@ var App = {
     var status = sf.status || 'all';
     var venue = vf.venue || 'all';
 
-    document.querySelectorAll('.ms-card').forEach(function(c) {
-      var gOk = game === 'all' || c.dataset.game === game;
-      var sOk = status === 'all' || c.dataset.status === status;
-      var vOk = venue === 'all' || c.dataset.venue === venue;
-      c.style.display = (gOk && sOk && vOk) ? '' : 'none';
+    // Show/hide game table panels
+    document.querySelectorAll('#msTimeline .ms-gt-panel').forEach(function(panel) {
+      var pg = panel.getAttribute('data-game');
+      panel.style.display = (game === 'all' || pg === game) ? '' : 'none';
     });
-
-    // Hide empty date groups
-    document.querySelectorAll('.ms-date-group').forEach(function(g) {
-      var visible = g.querySelectorAll('.ms-card[style=""], .ms-card:not([style])');
-      var hasVisible = false;
-      g.querySelectorAll('.ms-card').forEach(function(c) { if (c.style.display !== 'none') hasVisible = true; });
-      g.style.display = hasVisible ? '' : 'none';
+    // Show/hide individual table rows by status + venue
+    document.querySelectorAll('#msTimeline .ms-gt-row').forEach(function(row) {
+      var rs = row.getAttribute('data-status');
+      var rv = row.getAttribute('data-venue') || '';
+      var sOk = status === 'all' || rs === status;
+      var vOk = venue === 'all' || rv === venue;
+      row.style.display = (sOk && vOk) ? '' : 'none';
     });
   },
 

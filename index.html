@@ -8108,6 +8108,8 @@ var OPTIMA_GLB_DATA = {
 
     <button class="nav-btn active" data-tab="dashboard"><i class="fas fa-hat-wizard"></i> Great Hall</button>
 
+    <button class="nav-btn" data-tab="houses"><i class="fas fa-shield-halved"></i> Houses</button>
+
     <button class="nav-btn" data-tab="scores"><i class="fas fa-bolt-lightning"></i> Live Scores <span class="badge" id="liveBadge" style="display:none">0</span></button>
 
     <button class="nav-btn" data-tab="rankings"><i class="fas fa-trophy"></i> House Cup</button>
@@ -8117,8 +8119,6 @@ var OPTIMA_GLB_DATA = {
     <button class="nav-btn" data-tab="games"><i class="fas fa-broom-ball"></i> Tournaments</button>
 
     <button class="nav-btn" data-tab="playerProfiles"><i class="fas fa-hat-wizard"></i> Wizards</button>
-
-    <button class="nav-btn" data-tab="houses"><i class="fas fa-shield-halved"></i> Houses</button>
 
   </div>
 
@@ -8321,6 +8321,26 @@ var OPTIMA_GLB_DATA = {
 
 
   <!-- â•â•â•â•â•â•â• LIVE SCORES â•â•â•â•â•â•â• -->
+
+  <div id="houses" class="section">
+
+    <div class="section-header">
+
+      <i class="fas fa-shield-halved"></i>
+
+      <h2>Houses</h2>
+
+    </div>
+
+    <div class="tab-guide" id="guide-houses"><i class="fas fa-shield-halved"></i><span>Houses shows the four house standings in a bar race, followed by detailed house cards with captain, members, and point breakdown. The crests represent each house's identity.</span><span class="tab-guide-dismiss" onclick="this.parentElement.style.display='none';localStorage.setItem('guide-houses','1')" title="Dismiss">✖</span></div>
+
+    <div id="housesContent">
+
+      <div class="skeleton skel-card"></div>
+
+    </div>
+
+  </div>
 
   <div id="scores" class="section">
 
@@ -8635,26 +8655,6 @@ var OPTIMA_GLB_DATA = {
 
 
   <!-- â•â•â•â•â•â•â• HOUSES â•â•â•â•â•â•â• -->
-
-  <div id="houses" class="section">
-
-    <div class="section-header">
-
-      <i class="fas fa-shield-halved"></i>
-
-      <h2>Houses</h2>
-
-    </div>
-
-    <div class="tab-guide" id="guide-houses"><i class="fas fa-shield-halved"></i><span>Houses shows the four house standings in a bar race, followed by detailed house cards with captain, members, and point breakdown. The crests represent each house's identity.</span><span class="tab-guide-dismiss" onclick="this.parentElement.style.display='none';localStorage.setItem('guide-houses','1')" title="Dismiss">✖</span></div>
-
-    <div id="housesContent">
-
-      <div class="skeleton skel-card"></div>
-
-    </div>
-
-  </div>
 
 </div>
 

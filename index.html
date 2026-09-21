@@ -13992,12 +13992,12 @@ a, button, .nav-btn, .stat-card, .house-card, .game-card2, .ms-card, .ls-match-c
 
 
   .hero-balloon { display: none; }
-
-
+  .hero-castle { display: none; }
+  .hero-castle-far, .hero-castle-mid, .hero-castle-glow, .hero-castle-fog, .hero-castle-near { display: none; }
 
   .hero-content { padding: 0.8rem 1rem; }
 
-  .hero-logo { width: 44px; height: 44px; }
+  .hero-logo { width: 50px; height: 50px; }
   .hero-logo-left { left: 8px; }
   .hero-logo-right { right: 8px; }
 
@@ -14027,9 +14027,8 @@ a, button, .nav-btn, .stat-card, .house-card, .game-card2, .ms-card, .ls-match-c
     white-space: nowrap;
     flex-shrink: 0;
     scroll-snap-align: start;
-
-
-
+    color: #d4a017;
+    text-shadow: 0 0 6px rgba(212,160,23,0.2);
   }
 
 
@@ -15430,11 +15429,11 @@ a, button, .nav-btn, .stat-card, .house-card, .game-card2, .ms-card, .ls-match-c
 
 
 
-<script src="https://cdn.jsdelivr.net/npm/three@0.137.0/build/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.137.0/build/three.min.js" onerror="console.error('OPTIMA: three.min.js CDN failed')"></script>
 
 
 
-<script src="https://cdn.jsdelivr.net/npm/three@0.137.0/examples/js/loaders/GLTFLoader.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.137.0/examples/js/loaders/GLTFLoader.js" onerror="console.error('OPTIMA: GLTFLoader.js CDN failed')"></script>
 
 
 
@@ -28798,7 +28797,11 @@ window.addEventListener("load", function() {
 
 
 
-  if (!mount || typeof THREE === "undefined" || typeof THREE.GLTFLoader === "undefined" || !window.OPTIMA_GLB_DATA) return;
+  if (!mount) { console.error("OPTIMA 3D: mount element not found"); return; }
+  if (typeof THREE === "undefined") { console.error("OPTIMA 3D: THREE.js not loaded — check CDN"); return; }
+  if (typeof THREE.GLTFLoader === "undefined") { console.error("OPTIMA 3D: GLTFLoader not loaded — check CDN"); return; }
+  if (!window.OPTIMA_GLB_DATA) { console.error("OPTIMA 3D: GLB data not found"); return; }
+  console.log("OPTIMA 3D: All checks passed, initializing...");
 
 
 
@@ -28842,11 +28845,13 @@ window.addEventListener("load", function() {
 
 
 
-  var renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+  var isMob = window.innerWidth < 768;
+  var renderer;
+  try {
+    renderer = new THREE.WebGLRenderer({ antialias: !isMob, alpha: true, powerPreference: isMob ? "low-power" : "high-performance" });
+  } catch(e) { console.error("OPTIMA 3D: WebGL init failed", e); return; }
 
-
-
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+  renderer.setPixelRatio(isMob ? 1 : Math.min(window.devicePixelRatio || 1, 2));
 
 
 
@@ -29034,7 +29039,7 @@ window.addEventListener("load", function() {
 
 
 
-    var tgtH = 3.4;
+    var tgtH = window.innerWidth < 768 ? 2.6 : 3.4;
 
 
 

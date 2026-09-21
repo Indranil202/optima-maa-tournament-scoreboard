@@ -1998,6 +1998,25 @@ body::after {
 
 .hero-content { position: relative; z-index: 5; padding: 1rem 2rem; }
 
+.hero-logo {
+  position: absolute;
+  width: 80px;
+  height: 80px;
+  object-fit: contain;
+  z-index: 10;
+  background: transparent;
+  border: none;
+  filter: drop-shadow(0 0 6px rgba(100,140,255,0.4)) drop-shadow(0 0 16px rgba(80,60,180,0.25));
+  transition: opacity 0.3s, transform 0.3s, filter 0.3s;
+  pointer-events: auto;
+  opacity: 0.9;
+}
+.hero-logo:hover { opacity: 1; transform: scale(1.1); filter: drop-shadow(0 0 10px rgba(100,140,255,0.6)) drop-shadow(0 0 24px rgba(80,60,180,0.4)); }
+.hero-logo-left { left: 1%; top: 8%; width: 60px; height: 60px; }
+.hero-logo-right { right: 1%; top: 8%; }
+
+
+
 
 
 
@@ -13978,6 +13997,11 @@ a, button, .nav-btn, .stat-card, .house-card, .game-card2, .ms-card, .ls-match-c
 
   .hero-content { padding: 0.8rem 1rem; }
 
+  .hero-logo { width: 44px; height: 44px; }
+  .hero-logo-left { left: 8px; }
+  .hero-logo-right { right: 8px; }
+
+
 
 
   
@@ -13992,31 +14016,17 @@ a, button, .nav-btn, .stat-card, .house-card, .game-card2, .ms-card, .ls-match-c
 
 
 
-  .nav-scroll { gap: 2px; padding: 0 6px; justify-content: flex-start; }
+  .nav-scroll { gap: 4px; padding: 8px 12px; justify-content: flex-start; overflow-x: auto; -webkit-overflow-scrolling: touch; scroll-snap-type: x mandatory; }
 
 
 
   .nav-btn {
-
-
-
     padding: 10px 14px;
-
-
-
-    font-size: 0.75rem;
-
-
-
+    font-size: 0.78rem;
     min-height: 44px;
-
-
-
     white-space: nowrap;
-
-
-
     flex-shrink: 0;
+    scroll-snap-align: start;
 
 
 
@@ -14316,7 +14326,7 @@ a, button, .nav-btn, .stat-card, .house-card, .game-card2, .ms-card, .ls-match-c
 
 
 
-  .hero { height: 220px; }
+  .hero { height: 300px; }
 
 
 
@@ -14340,7 +14350,7 @@ a, button, .nav-btn, .stat-card, .house-card, .game-card2, .ms-card, .ls-match-c
 
 
 
-  .nav-scroll { padding: 0 4px; }
+  .nav-scroll { padding: 6px 10px; }
 
 
 
@@ -14524,7 +14534,7 @@ a, button, .nav-btn, .stat-card, .house-card, .game-card2, .ms-card, .ls-match-c
 
 
 
-  .hero { height: 180px; }
+  .hero { height: 260px; }
 
 
 
@@ -16014,7 +16024,11 @@ var OPTIMA_GLB_DATA = {
 
 
 
+  <img class="hero-logo hero-logo-left" src="MAA.png" alt="MAA BASH">
+  <img class="hero-logo hero-logo-right" src="CET.png" alt="CET OPTIMA">
+
   <div class="hero-content">
+
 
 
 
@@ -16145,7 +16159,7 @@ var OPTIMA_GLB_DATA = {
 
 
 
-  <div id="dataTimestamp" style="position:absolute;right:12px;top:50%;transform:translateY(-50%);font-size:0.6rem;color:var(--text-muted);opacity:0.7;white-space:nowrap"><i class="fas fa-clock" style="margin-right:3px;opacity:0.5"></i><span id="tsText">--</span></div>
+  <div id="dataTimestamp" style="position:absolute;right:8px;top:50%;transform:translateY(-50%);display:none;font-size:0.6rem;color:var(--text-muted);opacity:0.7;white-space:nowrap"><i class="fas fa-clock" style="margin-right:3px;opacity:0.5"></i><span id="tsText">--</span></div>
 </div>
 
 
@@ -18158,7 +18172,7 @@ function updateStatusTicker() {
 
 
 
-  if (wizards > 0) parts.push('\U0001F9D9 ' + wizards + ' Wizards');
+  if (wizards > 0) parts.push('🧙 ' + wizards + ' Wizards');
 
 
 
@@ -18174,7 +18188,7 @@ function updateStatusTicker() {
 
 
 
-  var HEMOJI = { gryffindor: '\U0001F981', slytherin: '\U0001F40D', ravenclaw: '\U0001F985', hufflepuff: '\U0001F9A1' };
+  var HEMOJI = { gryffindor: '🦁', slytherin: '🐍', ravenclaw: '🦅', hufflepuff: '🦡' };
 
 
 
@@ -18186,11 +18200,11 @@ function updateStatusTicker() {
 
 
 
-    var e2 = HEMOJI[(lead.name||'').toLowerCase()] || '\U0001F3F0';
+    var e2 = HEMOJI[(lead.name||'').toLowerCase()] || '🏰';
 
 
 
-    parts.push('\U0001F3C6 Cup Leader: ' + e2 + ' ' + (lead.name||'') + ' \u2014 ' + (lead.points||0) + ' pts');
+    parts.push('🏆 Cup Leader: ' + e2 + ' ' + (lead.name||'') + ' \u2014 ' + (lead.points||0) + ' pts');
 
 
 
@@ -18202,7 +18216,7 @@ function updateStatusTicker() {
 
 
 
-      if (gap > 0) parts.push('\U0001F4C8 Leading by +' + gap + ' pts over ' + (houses[1].name||''));
+      if (gap > 0) parts.push('📈 Leading by +' + gap + ' pts over ' + (houses[1].name||''));
 
 
 
@@ -18282,7 +18296,7 @@ function updateStatusTicker() {
 
 
 
-      if (upcoming > 0) parts.push('\U0001F4C5 ' + upcoming + ' Upcoming Matches');
+      if (upcoming > 0) parts.push('📅 ' + upcoming + ' Upcoming Matches');
 
 
 
@@ -18298,7 +18312,7 @@ function updateStatusTicker() {
 
 
 
-        parts.push('\U0001F52E Next: ' + nextMatch.t1 + ' vs ' + nextMatch.t2 + (ds ? ' \u00B7 ' + ds : ''));
+        parts.push('🔮 Next: ' + nextMatch.t1 + ' vs ' + nextMatch.t2 + (ds ? ' \u00B7 ' + ds : ''));
 
 
 
@@ -18382,7 +18396,7 @@ function updateStatusTicker() {
 
 
 
-  parts.push('\U0001F552 Updated ' + new Date().toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'}));
+  parts.push('🕒 Updated ' + new Date().toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'}));
 
 
 
@@ -27983,6 +27997,16 @@ startWizardSpawner();
   }
 })();
 
+
+// Ensure active nav tab is visible on mobile
+(function() {
+  var active = document.querySelector('.nav-btn.active');
+  if (active) {
+    setTimeout(function() {
+      active.scrollIntoView({ inline: 'center', block: 'nearest', behavior: 'smooth' });
+    }, 500);
+  }
+})();
 // ═══ OWL DELIVERY FOR SCORE UPDATES ═══
 
 

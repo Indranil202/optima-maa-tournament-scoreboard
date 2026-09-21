@@ -9768,6 +9768,8 @@ var App = {
 
 
     // ── House Cup Race Bars ──
+
+          var HOUSE_LOGO_MAP = { 'Gryffindor': 'assets/House%20logo/Gryffindor.png', 'Slytherin': 'assets/House%20logo/Slytherin.png', 'Ravenclaw': 'assets/House%20logo/Ravenclaw.png', 'Hufflepuff': 'assets/House%20logo/Hufflepuff.png' };
 
     var houses = (d.houses || []).slice().sort(function(a,b) { return (b.points||0) - (a.points||0); });
 
@@ -9791,7 +9793,7 @@ var App = {
 
           '<div class="hb-info"><div class="hb-name">' + (h.name||'') + '</div>' +
 
-          '<div class="hb-bar-track"><div class="hb-bar-fill" style="background:' + color + '" data-width="' + pct + '%"></div></div></div>' +
+          '<div class="hb-bar-track"><div class="hb-bar-fill" style="background:' + color + '" data-width="' + pct + '%">' + (HOUSE_LOGO_MAP[(h.name||'')] ? '<img class="hs-race-logo" src="' + HOUSE_LOGO_MAP[(h.name||'')] + '">' : '') + '</div></div></div>' +
 
           '<div class="hb-points" style="color:' + color + '">' + (h.points||0) + '</div></div>';
 
@@ -11407,13 +11409,13 @@ var App = {
 
                 '<td><span class="dt-segment-badge ' + segClass + '">' + segment + '</span></td>' +
 
-                '<td class="dt-house-name dt-pos-1">' + normHouse(row[2] || '-') + '</td>' +
+                '<td class="dt-house-name dt-pos-1">' + '<span style="display:inline-flex;align-items:center;gap:4px">' + ((HMETA[normHouse(row[2]||'')] || {}).logo ? '<img src="' + HMETA[normHouse(row[2]||'')].logo + '" style="width:18px;height:18px;border-radius:50%;object-fit:contain">' : '') + normHouse(row[2] || '-') + '</span>' + '</td>' +
 
-                '<td class="dt-house-name dt-pos-2">' + normHouse(row[3] || '-') + '</td>' +
+                '<td class="dt-house-name dt-pos-2">' + '<span style="display:inline-flex;align-items:center;gap:4px">' + ((HMETA[normHouse(row[3]||'')] || {}).logo ? '<img src="' + HMETA[normHouse(row[3]||'')].logo + '" style="width:18px;height:18px;border-radius:50%;object-fit:contain">' : '') + normHouse(row[3] || '-') + '</span>' + '</td>' +
 
-                '<td class="dt-house-name dt-pos-3">' + normHouse(row[4] || '-') + '</td>' +
+                '<td class="dt-house-name dt-pos-3">' + '<span style="display:inline-flex;align-items:center;gap:4px">' + ((HMETA[normHouse(row[4]||'')] || {}).logo ? '<img src="' + HMETA[normHouse(row[4]||'')].logo + '" style="width:18px;height:18px;border-radius:50%;object-fit:contain">' : '') + normHouse(row[4] || '-') + '</span>' + '</td>' +
 
-                '<td class="dt-house-name dt-pos-4">' + normHouse(row[5] || '-') + '</td>' +
+                '<td class="dt-house-name dt-pos-4">' + '<span style="display:inline-flex;align-items:center;gap:4px">' + ((HMETA[normHouse(row[5]||'')] || {}).logo ? '<img src="' + HMETA[normHouse(row[5]||'')].logo + '" style="width:18px;height:18px;border-radius:50%;object-fit:contain">' : '') + normHouse(row[5] || '-') + '</span>' + '</td>' +
 
                 '</tr>';
 
@@ -12589,7 +12591,7 @@ loadPlayerProfiles: function() {
 
             html += '<div class="wc-front-pts"><i class="fas fa-bolt"></i> ' + pts + '</div>';
 
-            html += '<div class="wc-house-emoji">' + hm.emoji + '</div>';
+            html += '<div class="wc-house-emoji">' + (hm.logo ? '<img src="' + hm.logo + '" style="width:100%;height:100%;object-fit:contain">' : hm.emoji) + '</div>';
 
             html += '</div>';
 
@@ -12874,39 +12876,6 @@ loadPlayerProfiles: function() {
 
 
           var html = '';
-
-
-
-          // â”€â”€â”€ STANDINGS BAR RACE â”€â”€â”€
-
-          html += '<div class="houses-standings">';
-
-          houses.forEach(function(h, idx) {
-
-            var hm = HOUSE_META[h.name] || DEFAULT_META;
-
-            var pct = maxPts > 0 ? Math.round(((h.points || 0) / maxPts) * 100) : 0;
-
-            html += '<div class="hs-bar-item">';
-
-            html += '<div class="hs-rank r' + (idx + 1) + '">' + RANK_MEDALS[idx] + '</div>';
-
-            html += '<div class="hs-emoji">' + (hm.logo ? '<img src="' + hm.logo + '" style="width:28px;height:28px;object-fit:contain;border-radius:50%">' : hm.emoji) + '</div>';
-
-            html += '<div class="hs-info"><div class="hs-name">' + (h.name || '') + '</div>';
-
-            html += '<div class="hs-track"><div class="hs-fill" style="background:' + hm.color + '" data-width="' + pct + '%">' + (hm.logo ? '<img class="hs-race-logo" src="' + hm.logo + '">' : '') + '</div></div></div>';
-
-            html += '<div class="hs-pts" style="color:' + hm.color + '">' + (h.points || 0) + '</div>';
-
-            html += '</div>';
-
-          });
-
-          html += '</div>';
-
-
-
           // â”€â”€â”€ HOUSE CARDS â”€â”€â”€
 
           html += '<div class="houses-grid">';

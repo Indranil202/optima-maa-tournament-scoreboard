@@ -4995,7 +4995,10 @@ body::after {
 
 .gt-side-partner::before { content: '& '; font-weight: 400; opacity: 0.6; }
 
-
+.gt-side-players {
+  font-size: 0.6rem; color: var(--text-muted); opacity: 0.8;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 140px;
+}
 
 .gt-score {
 
@@ -14288,6 +14291,8 @@ a, button, .nav-btn, .stat-card, .house-card, .game-card2, .ms-card, .ls-match-c
 
 
 
+.gh-result-players { font-size: 0.65rem; color: var(--neon-blue); opacity: 0.85; margin-top: 1px; }
+
 .gh-result-detail { font-size: 0.7rem; color: var(--text-muted); }
 
 
@@ -15120,7 +15125,7 @@ a, button, .nav-btn, .stat-card, .house-card, .game-card2, .ms-card, .ls-match-c
     <button class="nav-btn" data-tab="houses"><i class="fas fa-shield-halved"></i> Houses</button>
 
 
-    <button class="nav-btn" data-tab="scores"><i class="fas fa-bolt-lightning"></i> Live Scores <span class="badge" id="liveBadge" style="display:none">0</span></button>
+    <button class="nav-btn" data-tab="scores"><i class="fas fa-quidditch-broom-ball"></i> Match Centre <span class="badge" id="liveBadge" style="display:none">0</span></button>
 
 
 
@@ -15128,15 +15133,15 @@ a, button, .nav-btn, .stat-card, .house-card, .game-card2, .ms-card, .ls-match-c
 
 
 
-    <button class="nav-btn" data-tab="schedule"><i class="fas fa-scroll"></i> Match Schedule</button>
 
 
 
-    <button class="nav-btn" data-tab="games"><i class="fas fa-broom-ball"></i> Tournaments</button>
+
+    <button class="nav-btn" data-tab="games"><i class="fas fa-broom-ball"></i> Tournament Arena</button>
 
 
 
-    <button class="nav-btn" data-tab="playerProfiles"><i class="fas fa-hat-wizard"></i> Wizards</button>
+    <button class="nav-btn" data-tab="playerProfiles"><i class="fas fa-hat-wizard"></i> Wizard Registry</button>
 
 
 
@@ -15273,7 +15278,7 @@ a, button, .nav-btn, .stat-card, .house-card, .game-card2, .ms-card, .ls-match-c
 
 
 
-    <div class="tab-guide" id="guide-dashboard"><i class="fas fa-hat-wizard"></i><span>Welcome to The Great Hall! See tournament KPIs at a glance — total matches, completion %, active wizards, and the current Cup Leader. The progress rings show how much of the tournament is covered. Scroll down for recent results and upcoming fixtures.</span><span class="tab-guide-dismiss" onclick="this.parentElement.style.display='none';localStorage.setItem('guide-dashboard','1')" title="Dismiss">✖</span></div>
+    <div class="tab-guide" id="guide-dashboard"><i class="fas fa-hat-wizard"></i><span>Welcome to The Great Hall, wizard! Behold the tournament at a glance — scheduled battles, completion enchantments, enrolled wizards, and the reigning Cup Leader. The mystic rings reveal tournament progress. Scroll down for recent duels and upcoming encounters.</span><span class="tab-guide-dismiss" onclick="this.parentElement.style.display='none';localStorage.setItem('guide-dashboard','1')" title="Dismiss">✖</span></div>
 
 
 
@@ -15565,7 +15570,7 @@ a, button, .nav-btn, .stat-card, .house-card, .game-card2, .ms-card, .ls-match-c
 
 
 
-    <div class="tab-guide" id="guide-houses"><i class="fas fa-shield-halved"></i><span>Houses shows the four house standings in a bar race, followed by detailed house cards with captain, members, and point breakdown. The crests represent each house's identity.</span><span class="tab-guide-dismiss" onclick="this.parentElement.style.display='none';localStorage.setItem('guide-houses','1')" title="Dismiss">✖</span></div>
+    <div class="tab-guide" id="guide-houses"><i class="fas fa-shield-halved"></i><span>The four noble Houses compete for the OPTIMA Cup! Explore each House card — meet the Captain &amp; Vice Captain, view the full roster, and track points earned across Indoor, Outdoor, Cultural &amp; Inhouse realms. Every victory adds to the glory of your House!</span><span class="tab-guide-dismiss" onclick="this.parentElement.style.display='none';localStorage.setItem('guide-houses','1')" title="Dismiss">✖</span></div>
 
 
 
@@ -15593,11 +15598,11 @@ a, button, .nav-btn, .stat-card, .house-card, .game-card2, .ms-card, .ls-match-c
 
 
 
-      <i class="fas fa-bolt-lightning"></i>
+      <i class="fas fa-quidditch-broom-ball"></i>
 
 
 
-      <h2>Live Scores</h2>
+      <h2>Match Centre</h2>
 
 
 
@@ -15612,6 +15617,8 @@ a, button, .nav-btn, .stat-card, .house-card, .game-card2, .ms-card, .ls-match-c
     <div class="stats-grid" id="matchStats">
 
 
+
+      <div class="stat-card"><div class="stat-value" id="totalMatchStat">0</div><div class="stat-label">Total</div><i class="fas fa-gamepad stat-icon"></i></div>
 
       <div class="stat-card live">
 
@@ -15989,71 +15996,7 @@ a, button, .nav-btn, .stat-card, .house-card, .game-card2, .ms-card, .ls-match-c
 
 
 
-  <div id="schedule" class="section">
 
-
-
-    <div class="section-header">
-
-
-
-      <i class="fas fa-scroll"></i>
-
-
-
-      <h2>Match Schedule</h2>
-
-
-
-    </div>
-
-
-
-    <div class="tab-guide" id="guide-schedule"><i class="fas fa-calendar-days"></i><span>Match Schedule lists all upcoming and completed fixtures grouped by game. Use Game, Status, and Venue filters to find specific matches. Each row shows date, time, teams/players, and venue.</span><span class="tab-guide-dismiss" onclick="this.parentElement.style.display='none';localStorage.setItem('guide-schedule','1')" title="Dismiss">✖</span></div>
-
-
-
-    <!-- KPI row -->
-
-
-
-    <div class="ms-kpi-row" id="msKpiRow">
-      <div class="stat-card live"><div class="stat-value" id="msTotalStat">0</div><div class="stat-label">Total Matches</div><i class="fas fa-gamepad stat-icon"></i></div>
-      <div class="stat-card scheduled"><div class="stat-value" id="msUpcomingStat">0</div><div class="stat-label">Scheduled</div><i class="fas fa-calendar-clock stat-icon"></i></div>
-      <div class="stat-card live"><div class="stat-value" id="msLiveStat">0</div><div class="stat-label">Live</div><i class="fas fa-bolt stat-icon"></i></div>
-      <div class="stat-card completed"><div class="stat-value" id="msDoneStat">0</div><div class="stat-label">Completed</div><i class="fas fa-trophy stat-icon"></i></div>
-
-
-
-    </div>
-
-
-
-    <!-- Filters -->
-
-
-
-    <div id="msFilters"></div>
-
-
-
-    <!-- Timeline -->
-
-
-
-    <div id="msTimeline">
-
-
-
-      <div class="skeleton skel-card"></div>
-
-
-
-    </div>
-
-
-
-  </div>
 
 
 
@@ -16077,7 +16020,7 @@ a, button, .nav-btn, .stat-card, .house-card, .game-card2, .ms-card, .ls-match-c
 
 
 
-      <h2>Tournaments</h2>
+      <h2>Tournament Arena</h2>
 
 
 
@@ -16085,9 +16028,16 @@ a, button, .nav-btn, .stat-card, .house-card, .game-card2, .ms-card, .ls-match-c
 
 
 
-    <div class="tab-guide" id="guide-games"><i class="fas fa-gamepad"></i><span>Games &amp; Events lists every sport and event in the tournament with venue, POC contacts, and event categories. Cards are grouped by Indoor, Outdoor, Online, Cultural, and Inhouse segments.</span><span class="tab-guide-dismiss" onclick="this.parentElement.style.display='none';localStorage.setItem('guide-games','1')" title="Dismiss">✖</span></div>
+    <div class="tab-guide" id="guide-games"><i class="fas fa-gamepad"></i><span>The Tournament Arena! Every enchanted game and mystical event awaits — with venues, Point-of-Contact sorcerers, and spell categories. Cards are forged by realm: Indoor, Outdoor, Online, Cultural, and Inhouse.</span><span class="tab-guide-dismiss" onclick="this.parentElement.style.display='none';localStorage.setItem('guide-games','1')" title="Dismiss">✖</span></div>
 
 
+
+    <!-- Tournament KPI Cards -->
+    <div class="ms-kpi-row" id="gamesKpiRow" style="margin-bottom:1rem">
+      <div class="stat-card live"><div class="stat-value" id="gkSegments">0</div><div class="stat-label">Magical Realms</div><i class="fas fa-layer-group stat-icon"></i></div>
+      <div class="stat-card completed"><div class="stat-value" id="gkGames">0</div><div class="stat-label">Enchanted Games</div><i class="fas fa-broom-ball stat-icon"></i></div>
+      <div class="stat-card players"><div class="stat-value" id="gkCategories">0</div><div class="stat-label">Spell Categories</div><i class="fas fa-wand-sparkles stat-icon"></i></div>
+    </div>
 
     <div id="gamesContent">
 
@@ -16125,7 +16075,7 @@ a, button, .nav-btn, .stat-card, .house-card, .game-card2, .ms-card, .ls-match-c
 
 
 
-      <h2>Wizards</h2>
+      <h2>Wizard Registry</h2>
 
 
 
@@ -16133,9 +16083,17 @@ a, button, .nav-btn, .stat-card, .house-card, .game-card2, .ms-card, .ls-match-c
 
 
 
-    <div class="tab-guide" id="guide-playerProfiles"><i class="fas fa-hat-wizard"></i><span>Wizard Profiles shows every participant's stats. Search by name or filter by house. Click a card to flip it — the back shows games played, positions, and total points earned.</span><span class="tab-guide-dismiss" onclick="this.parentElement.style.display='none';localStorage.setItem('guide-playerProfiles','1')" title="Dismiss">✖</span></div>
+    <div class="tab-guide" id="guide-playerProfiles"><i class="fas fa-hat-wizard"></i><span>The Wizard Registry! Every sorcerer who has entered the tournament. Search by name or filter by House allegiance. Tap a card to reveal the enchanted backside — duels fought, positions held, and magical points earned.</span><span class="tab-guide-dismiss" onclick="this.parentElement.style.display='none';localStorage.setItem('guide-playerProfiles','1')" title="Dismiss">✖</span></div>
 
 
+
+    <!-- Wizards KPI Cards -->
+    <div class="ms-kpi-row" id="wizKpiRow" style="margin-bottom:1rem">
+      <div class="stat-card players"><div class="stat-value" id="wizTotalStat">0</div><div class="stat-label">Qualified Wizards</div><i class="fas fa-hat-wizard stat-icon"></i></div>
+      <div class="stat-card live"><div class="stat-value" id="wizTopPts" style="font-size:clamp(0.7rem,2vw,0.9rem);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">—</div><div class="stat-label">Supreme Sorcerer</div><i class="fas fa-crown stat-icon"></i></div>
+      <div class="stat-card completed"><div class="stat-value" id="wizTopWins" style="font-size:clamp(0.7rem,2vw,0.9rem);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">—</div><div class="stat-label">Champion of Duels</div><i class="fas fa-medal stat-icon"></i></div>
+      <div class="stat-card scheduled"><div class="stat-value" id="wizHouseTop" style="font-size:clamp(0.7rem,2vw,0.9rem);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">—</div><div class="stat-label">Dominant House</div><i class="fas fa-shield-halved stat-icon"></i></div>
+    </div>
 
     <div class="profile-filters">
 
@@ -17237,7 +17195,7 @@ function updateStatusTicker() {
 
 
 
-  if (d._scheduleRaw) {
+  if (d._liveRaw) {
 
 
 
@@ -17245,7 +17203,7 @@ function updateStatusTicker() {
 
 
 
-      var sd = JSON.parse(d._scheduleRaw);
+      var sd2 = JSON.parse(d._liveRaw);
 
 
 
@@ -17253,11 +17211,11 @@ function updateStatusTicker() {
 
 
 
-      for (var i = 1; i < sd.length; i++) {
+      for (var i = 1; i < sd2.length; i++) {
 
 
 
-        var st = ((sd[i][6]||'')+'').toLowerCase();
+        var st = ((sd2[i][8]||'')+'').toLowerCase();
 
 
 
@@ -17269,7 +17227,7 @@ function updateStatusTicker() {
 
 
 
-          if (!nextMatch && sd[i][1]) nextMatch = { t1: sd[i][3]||'', t2: sd[i][4]||'', date: sd[i][1]||'' };
+          if (!nextMatch && sd2[i][1]) nextMatch = { t1: sd2[i][3]||'', t2: sd2[i][4]||'', date: sd2[i][1]||'' };
 
 
 
@@ -17341,7 +17299,7 @@ function updateStatusTicker() {
 
 
 
-        var ls = ((ld[j][5]||'')+'').toLowerCase();
+        var ls = ((ld[j][8]||'')+'').toLowerCase();
 
 
 
@@ -17349,7 +17307,7 @@ function updateStatusTicker() {
 
 
 
-          lastResult = { t1: ld[j][1]||'', t2: ld[j][2]||'', score: ld[j][3]||'' };
+          lastResult = { t1: ld[j][3]||'', t2: ld[j][4]||'', score: ld[j][5]||'' };
 
 
 
@@ -17361,7 +17319,7 @@ function updateStatusTicker() {
 
 
 
-      if (lastResult) parts.push('\u2705 Result: ' + lastResult.t1 + ' ' + lastResult.score + ' ' + lastResult.t2);
+      if (lastResult) parts.push('\u2705 Result: ' + (self._resolveName ? self._resolveName(lastResult.t1) : lastResult.t1) + ' ' + lastResult.score + ' ' + (self._resolveName ? self._resolveName(lastResult.t2) : lastResult.t2));
 
 
 
@@ -17464,6 +17422,28 @@ function updateStatusTicker() {
 // â•â•â• MAIN APP â•â•â•
 
 
+
+  // ── Global date helper: convert to IST ──
+  function toIST(v) {
+    if (!v) return null;
+    var s = String(v).trim();
+    var d;
+    var gm = s.match(/Date\((\d+),(\d+),(\d+)(?:,(\d+),(\d+)(?:,(\d+))?)?/);
+    if (gm) {
+      d = new Date(parseInt(gm[1]), parseInt(gm[2]), parseInt(gm[3]),
+        parseInt(gm[4]||0), parseInt(gm[5]||0), parseInt(gm[6]||0));
+      return d;
+    }
+    d = new Date(v);
+    if (isNaN(d.getTime())) return null;
+    if (typeof v === 'string' && (v.indexOf('T') > -1 || v.indexOf('Z') > -1 || v.match(/[+-]\d{2}:\d{2}$/))) {
+      var istMs = d.getTime() + 5.5 * 60 * 60 * 1000;
+      d = new Date(istMs);
+      return new Date(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate(),
+        d.getUTCHours(), d.getUTCMinutes(), d.getUTCSeconds());
+    }
+    return d;
+  }
 
 var App = {
 
@@ -17943,10 +17923,6 @@ var App = {
 
 
 
-    this.loadSchedule();
-
-
-
     this.loadGames();
 
 
@@ -18331,7 +18307,7 @@ var App = {
 
 
 
-        '<div class="stat-card live"><div class="stat-value" id="dTotal">0</div><div class="stat-label">Total Matches</div><i class="fas fa-gamepad stat-icon"></i>' +
+        '<div class="stat-card live"><div class="stat-value" id="dTotal">0</div><div class="stat-label">Total Scheduled</div><i class="fas fa-scroll stat-icon"></i>' +
 
 
 
@@ -18375,7 +18351,7 @@ var App = {
 
 
 
-        animateCounter(document.getElementById('dPlayers'), d.players || 0);
+        animateCounter(document.getElementById('dPlayers'), d.players || d._memberCount || 0);
 
 
 
@@ -18621,7 +18597,7 @@ var App = {
 
 
 
-          var status = ((ld[ri][5]||'')+'').toLowerCase();
+          var status = ((ld[ri][8]||'')+'').toLowerCase();
 
 
 
@@ -18629,7 +18605,7 @@ var App = {
 
 
 
-            completed.push({ game: ld[ri][0]||'', t1: ld[ri][1]||'', t2: ld[ri][2]||'', score: ld[ri][3]||'', status: status });
+            completed.push({ game: ld[ri][0]||'', t1: ld[ri][3]||'', t2: ld[ri][4]||'', score: ld[ri][5]||'', status: status, p1a: ld[ri][9]||'', p2a: ld[ri][11]||'' });
 
 
 
@@ -18661,18 +18637,15 @@ var App = {
 
 
 
+            var rP1 = (m.p1a || '').toString().trim();
+            var rP2 = (m.p2a || '').toString().trim();
+            var rPlayers = '';
+            if (rP1 || rP2) {
+              rPlayers = '<div class="gh-result-players">' + (rP1 || '?') + ' vs ' + (rP2 || '?') + '</div>';
+            }
             rHtml += '<div class="gh-result-item">' +
-
-
-
               '<div class="gh-result-icon" style="background:rgba(46,204,113,0.1);color:var(--neon-green)"><i class="fas fa-check"></i></div>' +
-
-
-
-              '<div class="gh-result-info"><div class="gh-result-game">' + m.t1 + ' vs ' + m.t2 + '</div><div class="gh-result-detail">' + m.game + '</div></div>' +
-
-
-
+              '<div class="gh-result-info"><div class="gh-result-game">' + (self._resolveName ? self._resolveName(m.t1) : m.t1) + ' vs ' + (self._resolveName ? self._resolveName(m.t2) : m.t2) + '</div>' + rPlayers + '<div class="gh-result-detail">' + m.game + '</div></div>' +
               '<div class="gh-result-score">' + m.score + '</div></div>';
 
 
@@ -18753,7 +18726,7 @@ var App = {
 
 
 
-            '<div class="gh-player-info"><div class="gh-player-name">' + (p.Name||'') + '</div>' +
+            '<div class="gh-player-info"><div class="gh-player-name">' + (self._resolveName ? self._resolveName(p.Name||'') : (p.Name||'')) + '</div>' +
 
 
 
@@ -18793,7 +18766,7 @@ var App = {
 
 
 
-    if (umEl && d._scheduleRaw) {
+    if (umEl && d._liveRaw) {
 
 
 
@@ -18801,7 +18774,7 @@ var App = {
 
 
 
-        var sd = JSON.parse(d._scheduleRaw);
+        var sd3 = JSON.parse(d._liveRaw);
 
 
 
@@ -18809,11 +18782,11 @@ var App = {
 
 
 
-        for (var si = 1; si < sd.length; si++) {
+        for (var si = 1; si < sd3.length; si++) {
 
 
 
-          var sStatus = ((sd[si][6]||'')+'').toLowerCase();
+          var sStatus = ((sd3[si][8]||'')+'').toLowerCase();
 
 
 
@@ -18821,7 +18794,7 @@ var App = {
 
 
 
-            upcoming.push({ id: sd[si][0]||'', date: sd[si][1]||'', time: sd[si][2]||'', t1: sd[si][3]||'', t2: sd[si][4]||'', venue: sd[si][5]||'' });
+            upcoming.push({ id: sd3[si][0]||'', date: sd3[si][1]||'', time: sd3[si][2]||'', t1: sd3[si][3]||'', t2: sd3[si][4]||'', venue: sd3[si][7]||'' });
 
 
 
@@ -19050,28 +19023,42 @@ var App = {
 
 
           self._memberMap = {};
-
-
+          self.dashData._memberCount = Math.max(0, membersData.length - 1);
+          self._aliasMap = {};   // alias(lower) → proper full name
+          self._nameMap = {};    // name(lower) → proper full name
 
           for (var mi = 1; mi < membersData.length; mi++) {
-
-
-
             var mHouse = (membersData[mi][0] || '').toString().trim();
-
-
-
             var mName = (membersData[mi][1] || '').toString().trim();
-
-
-
-            if (mName && mHouse) self._memberMap[mName.toLowerCase()] = mHouse;
-
-
-
+            var mAlias = (membersData[mi][3] || '').toString().trim();
+            if (mName && mHouse) {
+              self._memberMap[mName.toLowerCase()] = mHouse;
+              self._nameMap[mName.toLowerCase()] = mName;
+              if (mAlias) {
+                self._aliasMap[mAlias.toLowerCase()] = mName;
+                self._memberMap[mAlias.toLowerCase()] = mHouse;
+              }
+            }
           }
 
 
+
+
+          // ── Title-case helper ──
+          self._titleCase = function(s) {
+            if (!s) return '';
+            return s.toString().trim().toLowerCase().replace(/(?:^|\s)\S/g, function(c) { return c.toUpperCase(); });
+          };
+          // ── Resolve alias/name → proper full name ──
+          self._resolveName = function(raw) {
+            if (!raw) return '';
+            var s = raw.toString().trim();
+            if (!s) return '';
+            var key = s.toLowerCase();
+            if (self._aliasMap && self._aliasMap[key]) return self._aliasMap[key];
+            if (self._nameMap && self._nameMap[key]) return self._nameMap[key];
+            return self._titleCase(s);
+          };
 
         } catch(e) { self._memberMap = {}; }
 
@@ -19350,8 +19337,6 @@ var App = {
 
       // Look up house from player/team name
 
-
-
       function lookupHouse(name) {
 
 
@@ -19441,13 +19426,7 @@ var App = {
 
 
       function cleanName(name) {
-
-
-
         return (name || '').toString().trim().replace(/\s*\([A-Z]{2}\d*\)\s*$/, '');
-
-
-
       }
 
 
@@ -19557,8 +19536,7 @@ var App = {
 
 
       var gameSet = {};
-
-
+      var venueSet = {};
 
 
 
@@ -19604,7 +19582,7 @@ var App = {
 
 
 
-        var status = (row[5] || '').toString().trim().toLowerCase();
+        var status = (row[8] || '').toString().trim().toLowerCase();
 
 
 
@@ -19624,11 +19602,11 @@ var App = {
 
 
 
-        var team1raw = (row[1] || '').toString().trim();
+        var team1raw = (row[3] || '').toString().trim();
 
 
 
-        var team2raw = (row[2] || '').toString().trim();
+        var team2raw = (row[4] || '').toString().trim();
 
 
 
@@ -19644,7 +19622,7 @@ var App = {
 
 
 
-        var score = parseScore(row[3], parsed.gameCode);
+        var score = parseScore(row[5], parsed.gameCode);
 
 
 
@@ -19652,23 +19630,14 @@ var App = {
 
 
 
-        // Player names from extended columns (G-J = indices 6-9)
+        // Player names from extended columns (J-M = indices 9-12)
 
 
 
-        var p1a = cleanName(row[6] || '');
-
-
-
-        var p1b = cleanName(row[7] || '');
-
-
-
-        var p2a = cleanName(row[8] || '');
-
-
-
-        var p2b = cleanName(row[9] || '');
+        var p1a = self._resolveName(row[9] || '');
+        var p1b = self._resolveName(row[10] || '');
+        var p2a = self._resolveName(row[11] || '');
+        var p2b = self._resolveName(row[12] || '');
 
 
 
@@ -19692,11 +19661,11 @@ var App = {
 
 
 
-          team1: isTeamGame ? team1raw : cleanName(team1raw),
+          team1: isTeamGame ? team1raw : self._resolveName(team1raw),
 
 
 
-          team2: isTeamGame ? team2raw : cleanName(team2raw),
+          team2: isTeamGame ? team2raw : self._resolveName(team2raw),
 
 
 
@@ -19704,9 +19673,9 @@ var App = {
 
 
 
-          p1a: p1a, p1b: p1b, p2a: p2a, p2b: p2b
+          p1a: p1a, p1b: p1b, p2a: p2a, p2b: p2b,
 
-
+          date: row[1], time: row[2], venue: (row[7] || '').toString().trim()
 
         };
 
@@ -19741,8 +19710,7 @@ var App = {
 
 
         gameSet[parsed.gameCode] = gameMeta.name;
-
-
+        if (match.venue) venueSet[match.venue] = true;
 
       });
 
@@ -19756,6 +19724,7 @@ var App = {
 
 
 
+      animateCounter(document.getElementById('totalMatchStat'), stats.live + stats.scheduled + stats.completed);
       animateCounter(document.getElementById('liveStat'), stats.live);
 
 
@@ -19873,6 +19842,16 @@ var App = {
 
 
       fHtml += '</div>';
+      // Venue filter
+      var venues = Object.keys(venueSet).sort();
+      if (venues.length > 1) {
+        fHtml += '<div class="ls-filter-bar" id="lsVenueFilter">';
+        fHtml += '<span class="ls-filter-label">Venue</span>';
+        fHtml += '<button class="ls-filter-pill active" data-venue="all">All</button>';
+        venues.forEach(function(v) { fHtml += '<button class="ls-filter-pill" data-venue="' + v + '">' + v + '</button>'; });
+        fHtml += '</div>';
+      }
+
 
 
 
@@ -19987,41 +19966,20 @@ var App = {
 
 
         if (m.isTeamGame) {
-
-
-
           h += '<span class="gt-side-name">' + team + '</span>';
-
-
-
+          // Show player names under house name if available
+          if (p1) {
+            h += '<span class="gt-side-players">' + p1;
+            if (p2) h += ' & ' + p2;
+            h += '</span>';
+          }
         } else if (p1) {
-
-
-
           h += '<span class="gt-side-name">' + p1 + '</span>';
-
-
-
           if (p2) h += '<span class="gt-side-partner">' + p2 + '</span>';
-
-
-
           if (house) h += '<span class="gt-side-sub">' + house + '</span>';
-
-
-
         } else {
-
-
-
           h += '<span class="gt-side-name">' + team + '</span>';
-
-
-
           if (house && house !== team) h += '<span class="gt-side-sub">' + house + '</span>';
-
-
-
         }
 
 
@@ -20220,7 +20178,9 @@ var App = {
 
         cHtml += '<th>Phase</th>';
 
+        cHtml += '<th>Date</th>';
 
+        cHtml += '<th>Time</th>';
 
         cHtml += '<th>Side A</th>';
 
@@ -20232,7 +20192,7 @@ var App = {
 
         cHtml += '<th>Side B</th>';
 
-
+        cHtml += '<th>Venue</th>';
 
         cHtml += '<th class="center">Status</th>';
 
@@ -20302,7 +20262,7 @@ var App = {
 
 
 
-          cHtml += '<tr class="' + rowCls + '" data-status="' + m.status + '" data-game="' + m.gameCode + '">';
+          cHtml += '<tr class="' + rowCls + '" data-status="' + m.status + '" data-game="' + m.gameCode + '" data-venue="' + (m.venue || '') + '">';
 
 
 
@@ -20372,11 +20332,10 @@ var App = {
 
           cHtml += '</td>';
 
-
-
-
-
-
+          // Date
+          cHtml += '<td class="gt-date">' + fmtDate(m.date) + '</td>';
+          // Time
+          cHtml += '<td class="gt-time">' + fmtTime(m.time) + '</td>';
 
           // Side A
 
@@ -20413,6 +20372,9 @@ var App = {
 
 
 
+
+          // Venue
+          cHtml += '<td class="gt-venue">' + (m.venue || '') + '</td>';
 
           // Status
 
@@ -20520,6 +20482,15 @@ var App = {
 
       });
 
+      // Venue filter listeners
+      document.querySelectorAll('#lsVenueFilter .ls-filter-pill').forEach(function(btn) {
+        btn.addEventListener('click', function() {
+          document.querySelectorAll('#lsVenueFilter .ls-filter-pill').forEach(function(b) { b.classList.remove('active'); });
+          btn.classList.add('active');
+          self.filterMatches();
+        });
+      });
+
 
 
 
@@ -20570,11 +20541,15 @@ var App = {
 
 
 
+    var venueBtn = document.querySelector('#lsVenueFilter .ls-filter-pill.active');
+
     var gf = gameBtn ? gameBtn.getAttribute('data-game') : 'all';
 
 
 
     var sf = statusBtn ? statusBtn.getAttribute('data-status') : 'all';
+
+    var vf = venueBtn ? venueBtn.getAttribute('data-venue') : 'all';
 
 
 
@@ -20612,9 +20587,13 @@ var App = {
 
       var rs = row.getAttribute('data-status');
 
+      var rv = row.getAttribute('data-venue') || '';
 
+      var sOk = sf === 'all' || rs === sf;
 
-      row.style.display = (sf === 'all' || rs === sf) ? '' : 'none';
+      var vOk = vf === 'all' || rv === vf;
+
+      row.style.display = (sOk && vOk) ? '' : 'none';
 
 
 
@@ -21725,1392 +21704,6 @@ var App = {
 
 
 
-  loadSchedule: function() {
-
-
-
-    var self = this;
-
-
-
-    var GAME_MAP = self._gameMap || {};
-
-
-
-    var CAT_MAP = self._catMap || {};
-
-
-
-    var HOUSE_COLORS = {
-
-
-
-      'Slytherin': '#2ecc71', 'Ravenclaw': '#3498db',
-
-
-
-      'Gryffindor': '#e74c3c', 'Hufflepuff': '#f1c40f'
-
-
-
-    };
-
-
-
-    var HOUSE_SHORT = {
-
-
-
-      'Slytherin': 'SL', 'Ravenclaw': 'RC',
-
-
-
-      'Gryffindor': 'GR', 'Hufflepuff': 'HF'
-
-
-
-    };
-
-
-    var HOUSE_LOGOS = {
-      'Gryffindor': 'assets/House%20logo/Gryffindor.png',
-      'Slytherin': 'assets/House%20logo/Slytherin.png',
-      'Ravenclaw': 'assets/House%20logo/Ravenclaw.png',
-      'Hufflepuff': 'assets/House%20logo/Hufflepuff.png'
-    };
-
-
-
-
-
-
-    function parseMatchId(mid) {
-
-
-
-      var parts = mid.split('-');
-
-
-
-      if (parts.length < 3) return null;
-
-
-
-      var matchNum = parseInt(parts[parts.length - 1]);
-
-
-
-      var category = parts[parts.length - 2];
-
-
-
-      var gameCode = parts.slice(0, parts.length - 2).join('-');
-
-
-
-      return { gameCode: gameCode, category: category, matchNum: matchNum };
-
-
-
-    }
-
-
-
-
-
-
-
-    // Convert any date value to IST (UTC+5:30) as a local Date object
-    function toIST(v) {
-      if (!v) return null;
-      var s = String(v).trim();
-      var d;
-      // Google Sheets Date(y,m,d,...) format
-      var gm = s.match(/Date\((\d+),(\d+),(\d+)(?:,(\d+),(\d+)(?:,(\d+))?)?/);
-      if (gm) {
-        d = new Date(parseInt(gm[1]), parseInt(gm[2]), parseInt(gm[3]),
-          parseInt(gm[4]||0), parseInt(gm[5]||0), parseInt(gm[6]||0));
-        return d; // already IST from Google Sheets
-      }
-      d = new Date(v);
-      if (isNaN(d.getTime())) return null;
-      // If the date came as UTC/ISO, shift to IST
-      // Only shift if input looks like ISO (has 'T' or 'Z' or timezone offset)
-      if (typeof v === 'string' && (v.indexOf('T') > -1 || v.indexOf('Z') > -1 || v.match(/[+-]\d{2}:\d{2}$/))) {
-        var istMs = d.getTime() + 5.5 * 60 * 60 * 1000;
-        d = new Date(istMs);
-        // Return a Date with IST values in local fields
-        return new Date(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate(),
-          d.getUTCHours(), d.getUTCMinutes(), d.getUTCSeconds());
-      }
-      return d; // Already local/IST
-    }
-
-    function fmtDate(v) {
-      if (!v) return '';
-      var d = toIST(v);
-      if (!d || isNaN(d.getTime())) return String(v);
-      var months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-      var days = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
-      return days[d.getDay()] + ', ' + d.getDate() + ' ' + months[d.getMonth()] + ' ' + d.getFullYear();
-    }
-
-
-
-
-
-
-
-    function fmtTime(v) {
-      if (!v) return '';
-      var s = String(v).trim();
-
-      // Google Sheets serial time (0-1 range, e.g. 0.4375 = 10:30 AM)
-      var num = parseFloat(s);
-      if (!isNaN(num) && num >= 0 && num < 1 && s.match(/^\d*\.\d+$/)) {
-        var totalMin = Math.round(num * 24 * 60);
-        var hh = Math.floor(totalMin / 60);
-        var mm = totalMin % 60;
-        var ap = hh >= 12 ? 'PM' : 'AM';
-        hh = hh % 12 || 12;
-        return hh + ':' + String(mm).padStart(2, '0') + ' ' + ap + ' IST';
-      }
-
-      // Google Sheets Date(y,m,d,h,min,sec) format
-      var gm = s.match(/Date\((\d+),(\d+),(\d+),(\d+),(\d+)/);
-      if (gm) {
-        var gh = parseInt(gm[4]), gmi = String(parseInt(gm[5])).padStart(2, '0');
-        var gap = gh >= 12 ? 'PM' : 'AM';
-        gh = gh % 12 || 12;
-        return gh + ':' + gmi + ' ' + gap + ' IST';
-      }
-
-      // HH:MM or HH:MM:SS string — treat as IST directly
-      var tm = s.match(/(\d{1,2}):(\d{2})/);
-      if (tm) {
-        var th = parseInt(tm[1]), tmi = tm[2];
-        var tap = th >= 12 ? 'PM' : 'AM';
-        th = th % 12 || 12;
-        return th + ':' + tmi + ' ' + tap + ' IST';
-      }
-
-      // ISO datetime — convert to IST
-      var dt = new Date(s);
-      if (!isNaN(dt.getTime())) {
-        var ist = new Date(dt.getTime() + 5.5 * 60 * 60 * 1000);
-        var ih = ist.getUTCHours(), im = String(ist.getUTCMinutes()).padStart(2, '0');
-        var iap = ih >= 12 ? 'PM' : 'AM';
-        ih = ih % 12 || 12;
-        return ih + ':' + im + ' ' + iap + ' IST';
-      }
-
-      return s;
-    }
-
-
-
-
-
-
-
-    function dateKey(v) {
-      if (!v) return '9999-99-99';
-      var d = toIST(v);
-      if (!d || isNaN(d.getTime())) return '9999-99-99';
-      return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
-    }
-
-
-
-
-
-
-
-    function dayTag(dk) {
-
-
-
-      var today = new Date();
-
-
-
-      var tk = today.getFullYear() + '-' + String(today.getMonth()+1).padStart(2,'0') + '-' + String(today.getDate()).padStart(2,'0');
-
-
-
-      if (dk === tk) return '<span class="ms-day-tag today">TODAY</span>';
-
-
-
-      if (dk < tk) return '<span class="ms-day-tag past">PAST</span>';
-
-
-
-      return '<span class="ms-day-tag future">UPCOMING</span>';
-
-
-
-    }
-
-
-
-
-
-
-
-    function getPhase(matchNum, segment) {
-
-
-
-      if (!matchNum) return '';
-
-
-
-      var isOutdoor = (segment === 'outdoor');
-
-
-
-      if (isOutdoor) {
-
-
-
-        if (matchNum === 5) return '3rd Place';
-
-
-
-        if (matchNum === 6) return 'Final';
-
-
-
-      } else {
-
-
-
-        if (matchNum === 5 || matchNum === 6) return 'Semifinal';
-
-
-
-        if (matchNum === 7) return '3rd Place';
-
-
-
-        if (matchNum === 8) return 'Final';
-
-
-
-      }
-
-
-
-      return '';
-
-
-
-    }
-
-
-
-
-
-
-
-    callBackend('getSchedule', function(raw) {
-
-
-
-        debugLog('Schedule', 'OK', (raw || '').substring(0, 80));
-
-
-
-        self.dashData._scheduleRaw = raw;
-
-
-
-        try {
-
-
-
-          var data = JSON.parse(raw);
-
-
-
-          if (!data || data.length <= 1) {
-
-
-
-            document.getElementById('msTimeline').innerHTML = '<p style="color:var(--text-muted);padding:2rem;text-align:center"><i class="fas fa-calendar-xmark" style="font-size:2rem;display:block;margin-bottom:0.5rem;opacity:0.4"></i>No matches scheduled yet</p>';
-
-
-
-            return;
-
-
-
-          }
-
-
-
-
-
-
-
-          // cols: Match ID(0), Date(1), Time(2), Team1(3), Team2(4), Venue(5), Status(6)
-
-
-
-          var rows = data.slice(1).filter(function(r) { return r[0] && r[0].toString().trim(); });
-
-
-
-          var stats = { total: 0, scheduled: 0, live: 0, completed: 0 };
-
-
-
-          var gameSet = {};
-
-
-
-          var venueSet = {};
-
-
-
-          var matches = [];
-
-
-
-
-
-
-
-          rows.forEach(function(row) {
-
-
-
-            var rawId = (row[0] || '').toString().trim();
-
-
-
-            var mid = rawId.replace(/\s+(Final|3rd\s*Pl?ace|Semi\s*Final).*$/i, '').trim();
-
-
-
-            var parsed = parseMatchId(mid);
-
-
-
-            if (!parsed || isNaN(parsed.matchNum)) return;
-
-
-
-
-
-
-
-            var gameMeta = GAME_MAP[parsed.gameCode] || { name: parsed.gameCode, segment: 'indoor', icon: 'fa-gamepad' };
-
-
-
-            var catName = CAT_MAP[parsed.category] || parsed.category;
-
-
-
-            var phase = getPhase(parsed.matchNum, gameMeta.segment);
-
-
-
-            // Override phase from raw ID text (e.g. "FTB-TM-5 3rd Place")
-
-
-
-            if (/final/i.test(rawId)) phase = 'Final';
-
-
-
-            else if (/3rd/i.test(rawId)) phase = '3rd Place';
-
-
-
-            else if (/semi/i.test(rawId)) phase = 'Semifinal';
-
-
-
-
-
-
-
-            var status = (row[6] || '').toString().trim().toLowerCase();
-
-
-
-            if (status === 'completed' || status === 'complete') { stats.completed++; status = 'completed'; }
-
-
-
-            else if (status === 'live' || status === 'in progress') { stats.live++; status = 'live'; }
-
-
-
-            else { stats.scheduled++; status = 'scheduled'; }
-
-
-
-            stats.total++;
-
-
-
-
-
-
-
-            var venue = (row[5] || '').toString().trim();
-
-
-
-            gameSet[parsed.gameCode] = gameMeta.name;
-
-
-
-            if (venue) venueSet[venue] = true;
-
-
-
-
-
-
-
-            // Player names from extended columns (H-K = indices 7-10)
-
-
-
-            var mp1a = (row[7] || '').toString().trim();
-
-
-
-            var mp1b = (row[8] || '').toString().trim();
-
-
-
-            var mp2a = (row[9] || '').toString().trim();
-
-
-
-            var mp2b = (row[10] || '').toString().trim();
-
-
-
-
-
-
-
-            matches.push({
-
-
-
-              id: mid, rawId: rawId, gameCode: parsed.gameCode, gameName: gameMeta.name,
-
-
-
-              gameIcon: gameMeta.icon, segment: gameMeta.segment, category: catName,
-
-
-
-              matchNum: parsed.matchNum, phase: phase, status: status,
-
-
-
-              team1: (row[3] || '').toString().trim(),
-
-
-
-              team2: (row[4] || '').toString().trim(),
-
-
-
-              date: row[1], time: row[2], venue: venue,
-
-
-
-              dk: dateKey(row[1]),
-
-
-
-              p1a: mp1a, p1b: mp1b, p2a: mp2a, p2b: mp2b
-
-
-
-            });
-
-
-
-          });
-
-
-
-
-
-
-
-          // KPI
-
-
-
-          animateCounter(document.getElementById('msTotalStat'), stats.total);
-
-
-
-          animateCounter(document.getElementById('msUpcomingStat'), stats.scheduled);
-
-
-
-          animateCounter(document.getElementById('msLiveStat'), stats.live);
-
-
-
-          animateCounter(document.getElementById('msDoneStat'), stats.completed);
-
-
-
-
-
-
-
-          // Filters: Game + Status + Venue
-
-
-
-          var fHtml = '<div class="ms-filter-bar" id="msGameFilter">';
-
-
-
-          fHtml += '<span class="ms-filter-label">Game</span>';
-
-
-
-          fHtml += '<button class="ms-filter-pill active" data-game="all">All</button>';
-
-
-
-          var sortedG = Object.keys(gameSet).sort(function(a,b){ return gameSet[a].localeCompare(gameSet[b]); });
-
-
-
-          sortedG.forEach(function(c) { fHtml += '<button class="ms-filter-pill" data-game="' + c + '">' + gameSet[c] + '</button>'; });
-
-
-
-          fHtml += '</div>';
-
-
-
-
-
-
-
-          fHtml += '<div class="ms-filter-bar" id="msStatusFilter">';
-
-
-
-          fHtml += '<span class="ms-filter-label">Status</span>';
-
-
-
-          fHtml += '<button class="ms-filter-pill active" data-status="all">All</button>';
-
-
-
-          if (stats.live > 0) fHtml += '<button class="ms-filter-pill" data-status="live"><span class="ls-status-dot live" style="display:inline-block;width:6px;height:6px;margin-right:4px;vertical-align:middle"></span>Live (' + stats.live + ')</button>';
-
-
-
-          if (stats.scheduled > 0) fHtml += '<button class="ms-filter-pill" data-status="scheduled">Scheduled (' + stats.scheduled + ')</button>';
-
-
-
-          if (stats.completed > 0) fHtml += '<button class="ms-filter-pill" data-status="completed">Completed (' + stats.completed + ')</button>';
-
-
-
-          fHtml += '</div>';
-
-
-
-
-
-
-
-          var venues = Object.keys(venueSet).sort();
-
-
-
-          if (venues.length > 1) {
-
-
-
-            fHtml += '<div class="ms-filter-bar" id="msVenueFilter">';
-
-
-
-            fHtml += '<span class="ms-filter-label">Venue</span>';
-
-
-
-            fHtml += '<button class="ms-filter-pill active" data-venue="all">All</button>';
-
-
-
-            venues.forEach(function(v) { fHtml += '<button class="ms-filter-pill" data-venue="' + v + '">' + v + '</button>'; });
-
-
-
-            fHtml += '</div>';
-
-
-
-          }
-
-
-
-          document.getElementById('msFilters').innerHTML = fHtml;
-
-
-
-
-
-
-
-          // ═══ Build game-wise tables for Schedule ═══
-
-
-
-          // Group by game code
-
-
-
-          var msGameTables = {};
-
-
-
-          matches.forEach(function(m) {
-
-
-
-            if (!msGameTables[m.gameCode]) {
-
-
-
-              msGameTables[m.gameCode] = { name: m.gameName, icon: m.gameIcon, segment: m.segment, matches: [] };
-
-
-
-            }
-
-
-
-            msGameTables[m.gameCode].matches.push(m);
-
-
-
-          });
-
-
-
-
-
-
-
-          // Helper: render side cell for schedule
-
-
-
-          function msSide(m, side, align) {
-
-
-
-            var isRight = align === 'right';
-
-
-
-            var cls = 'gt-side' + (isRight ? ' right' : '');
-
-
-
-            var team = side === 'a' ? m.team1 : m.team2;
-
-
-
-            var p1 = side === 'a' ? m.p1a : m.p2a;
-
-
-
-            var p2 = side === 'a' ? m.p1b : m.p2b;
-
-
-
-            var isTeam = !!HOUSE_COLORS[m.team1] || !!HOUSE_COLORS[m.team2];
-
-
-
-            var house = '';
-
-
-
-            if (HOUSE_COLORS[team]) { house = team; }
-
-
-
-            else if (self._memberMap) {
-
-
-
-              var lk = (p1 || team).toLowerCase();
-
-
-
-              house = self._memberMap[lk] || '';
-
-
-
-            }
-
-
-
-            var hColor = HOUSE_COLORS[house] || '#555';
-
-
-
-
-
-
-
-            var h = '<td><div class="' + cls + '">';
-
-
-
-            var sLogo2 = HOUSE_LOGOS[house] || '';
-
-            h += sLogo2 ? '<img src="' + sLogo2 + '" class="gt-side-dot" style="width:20px;height:20px;border-radius:50%;object-fit:contain">' : '<span class="gt-side-dot" style="background:' + hColor + '"></span>';
-
-
-
-            h += '<div class="gt-side-info">';
-
-
-
-            if (isTeam) {
-
-
-
-              h += '<span class="gt-side-name">' + team + '</span>';
-
-
-
-            } else if (p1) {
-
-
-
-              h += '<span class="gt-side-name">' + p1 + '</span>';
-
-
-
-              if (p2) h += '<span class="gt-side-partner">' + p2 + '</span>';
-
-
-
-              if (house) h += '<span class="gt-side-sub">' + house + '</span>';
-
-
-
-            } else {
-
-
-
-              h += '<span class="gt-side-name">' + (team || 'TBD') + '</span>';
-
-
-
-              if (house && house !== team) h += '<span class="gt-side-sub">' + house + '</span>';
-
-
-
-            }
-
-
-
-            h += '</div></div></td>';
-
-
-
-            return h;
-
-
-
-          }
-
-
-
-
-
-
-
-          var tHtml = '';
-
-
-
-          var sortedMsGames = Object.keys(msGameTables).sort(function(a, b) {
-
-
-
-            return msGameTables[a].name.localeCompare(msGameTables[b].name);
-
-
-
-          });
-
-
-
-
-
-
-
-          sortedMsGames.forEach(function(gc) {
-
-
-
-            var gt = msGameTables[gc];
-
-
-
-            var liveCount = gt.matches.filter(function(m) { return m.status === 'live'; }).length;
-
-
-
-            var segKey = (gt.segment === 'indoor' || gt.segment === 'online') ? gt.segment : (gt.segment || 'indoor');
-
-
-
-
-
-
-
-            tHtml += '<div class="gt-panel ms-gt-panel" data-game="' + gc + '">';
-
-
-
-            tHtml += '<div class="gt-header" onclick="this.parentElement.classList.toggle(\'collapsed\')">';
-
-
-
-            tHtml += '<div class="gt-header-left"><i class="fas ' + gt.icon + '"></i>' + gt.name;
-
-
-
-            tHtml += '<span class="gt-seg ' + segKey + '">' + gt.segment + '</span></div>';
-
-
-
-            tHtml += '<div class="gt-header-right">';
-
-
-
-            if (liveCount > 0) tHtml += '<span class="gt-live-badge"><i class="fas fa-circle" style="font-size:5px;vertical-align:middle;margin-right:3px"></i> ' + liveCount + ' Live</span>';
-
-
-
-            tHtml += '<span class="gt-count">' + gt.matches.length + ' matches</span>';
-
-
-
-            tHtml += '<i class="fas fa-chevron-down gt-chevron"></i>';
-
-
-
-            tHtml += '</div></div>';
-
-
-
-
-
-
-
-            tHtml += '<div class="gt-body"><table class="gt-table">';
-
-
-
-            tHtml += '<thead><tr>';
-
-
-
-            tHtml += '<th style="width:36px">#</th>';
-
-
-
-            tHtml += '<th>Event</th>';
-
-
-
-            tHtml += '<th>Phase</th>';
-
-
-
-            tHtml += '<th>Date</th>';
-
-
-
-            tHtml += '<th>Time</th>';
-
-
-
-            tHtml += '<th>Side A</th>';
-
-
-
-            tHtml += '<th style="width:30px;text-align:center">VS</th>';
-
-
-
-            tHtml += '<th>Side B</th>';
-
-
-
-            tHtml += '<th>Venue</th>';
-
-
-
-            tHtml += '<th class="center">Status</th>';
-
-
-
-            tHtml += '</tr></thead><tbody>';
-
-
-
-
-
-
-
-            // Sort by date, then match number
-
-
-
-            gt.matches.sort(function(a, b) {
-
-
-
-              if (a.dk !== b.dk) return a.dk < b.dk ? -1 : 1;
-
-
-
-              if (a.category !== b.category) return a.category.localeCompare(b.category);
-
-
-
-              return a.matchNum - b.matchNum;
-
-
-
-            });
-
-
-
-
-
-
-
-            gt.matches.forEach(function(m, idx) {
-
-
-
-              var rowCls = 'ms-gt-row';
-
-
-
-              if (m.status === 'live') rowCls += ' gt-row-live';
-
-
-
-              tHtml += '<tr class="' + rowCls + '" data-status="' + m.status + '" data-game="' + m.gameCode + '" data-venue="' + (m.venue || '') + '">';
-
-
-
-
-
-
-
-              // #
-
-
-
-              tHtml += '<td class="mono">' + (idx + 1) + '</td>';
-
-
-
-
-
-
-
-              // Event
-
-
-
-              tHtml += '<td>' + m.category + '</td>';
-
-
-
-
-
-
-
-              // Phase
-
-
-
-              tHtml += '<td>';
-
-
-
-              if (m.phase) {
-
-
-
-                var pc = m.phase === 'Final' ? 'final' : m.phase === 'Semifinal' ? 'semifinal' : 'third';
-
-
-
-                var pi = m.phase === 'Final' ? 'fa-trophy' : m.phase === 'Semifinal' ? 'fa-bolt' : 'fa-medal';
-
-
-
-                tHtml += '<span class="gt-phase ' + pc + '"><i class="fas ' + pi + '"></i> ' + m.phase + '</span>';
-
-
-
-              } else {
-
-
-
-                tHtml += '<span class="gt-matchid">M' + m.matchNum + '</span>';
-
-
-
-              }
-
-
-
-              tHtml += '</td>';
-
-
-
-
-
-
-
-              // Date
-
-
-
-              tHtml += '<td class="gt-date">' + fmtDate(m.date) + '</td>';
-
-
-
-
-
-
-
-              // Time
-
-
-
-              tHtml += '<td class="gt-time">' + (m.time ? fmtTime(m.time) : '') + '</td>';
-
-
-
-
-
-
-
-              // Side A
-
-
-
-              tHtml += msSide(m, 'a', 'left');
-
-
-
-
-
-
-
-              // VS
-
-
-
-              tHtml += '<td class="center" style="font-size:0.65rem;font-weight:700;color:var(--text-muted);opacity:0.5">VS</td>';
-
-
-
-
-
-
-
-              // Side B
-
-
-
-              tHtml += msSide(m, 'b', 'right');
-
-
-
-
-
-
-
-              // Venue
-
-
-
-              tHtml += '<td class="gt-venue">' + (m.venue || '') + '</td>';
-
-
-
-
-
-
-
-              // Status
-
-
-
-              var statusLabel = m.status.charAt(0).toUpperCase() + m.status.slice(1);
-
-
-
-              tHtml += '<td class="center"><span class="gt-status ' + m.status + '"><span class="gt-status-dot"></span>' + statusLabel + '</span></td>';
-
-
-
-
-
-
-
-              tHtml += '</tr>';
-
-
-
-            });
-
-
-
-
-
-
-
-            tHtml += '</tbody></table></div></div>';
-
-
-
-          });
-
-
-
-
-
-
-
-          document.getElementById('msTimeline').innerHTML = tHtml;
-
-
-
-
-
-
-
-          // Attach filter listeners
-
-
-
-          function attachFilter(containerId, attr) {
-
-
-
-            document.querySelectorAll('#' + containerId + ' .ms-filter-pill').forEach(function(btn) {
-
-
-
-              btn.addEventListener('click', function() {
-
-
-
-                document.querySelectorAll('#' + containerId + ' .ms-filter-pill').forEach(function(b) { b.classList.remove('active'); });
-
-
-
-                btn.classList.add('active');
-
-
-
-                self.filterSchedule();
-
-
-
-              });
-
-
-
-            });
-
-
-
-          }
-
-
-
-          attachFilter('msGameFilter', 'game');
-
-
-
-          attachFilter('msStatusFilter', 'status');
-
-
-
-          if (document.getElementById('msVenueFilter')) attachFilter('msVenueFilter', 'venue');
-
-
-
-
-
-
-
-        } catch(e) {
-
-
-
-          console.error('Schedule render error:', e);
-
-
-
-          debugLog('Schedule', 'PARSE ERROR', e.message + ' at ' + (e.stack||'').split('\n')[1]);
-
-
-
-          document.getElementById('msTimeline').innerHTML = '<p style="color:var(--neon-red);padding:1rem"><i class="fas fa-exclamation-triangle"></i> Error: ' + e.message + '</p>';
-
-
-
-        }
-
-
-
-      }, function(err) {
-
-
-
-        debugLog('Schedule', 'FAIL', err);
-
-
-
-        document.getElementById('msTimeline').innerHTML = '<p style="color:var(--neon-red);padding:1rem">Failed to load: ' + err + '</p>';
-
-
-
-      });
-
-
-
-  },
-
-
-
-
-
-
-
-  filterSchedule: function() {
-
-
-
-    var gf = (document.querySelector('#msGameFilter .ms-filter-pill.active') || {}).dataset || {};
-
-
-
-    var sf = (document.querySelector('#msStatusFilter .ms-filter-pill.active') || {}).dataset || {};
-
-
-
-    var vf = (document.querySelector('#msVenueFilter .ms-filter-pill.active') || {}).dataset || {};
-
-
-
-    var game = gf.game || 'all';
-
-
-
-    var status = sf.status || 'all';
-
-
-
-    var venue = vf.venue || 'all';
-
-
-
-
-
-
-
-    // Show/hide game table panels
-
-
-
-    document.querySelectorAll('#msTimeline .ms-gt-panel').forEach(function(panel) {
-
-
-
-      var pg = panel.getAttribute('data-game');
-
-
-
-      panel.style.display = (game === 'all' || pg === game) ? '' : 'none';
-
-
-
-    });
-
-
-
-    // Show/hide individual table rows by status + venue
-
-
-
-    document.querySelectorAll('#msTimeline .ms-gt-row').forEach(function(row) {
-
-
-
-      var rs = row.getAttribute('data-status');
-
-
-
-      var rv = row.getAttribute('data-venue') || '';
-
-
-
-      var sOk = status === 'all' || rs === status;
-
-
-
-      var vOk = venue === 'all' || rv === venue;
-
-
-
-      row.style.display = (sOk && vOk) ? '' : 'none';
-
-
-
-    });
-
-
-
-  },
-
-
 
 
 
@@ -23317,6 +21910,26 @@ var App = {
 
 
       var segKeys = Object.keys(segments);
+
+      // ── Populate Tournament KPI cards ──
+      var gkTotalGames = 0, gkTotalCats = 0, gkSegCount = 0;
+      segKeys.forEach(function(sk) {
+        var s = segments[sk];
+        if (!s || !s.name) return;
+        gkSegCount++;
+        var gd = s.games;
+        if (gd && typeof gd === 'object' && !Array.isArray(gd)) {
+          Object.keys(gd).forEach(function(ck) {
+            var catGames = gd[ck];
+            if (Array.isArray(catGames)) { gkTotalGames += catGames.length; gkTotalCats++; }
+          });
+        } else if (Array.isArray(gd)) {
+          gkTotalGames += gd.length; gkTotalCats++;
+        }
+      });
+      animateCounter(document.getElementById('gkSegments'), gkSegCount);
+      animateCounter(document.getElementById('gkGames'), gkTotalGames);
+      animateCounter(document.getElementById('gkCategories'), gkTotalCats);
 
 
 
@@ -23822,6 +22435,40 @@ loadPlayerProfiles: function() {
 
           self.dashData.players = profiles.length; updateStatusTicker();
 
+          // ── Populate Wizards KPI cards ──
+          animateCounter(document.getElementById('wizTotalStat'), profiles.length);
+          // Supreme Sorcerer: highest total points
+          if (profiles.length > 0 && profiles[0].TotalPoints > 0) {
+            var topWiz = profiles[0];
+            var topEl = document.getElementById('wizTopPts');
+            if (topEl) { topEl.textContent = (topWiz.Name || '?'); topEl.title = topWiz.TotalPoints + ' pts'; }
+            var topSub = topEl && topEl.parentElement;
+            if (topSub) { var sd = topSub.querySelector('.stat-label'); if(sd) sd.innerHTML = 'Supreme Sorcerer <span style="font-size:0.6rem;opacity:0.7">(' + topWiz.TotalPoints + ' pts)</span>'; }
+          }
+          // Champion of Duels: most 1st-place wins
+          var maxWins = 0, champName = '—';
+          profiles.forEach(function(p) {
+            var wins = (p.Games || []).filter(function(g) { return g.position === 1; }).length;
+            if (wins > maxWins) { maxWins = wins; champName = p.Name || '?'; }
+          });
+          if (maxWins > 0) {
+            var wEl = document.getElementById('wizTopWins');
+            if (wEl) { wEl.textContent = champName; wEl.title = maxWins + ' victories'; }
+            var wSub = wEl && wEl.parentElement;
+            if (wSub) { var sd2 = wSub.querySelector('.stat-label'); if(sd2) sd2.innerHTML = 'Champion of Duels <span style="font-size:0.6rem;opacity:0.7">(' + maxWins + ' wins)</span>'; }
+          }
+          // Dominant House: house with most wizards
+          var hCounts = {};
+          profiles.forEach(function(p) { var h = p.House || ''; if (h) hCounts[h] = (hCounts[h]||0) + 1; });
+          var topH = '', topHC = 0;
+          Object.keys(hCounts).forEach(function(h) { if (hCounts[h] > topHC) { topHC = hCounts[h]; topH = h; } });
+          if (topH) {
+            var hEl = document.getElementById('wizHouseTop');
+            if (hEl) { hEl.textContent = topH; hEl.title = topHC + ' wizards'; }
+            var hSub = hEl && hEl.parentElement;
+            if (hSub) { var sd3 = hSub.querySelector('.stat-label'); if(sd3) sd3.innerHTML = 'Dominant House <span style="font-size:0.6rem;opacity:0.7">(' + topHC + ')</span>'; }
+          }
+
 
 
           self.dashData._playersRaw = raw;
@@ -23853,8 +22500,7 @@ loadPlayerProfiles: function() {
 
 
           profiles.forEach(function(p) {
-
-
+            if (self._resolveName) p.Name = self._resolveName(p.Name || '');
 
             var initials = getInitials(p.Name);
 

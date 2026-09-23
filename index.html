@@ -17215,7 +17215,7 @@ function updateStatusTicker() {
 
 
 
-        var st = ((sd2[i][8]||'')+'').toLowerCase();
+        var st = ((sd2[i][C.status]||'')+'').toLowerCase();
 
 
 
@@ -17227,7 +17227,7 @@ function updateStatusTicker() {
 
 
 
-          if (!nextMatch && sd2[i][1]) nextMatch = { t1: sd2[i][3]||'', t2: sd2[i][4]||'', date: sd2[i][1]||'' };
+          if (!nextMatch && C.date >= 0 && sd2[i][C.date]) nextMatch = { t1: sd2[i][C.team1]||'', t2: sd2[i][C.team2]||'', date: sd2[i][C.date]||'' };
 
 
 
@@ -17288,6 +17288,7 @@ function updateStatusTicker() {
 
 
       var ld = JSON.parse(d._liveRaw);
+      var C2 = d._COL || { status: 5, team1: 1, team2: 2, score: 3 };
 
 
 
@@ -17299,7 +17300,7 @@ function updateStatusTicker() {
 
 
 
-        var ls = ((ld[j][8]||'')+'').toLowerCase();
+        var ls = ((ld[j][C2.status]||'')+'').toLowerCase();
 
 
 
@@ -17307,7 +17308,7 @@ function updateStatusTicker() {
 
 
 
-          lastResult = { t1: ld[j][3]||'', t2: ld[j][4]||'', score: ld[j][5]||'' };
+          lastResult = { t1: ld[j][C2.team1]||'', t2: ld[j][C2.team2]||'', score: ld[j][C2.score]||'' };
 
 
 
@@ -18586,6 +18587,7 @@ var App = {
 
 
         var ld = JSON.parse(d._liveRaw);
+        var C3 = d._COL || { status: 5, team1: 1, team2: 2, score: 3, p1a: 6, p2a: 8 };
 
 
 
@@ -18597,7 +18599,7 @@ var App = {
 
 
 
-          var status = ((ld[ri][8]||'')+'').toLowerCase();
+          var status = ((ld[ri][C3.status]||'')+'').toLowerCase();
 
 
 
@@ -18605,7 +18607,7 @@ var App = {
 
 
 
-            completed.push({ game: ld[ri][0]||'', t1: ld[ri][3]||'', t2: ld[ri][4]||'', score: ld[ri][5]||'', status: status, p1a: ld[ri][9]||'', p2a: ld[ri][11]||'' });
+            completed.push({ game: ld[ri][0]||'', t1: ld[ri][C3.team1]||'', t2: ld[ri][C3.team2]||'', score: ld[ri][C3.score]||'', status: status, p1a: C3.p1a >= 0 ? (ld[ri][C3.p1a]||'') : '', p2a: C3.p2a >= 0 ? (ld[ri][C3.p2a]||'') : '' });
 
 
 
@@ -18775,6 +18777,7 @@ var App = {
 
 
         var sd3 = JSON.parse(d._liveRaw);
+        var C4 = d._COL || { status: 5, team1: 1, team2: 2, date: -1, time: -1, venue: -1 };
 
 
 
@@ -18786,7 +18789,7 @@ var App = {
 
 
 
-          var sStatus = ((sd3[si][8]||'')+'').toLowerCase();
+          var sStatus = ((sd3[si][C4.status]||'')+'').toLowerCase();
 
 
 
@@ -18794,7 +18797,7 @@ var App = {
 
 
 
-            upcoming.push({ id: sd3[si][0]||'', date: sd3[si][1]||'', time: sd3[si][2]||'', t1: sd3[si][3]||'', t2: sd3[si][4]||'', venue: sd3[si][7]||'' });
+            upcoming.push({ id: sd3[si][0]||'', date: C4.date >= 0 ? (sd3[si][C4.date]||'') : '', time: C4.time >= 0 ? (sd3[si][C4.time]||'') : '', t1: sd3[si][C4.team1]||'', t2: sd3[si][C4.team2]||'', venue: C4.venue >= 0 ? (sd3[si][C4.venue]||'') : '' });
 
 
 
@@ -19176,9 +19179,29 @@ var App = {
 
 
 
+      // ── Auto-detect column indices from header row ──
+      var hdr = data[0] || [];
+      var COL = { mid: 0, date: -1, time: -1, team1: 1, team2: 2, score: 3, fmt: 4, venue: -1, status: 5, p1a: 6, p1b: 7, p2a: 8, p2b: 9 };
+      for (var ci = 0; ci < hdr.length; ci++) {
+        var h = (hdr[ci] || '').toString().trim().toLowerCase().replace(/[^a-z0-9]/g, '');
+        if (h === 'matchid' || h === 'match id')           COL.mid = ci;
+        else if (h === 'date')                              COL.date = ci;
+        else if (h === 'time')                              COL.time = ci;
+        else if (h === 'team1' || h === 'team1player1')     COL.team1 = ci;
+        else if (h === 'team2' || h === 'team2player2')     COL.team2 = ci;
+        else if (h === 'score')                             COL.score = ci;
+        else if (h === 'scoreformat' || h === 'score format') COL.fmt = ci;
+        else if (h === 'venue')                             COL.venue = ci;
+        else if (h === 'status')                            COL.status = ci;
+        else if (h === 'player1a' || h === 'player 1a')     COL.p1a = ci;
+        else if (h === 'player1b' || h === 'player 1b')     COL.p1b = ci;
+        else if (h === 'player2a' || h === 'player 2a')     COL.p2a = ci;
+        else if (h === 'player2b' || h === 'player 2b')     COL.p2b = ci;
+      }
+      // Store for dashboard reads
+      self.dashData._COL = COL;
+
       var rows = data.slice(1).filter(function(r) { return r[0] && r[0].toString().trim(); });
-
-
 
       var stats = { live: 0, scheduled: 0, completed: 0 };
 
@@ -19582,7 +19605,7 @@ var App = {
 
 
 
-        var status = (row[8] || '').toString().trim().toLowerCase();
+        var status = (row[COL.status] || '').toString().trim().toLowerCase();
 
 
 
@@ -19602,11 +19625,11 @@ var App = {
 
 
 
-        var team1raw = (row[3] || '').toString().trim();
+        var team1raw = (row[COL.team1] || '').toString().trim();
 
 
 
-        var team2raw = (row[4] || '').toString().trim();
+        var team2raw = (row[COL.team2] || '').toString().trim();
 
 
 
@@ -19622,7 +19645,7 @@ var App = {
 
 
 
-        var score = parseScore(row[5], parsed.gameCode);
+        var score = parseScore(row[COL.score], parsed.gameCode);
 
 
 
@@ -19630,14 +19653,14 @@ var App = {
 
 
 
-        // Player names from extended columns (J-M = indices 9-12)
+        // Player names from extended columns (auto-detected)
 
 
 
-        var p1a = self._resolveName(row[9] || '');
-        var p1b = self._resolveName(row[10] || '');
-        var p2a = self._resolveName(row[11] || '');
-        var p2b = self._resolveName(row[12] || '');
+        var p1a = COL.p1a >= 0 ? self._resolveName(row[COL.p1a] || '') : '';
+        var p1b = COL.p1b >= 0 ? self._resolveName(row[COL.p1b] || '') : '';
+        var p2a = COL.p2a >= 0 ? self._resolveName(row[COL.p2a] || '') : '';
+        var p2b = COL.p2b >= 0 ? self._resolveName(row[COL.p2b] || '') : '';
 
 
 
@@ -19675,7 +19698,7 @@ var App = {
 
           p1a: p1a, p1b: p1b, p2a: p2a, p2b: p2b,
 
-          date: row[1], time: row[2], venue: (row[7] || '').toString().trim()
+          date: COL.date >= 0 ? row[COL.date] : '', time: COL.time >= 0 ? row[COL.time] : '', venue: COL.venue >= 0 ? (row[COL.venue] || '').toString().trim() : ''
 
         };
 

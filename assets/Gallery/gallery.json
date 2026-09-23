@@ -1,0 +1,20 @@
+{
+  "_readme": "Add filenames (photos: jpg/png/webp, videos: mp4/webm/mov) to each game's photos array. Example: \"photos\": [\"match1.jpg\", \"final_highlights.mp4\"]",
+  "games": [
+    { "name": "Table Tennis", "folder": "Table Tennis", "icon": "fa-table-tennis-paddle-ball", "photos": [] },
+    { "name": "Badminton", "folder": "Badminton", "icon": "fa-shuttlecock", "photos": [] },
+    { "name": "Chess", "folder": "Chess", "icon": "fa-chess", "photos": [] },
+    { "name": "Carrom", "folder": "Carrom", "icon": "fa-bullseye", "photos": [] },
+    { "name": "8 Ball Pool", "folder": "8 Ball Pool", "icon": "fa-circle", "photos": [] },
+    { "name": "Foosball", "folder": "Foosball", "icon": "fa-gamepad", "photos": [] },
+    { "name": "Football", "folder": "Football", "icon": "fa-futbol", "photos": [] },
+    { "name": "Basketball", "folder": "Basketball", "icon": "fa-basketball", "photos": [] },
+    { "name": "Volleyball", "folder": "Volleyball", "icon": "fa-volleyball", "photos": [] },
+    { "name": "Throwball", "folder": "Throwball", "icon": "fa-volleyball", "photos": [] },
+    { "name": "Cricket", "folder": "Cricket", "icon": "fa-cricket-bat-ball", "photos": [] },
+    { "name": "FIFA FC25", "folder": "FIFA FC25", "icon": "fa-gamepad", "photos": [] },
+    { "name": "Mortal Combat", "folder": "Mortal Combat", "icon": "fa-hand-fist", "photos": [] },
+    { "name": "PUBG", "folder": "PUBG", "icon": "fa-crosshairs", "photos": [] },
+    { "name": "General", "folder": "General", "icon": "fa-camera", "photos": [] }
+  ]
+}

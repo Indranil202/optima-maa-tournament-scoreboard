@@ -5039,7 +5039,31 @@ body::after {
 
 }
 
+/* ─── Game-Specific Score Styles ─── */
+.gt-score-sets { display: flex; align-items: center; gap: 3px; justify-content: center; flex-wrap: wrap; }
+.gt-score-set {
+  font-size: 0.65rem; font-weight: 600; padding: 2px 5px; border-radius: 4px;
+  background: rgba(99,102,241,0.08); border: 1px solid rgba(99,102,241,0.15);
+  white-space: nowrap; line-height: 1.2;
+}
+.gt-score-set.set-win { background: rgba(46,204,113,0.12); border-color: rgba(46,204,113,0.25); color: var(--neon-green); }
+.gt-score-set.set-lose { background: rgba(100,116,139,0.08); border-color: rgba(100,116,139,0.15); color: var(--text-muted); }
+.gt-score-set-summary { font-size: 0.7rem; font-weight: 700; margin-right: 4px; white-space: nowrap; }
+.gt-score-set-summary .win { color: var(--neon-green); }
+.gt-score-set-summary .lose { color: var(--text-muted); }
+.gt-score-set-summary .gt-score-sep { margin: 0 1px; }
 
+.gt-score-cricket { display: flex; flex-direction: column; align-items: center; gap: 1px; }
+.gt-score-cricket-line { font-size: 0.7rem; font-weight: 600; white-space: nowrap; }
+.gt-score-cricket-line .overs { font-size: 0.6rem; font-weight: 400; color: var(--text-muted); }
+.gt-score-cricket-result { font-size: 0.6rem; font-weight: 700; color: var(--gold); margin-top: 1px; }
+
+.gt-score-chess { font-size: 1.1rem; font-weight: 800; letter-spacing: 2px; }
+.gt-score-chess .draw { color: var(--gold); }
+
+.gt-score-pubg { display: flex; flex-direction: column; align-items: center; gap: 1px; font-size: 0.7rem; }
+.gt-score-pubg-pts { font-weight: 700; }
+.gt-score-pubg-label { font-size: 0.55rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; }
 
 .gt-phase {
 
@@ -17317,7 +17341,7 @@ function updateStatusTicker() {
 
 
 
-        var ls = ((ld[j][4]||'')+'').toLowerCase();
+        var ls = ((ld[j][5]||'')+'').toLowerCase();
 
 
 
@@ -18597,7 +18621,7 @@ var App = {
 
 
 
-          var status = ((ld[ri][4]||'')+'').toLowerCase();
+          var status = ((ld[ri][5]||'')+'').toLowerCase();
 
 
 
@@ -19432,55 +19456,95 @@ var App = {
 
 
 
-      // Parse score "X-Y"
+      // ── Parse score — game-aware multi-format ──
+      // Formats: "X-Y" (simple), "11-9, 11-7, 8-11" (sets), "145/3 (20) vs 120/8 (20)" (cricket),
+      //          "1-0"/"½-½" (chess), "45-38-32-28" (PUBG 4-way), "Won by X runs" (cricket text)
+      var SET_GAMES = { 'TT':1, 'BM':1, 'VB':1, 'TB':1 };
+      var CRICKET_GAMES = { 'CRK':1 };
+      var CHESS_GAMES = { 'CH':1 };
+      var PUBG_GAMES = { 'PG':1 };
 
-
-
-      function parseScore(scoreStr) {
-
-
-
+      function parseScore(scoreStr, gameCode) {
         if (!scoreStr) return null;
-
-
-
         var s = scoreStr.toString().trim();
+        if (!s || s === '-' || s === '') return null;
 
+        // ── Chess: 1-0, 0-1, ½-½, 0.5-0.5 ──
+        if (CHESS_GAMES[gameCode]) {
+          var cm = s.match(/^([½01](?:\.5)?)\s*[-–]\s*([½01](?:\.5)?)$/);
+          if (cm) {
+            var ca = cm[1] === '½' ? 0.5 : parseFloat(cm[1]);
+            var cb = cm[2] === '½' ? 0.5 : parseFloat(cm[2]);
+            return { type: 'chess', a: cm[1], b: cm[2], winner: ca > cb ? 'a' : cb > ca ? 'b' : 'draw', raw: s };
+          }
+          return { type: 'text', raw: s, winner: null };
+        }
 
+        // ── Cricket: "145/3 (20) vs 120/8 (20)" or "Won by X runs/wkts" ──
+        if (CRICKET_GAMES[gameCode]) {
+          var cvm = s.match(/^(\d+\/\d+)\s*(?:\(([\.\d]+)\))?\s*(?:vs?|[-–])\s*(\d+\/\d+)\s*(?:\(([\.\d]+)\))?$/i);
+          if (cvm) {
+            var ra = parseInt(cvm[1]), rb = parseInt(cvm[3]);
+            return { type: 'cricket', aScore: cvm[1], aOvers: cvm[2]||'', bScore: cvm[3], bOvers: cvm[4]||'',
+                     winner: ra > rb ? 'a' : rb > ra ? 'b' : 'draw', raw: s };
+          }
+          // Text result like "Won by 5 wickets"
+          if (/won|tie|draw|no result/i.test(s)) {
+            return { type: 'cricket-text', raw: s, winner: null };
+          }
+          // Simple runs: "145-120"
+          var csimp = s.split(/[-–]/);
+          if (csimp.length === 2) {
+            var csa = parseInt(csimp[0]), csb = parseInt(csimp[1]);
+            if (!isNaN(csa) && !isNaN(csb)) return { type: 'simple', a: csa, b: csb, winner: csa > csb ? 'a' : csb > csa ? 'b' : 'draw', raw: s };
+          }
+          return { type: 'text', raw: s, winner: null };
+        }
 
-        if (!s || s === '-') return null;
+        // ── PUBG: "45-38-32-28" (4-way points) ──
+        if (PUBG_GAMES[gameCode]) {
+          var pp = s.split(/[-–,]/).map(function(x) { return x.trim(); });
+          if (pp.length >= 2) {
+            var pn = pp.map(function(x) { return parseInt(x); });
+            if (pn.every(function(x) { return !isNaN(x); })) {
+              return { type: 'pubg', points: pn, raw: s, winner: pn[0] >= pn[1] ? 'a' : 'b' };
+            }
+          }
+          return { type: 'text', raw: s, winner: null };
+        }
 
+        // ── Set-based: "11-9, 11-7, 8-11, 11-6" ──
+        if (SET_GAMES[gameCode] && s.indexOf(',') !== -1) {
+          var sets = s.split(',').map(function(x) { return x.trim(); });
+          var parsed = [], setsA = 0, setsB = 0;
+          for (var si = 0; si < sets.length; si++) {
+            var sp = sets[si].split(/[-–]/);
+            if (sp.length === 2) {
+              var sa = parseInt(sp[0].trim()), sb = parseInt(sp[1].trim());
+              if (!isNaN(sa) && !isNaN(sb)) {
+                parsed.push({ a: sa, b: sb });
+                if (sa > sb) setsA++; else if (sb > sa) setsB++;
+              }
+            }
+          }
+          if (parsed.length > 0) {
+            return { type: 'sets', sets: parsed, setsA: setsA, setsB: setsB,
+                     winner: setsA > setsB ? 'a' : setsB > setsA ? 'b' : 'draw', raw: s };
+          }
+        }
 
+        // ── Simple: "3-1" ──
+        var parts = s.split(/[-–]/);
+        if (parts.length === 2) {
+          var a = parseInt(parts[0].trim()), b = parseInt(parts[1].trim());
+          if (!isNaN(a) && !isNaN(b)) return { type: 'simple', a: a, b: b, winner: a > b ? 'a' : b > a ? 'b' : 'draw', raw: s };
+        }
 
-        var parts = s.split('-');
-
-
-
-        if (parts.length !== 2) return null;
-
-
-
-        var a = parseInt(parts[0]), b = parseInt(parts[1]);
-
-
-
-        if (isNaN(a) || isNaN(b)) return null;
-
-
-
-        return { a: a, b: b, winner: a > b ? 'a' : b > a ? 'b' : 'draw' };
-
-
-
+        // Fallback: display raw text
+        return { type: 'text', raw: s, winner: null };
       }
 
-
-
-
-
-
-
-      // Process matches
+            // Process matches
 
 
 
@@ -19540,7 +19604,7 @@ var App = {
 
 
 
-        var status = (row[4] || '').toString().trim().toLowerCase();
+        var status = (row[5] || '').toString().trim().toLowerCase();
 
 
 
@@ -19580,7 +19644,7 @@ var App = {
 
 
 
-        var score = parseScore(row[3]);
+        var score = parseScore(row[3], parsed.gameCode);
 
 
 
@@ -19588,23 +19652,23 @@ var App = {
 
 
 
-        // Player names from extended columns (F-I = indices 5-8)
+        // Player names from extended columns (G-J = indices 6-9)
 
 
 
-        var p1a = cleanName(row[5] || '');
+        var p1a = cleanName(row[6] || '');
 
 
 
-        var p1b = cleanName(row[6] || '');
+        var p1b = cleanName(row[7] || '');
 
 
 
-        var p2a = cleanName(row[7] || '');
+        var p2a = cleanName(row[8] || '');
 
 
 
-        var p2b = cleanName(row[8] || '');
+        var p2b = cleanName(row[9] || '');
 
 
 
@@ -19983,68 +20047,80 @@ var App = {
 
 
       function gtScore(m) {
-
-
-
         var h = '<td class="center"><div class="gt-score">';
-
-
-
-        if (m.score) {
-
-
-
-          var w = m.score.winner;
-
-
-
-          var ac = w === 'a' ? 'win' : w === 'b' ? 'lose' : '';
-
-
-
-          var bc = w === 'b' ? 'win' : w === 'a' ? 'lose' : '';
-
-
-
-          h += '<span class="' + ac + '">' + m.score.a + '</span>';
-
-
-
-          h += '<span class="gt-score-sep"> - </span>';
-
-
-
-          h += '<span class="' + bc + '">' + m.score.b + '</span>';
-
-
-
-        } else {
-
-
-
+        if (!m.score) {
           h += '<span class="gt-score-vs">VS</span>';
+          h += '</div></td>';
+          return h;
+        }
+        var sc = m.score;
+        var w = sc.winner;
 
-
-
+        // Set-based (TT, BM, VB, TB)
+        if (sc.type === 'sets') {
+          var acS = w === 'a' ? 'win' : w === 'b' ? 'lose' : '';
+          var bcS = w === 'b' ? 'win' : w === 'a' ? 'lose' : '';
+          h += '<div class="gt-score-sets">';
+          h += '<span class="gt-score-set-summary"><span class="' + acS + '">' + sc.setsA + '</span>';
+          h += '<span class="gt-score-sep">-</span>';
+          h += '<span class="' + bcS + '">' + sc.setsB + '</span></span>';
+          for (var si = 0; si < sc.sets.length; si++) {
+            var st = sc.sets[si];
+            var sw = st.a > st.b ? 'set-win' : st.b > st.a ? 'set-lose' : '';
+            h += '<span class="gt-score-set ' + sw + '">' + st.a + '-' + st.b + '</span>';
+          }
+          h += '</div>';
+        }
+        // Chess
+        else if (sc.type === 'chess') {
+          var acC = w === 'a' ? 'win' : w === 'b' ? 'lose' : 'draw';
+          var bcC = w === 'b' ? 'win' : w === 'a' ? 'lose' : 'draw';
+          h += '<div class="gt-score-chess">';
+          h += '<span class="' + acC + '">' + sc.a + '</span>';
+          h += '<span class="gt-score-sep"> \u2013 </span>';
+          h += '<span class="' + bcC + '">' + sc.b + '</span>';
+          h += '</div>';
+        }
+        // Cricket with overs
+        else if (sc.type === 'cricket') {
+          var acK = w === 'a' ? 'win' : w === 'b' ? 'lose' : '';
+          var bcK = w === 'b' ? 'win' : w === 'a' ? 'lose' : '';
+          h += '<div class="gt-score-cricket">';
+          h += '<span class="gt-score-cricket-line ' + acK + '">' + sc.aScore;
+          if (sc.aOvers) h += ' <span class="overs">(' + sc.aOvers + ')</span>';
+          h += '</span>';
+          h += '<span class="gt-score-sep">vs</span>';
+          h += '<span class="gt-score-cricket-line ' + bcK + '">' + sc.bScore;
+          if (sc.bOvers) h += ' <span class="overs">(' + sc.bOvers + ')</span>';
+          h += '</span></div>';
+        }
+        // Cricket text result
+        else if (sc.type === 'cricket-text') {
+          h += '<div class="gt-score-cricket"><span class="gt-score-cricket-result">' + sc.raw + '</span></div>';
+        }
+        // PUBG (multi-team points)
+        else if (sc.type === 'pubg') {
+          h += '<div class="gt-score-pubg">';
+          h += '<span class="gt-score-pubg-label">Kill Pts</span>';
+          h += '<span class="gt-score-pubg-pts">' + sc.points.join(' \u00b7 ') + '</span>';
+          h += '</div>';
+        }
+        // Simple (FTB, BSB, CR, 8BP, FSB, FC, MC)
+        else if (sc.type === 'simple') {
+          var ac = w === 'a' ? 'win' : w === 'b' ? 'lose' : '';
+          var bc = w === 'b' ? 'win' : w === 'a' ? 'lose' : '';
+          h += '<span class="' + ac + '">' + sc.a + '</span>';
+          h += '<span class="gt-score-sep"> - </span>';
+          h += '<span class="' + bc + '">' + sc.b + '</span>';
+        }
+        // Fallback text
+        else {
+          h += '<span style="font-size:0.7rem;color:var(--text-secondary)">' + sc.raw + '</span>';
         }
 
-
-
         h += '</div></td>';
-
-
-
         return h;
-
-
-
       }
-
-
-
-
-
-
 
       var cHtml = '';
 

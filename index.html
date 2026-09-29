@@ -5094,6 +5094,9 @@ body::after {
 
 .gt-phase.semifinal { background: rgba(56,189,248,0.12); color: var(--neon-blue); }
 
+        .gt-phase.quarterfinal { background: rgba(100,149,237,0.2); color: #6495ed; }
+
+
 
 
 .gt-phase.third { background: rgba(168,85,247,0.15); color: var(--neon-purple); }
@@ -19477,7 +19480,11 @@ var stats = { live: 0, scheduled: 0, completed: 0 };
 
 
 
-          if (matchNum === 5) return '3rd Place';
+          if (matchNum >= 1 && matchNum <= 4) return 'Quarter Final';
+
+
+
+        if (matchNum === 5) return '3rd Place';
 
 
 
@@ -19486,6 +19493,10 @@ var stats = { live: 0, scheduled: 0, completed: 0 };
 
 
         } else {
+
+
+
+          if (matchNum >= 1 && matchNum <= 4) return 'Quarter Final';
 
 
 
@@ -20377,31 +20388,11 @@ var stats = { live: 0, scheduled: 0, completed: 0 };
 
 
 
-        // Sort: live first, then scheduled, then completed; within same status by matchNum
+        // Sort: bracket order — group by category, then matchNum ascending (QF→SF→3rd→Final)
 
 
 
         gt.matches.sort(function(a, b) {
-
-
-
-          var order = { live: 0, scheduled: 1, completed: 2 };
-
-
-
-          var oa = order[a.status] != null ? order[a.status] : 1;
-
-
-
-          var ob = order[b.status] != null ? order[b.status] : 1;
-
-
-
-          if (oa !== ob) return oa - ob;
-
-
-
-          // Group by category
 
 
 
@@ -20421,7 +20412,27 @@ var stats = { live: 0, scheduled: 0, completed: 0 };
 
 
 
+        var lastCat = '';
+
+
+
         gt.matches.forEach(function(m, idx) {
+
+
+
+          if (m.category !== lastCat) {
+
+
+
+            cHtml += '<tr class="gt-cat-header"><td colspan="8" style="background:rgba(255,215,0,0.08);color:#ffd700;font-weight:700;font-size:1.05em;padding:10px 16px;border-bottom:2px solid rgba(255,215,0,0.25);letter-spacing:0.5px;"><i class="fas fa-chess"></i> &nbsp;' + m.category + '</td></tr>';
+
+
+
+            lastCat = m.category;
+
+
+
+          }
 
 
 
@@ -20445,7 +20456,7 @@ var stats = { live: 0, scheduled: 0, completed: 0 };
 
 
 
-          cHtml += '<td class="mono">' + (idx + 1) + '</td>';
+          cHtml += '<td class="mono">' + m.matchNum + '</td>';
 
 
 
@@ -20477,11 +20488,11 @@ var stats = { live: 0, scheduled: 0, completed: 0 };
 
 
 
-            var pc = m.phase === 'Final' ? 'final' : m.phase === 'Semifinal' ? 'semifinal' : 'third';
+            var pc = m.phase === 'Final' ? 'final' : m.phase === 'Semifinal' ? 'semifinal' : m.phase === 'Quarter Final' ? 'quarterfinal' : 'third';
 
 
 
-            var pi = m.phase === 'Final' ? 'fa-trophy' : m.phase === 'Semifinal' ? 'fa-bolt' : 'fa-medal';
+            var pi = m.phase === 'Final' ? 'fa-trophy' : m.phase === 'Semifinal' ? 'fa-bolt' : m.phase === 'Quarter Final' ? 'fa-crosshairs' : 'fa-medal';
 
 
 
@@ -22102,6 +22113,10 @@ var stats = { live: 0, scheduled: 0, completed: 0 };
 
 
       if (isOutdoor) {
+
+
+
+        if (matchNum >= 1 && matchNum <= 4) return 'Quarter Final';
 
 
 

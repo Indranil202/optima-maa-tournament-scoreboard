@@ -19745,7 +19745,7 @@ var stats = { live: 0, scheduled: 0, completed: 0 };
 
 
 
-        if (!parsed || isNaN(parsed.matchNum)) return;
+        if (!parsed) parsed = { gameCode: mid, category: '', matchNum: 0 };
 
 
 
@@ -22251,7 +22251,7 @@ var stats = { total: 0, scheduled: 0, live: 0, completed: 0 };
 
 
 
-            if (!parsed || isNaN(parsed.matchNum)) return;
+            if (!parsed) parsed = { gameCode: mid, category: '', matchNum: 0 };
 
 
 

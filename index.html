@@ -16368,7 +16368,7 @@ body.light-theme input,body.light-theme select{background:rgba(255,253,246,.8);c
 
 
 
-var GAS_API_URL = 'https://script.google.com/macros/s/AKfycbxVhVzeO2xHfpraIF9jPiInle4a5QTqxCSUYn81DINb4bPlveMTIHihGnYZNcJU0eeW/exec';
+var GAS_API_URL = 'https://script.google.com/macros/s/AKfycbxOYFPdJkX1SYbmN-xCuvHgh-QzQxoGpMyb7qqk8R85hKhFdULayWg3loHGKigQQqZZ/exec';
 
 
 
@@ -16380,7 +16380,7 @@ var GAS_API_URL = 'https://script.google.com/macros/s/AKfycbxVhVzeO2xHfpraIF9jPi
 
 
 
-var CACHE_TTL = 1 * 60 * 1000;  // 1 minute â€” fresh data re-fetched after this
+var CACHE_TTL = 15 * 60 * 1000;  // 15 minutes â€” fresh data re-fetched after this
 
 
 
@@ -18013,54 +18013,63 @@ var App = {
 
 
 
-    // Games sheet = source of truth. Load it first, build maps, then load all tabs.
+    // ── Bulk load: single API call fetches all sheets at once ──
+    // Eliminates GAS cold-start penalty (1 round-trip instead of 7)
+    fetchFromGAS('getAllData', function(text) {
+      try {
+        var bundle = JSON.parse(text);
+        // Pre-populate sessionStorage cache so callBackend() serves instantly
+        var now = String(Date.now());
+        var map = {
+          getGamesData:      JSON.stringify(bundle.games || {}),
+          getLiveScores:      JSON.stringify(bundle.liveScores || []),
+          getSchedule:       JSON.stringify(bundle.liveScores || []),
+          getRankings:       JSON.stringify(bundle.rankings || []),
+          getPlayerProfiles: JSON.stringify(bundle.players || []),
+          getHousesData:     JSON.stringify(bundle.houses || {}),
+          getHouseMembers:   JSON.stringify(bundle.houseMembers || [])
+        };
+        Object.keys(map).forEach(function(k) {
+          try {
+            sessionStorage.setItem('optima_' + k, map[k]);
+            sessionStorage.setItem('optima_' + k + '_ts', now);
+          } catch(e) {}
+        });
+        // Build game maps from pre-cached games data
+        self._gamesRaw = map.getGamesData;
+        self._buildGameMaps(map.getGamesData);
+        self._loadAllTabs();
+        updateDataTimestamp();
+        debugLog('Bulk', 'OK', 'getAllData loaded (' + text.length + ' bytes)');
+      } catch(e) {
+        debugLog('Bulk', 'FAIL', e.message);
+        self._fallbackLoadAll();
+      }
+    }, function(err) {
+      debugLog('Bulk', 'FAIL', err);
+      self._fallbackLoadAll();
+    });
 
 
 
+  },
+
+
+
+  // Fallback: original per-tab loading (if getAllData fails)
+  _fallbackLoadAll: function() {
+    var self = this;
     callBackend('getGamesData', function(raw) {
-
-
-
         self._gamesRaw = raw;
-
-
-
         self._buildGameMaps(raw);
-
-
-
         self._loadAllTabs();
-
-
-
       }, function() {
-
-
-
         self._gamesRaw = null;
-
-
-
         self._gameMap = {};
-
-
-
         self._allGames = {};
-
-
-
         self._catMap = {};
-
-
-
         self._loadAllTabs();
-
-
-
       });
-
-
-
   },
 
 

@@ -14958,17 +14958,6 @@ body.light-theme input,body.light-theme select{background:rgba(255,253,246,.8);c
 .diag-toggle:hover{color:#ffd700;border-color:rgba(212,160,23,.3)}
 
 
-/* KPI Legend */
-.kpi-legend{margin-top:1rem;padding:12px 16px;background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.06);border-radius:12px;display:flex;flex-wrap:wrap;gap:6px 20px;align-items:flex-start}
-.kpi-legend-title{width:100%;font-size:.65rem;text-transform:uppercase;letter-spacing:1.5px;color:var(--accent);font-weight:700;margin-bottom:2px;display:flex;align-items:center;gap:6px}
-.kpi-legend-title i{font-size:.7rem}
-.kpi-legend-item{display:flex;align-items:baseline;gap:5px;font-size:.7rem;line-height:1.4}
-.kpi-legend-item .kl-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0;margin-top:3px}
-.kpi-legend-item .kl-name{color:var(--text-primary);font-weight:600}
-.kpi-legend-item .kl-sep{color:rgba(255,255,255,.15)}
-.kpi-legend-item .kl-desc{color:var(--text-muted)}
-@media(max-width:600px){.kpi-legend{flex-direction:column;gap:4px}}
-
 
 /* Tournament Arena — Game completion status (mirrors House Cup tracker) */
 .gc-cat-tag.done {
@@ -15007,6 +14996,9 @@ body.light-theme input,body.light-theme select{background:rgba(255,253,246,.8);c
 .gc-status-badge.partial { background: rgba(251,191,36,0.12); color: var(--neon-yellow); }
 .gc-status-badge.pending { background: rgba(255,255,255,0.05); color: var(--text-muted); }
 
+
+/* KPI Card Inline Description */
+.stat-hint{font-size:.58rem;color:#666;line-height:1.25;margin-top:5px;text-align:center;padding:0 4px;opacity:.8}
 </style>
 
 
@@ -15502,20 +15494,6 @@ body.light-theme input,body.light-theme select{background:rgba(255,253,246,.8);c
 
 
     </div>
-
-
-
-
-
-
-
-    <div class="kpi-legend" style="margin-bottom:1rem">
-  <div class="kpi-legend-title"><i class="fas fa-circle-info"></i> KPI Guide</div>
-  <div class="kpi-legend-item"><span class="kl-dot" style="background:var(--neon-red)"></span><span class="kl-name">Total Scheduled</span><span class="kl-sep">—</span><span class="kl-desc">Total matches planned across the entire tournament</span></div>
-  <div class="kpi-legend-item"><span class="kl-dot" style="background:var(--neon-green)"></span><span class="kl-name">Completion %</span><span class="kl-sep">—</span><span class="kl-desc">Percentage of scheduled matches that have been completed</span></div>
-  <div class="kpi-legend-item"><span class="kl-dot" style="background:var(--neon-purple)"></span><span class="kl-name">Wizards</span><span class="kl-sep">—</span><span class="kl-desc">Total registered players in the tournament</span></div>
-  <div class="kpi-legend-item"><span class="kl-dot" style="background:var(--gold)"></span><span class="kl-name">Cup Leader</span><span class="kl-sep">—</span><span class="kl-desc">House currently leading the overall points race</span></div>
-</div>
     <!-- Row 2: House Cup Race + Leading House -->
 
 
@@ -15820,25 +15798,21 @@ body.light-theme input,body.light-theme select{background:rgba(255,253,246,.8);c
           <div class="stat-value" id="liveStat">0</div>
           <div class="stat-label">Live</div>
           <i class="fas fa-circle stat-icon"></i>
+<div class="stat-hint">Matches in progress right now</div>
         </div>
         <div class="stat-card scheduled">
           <div class="stat-value" id="upcomingStat">0</div>
           <div class="stat-label">Scheduled</div>
           <i class="fas fa-clock stat-icon"></i>
+<div class="stat-hint">Upcoming matches yet to be played</div>
         </div>
         <div class="stat-card completed">
           <div class="stat-value" id="completedStat">0</div>
           <div class="stat-label">Completed</div>
           <i class="fas fa-check-circle stat-icon"></i>
+<div class="stat-hint">Matches finished with final results</div>
         </div>
       </div>
-
-      <div class="kpi-legend">
-  <div class="kpi-legend-title"><i class="fas fa-circle-info"></i> KPI Guide</div>
-  <div class="kpi-legend-item"><span class="kl-dot" style="background:#e74c3c"></span><span class="kl-name">Live</span><span class="kl-sep">—</span><span class="kl-desc">Matches currently in progress right now</span></div>
-  <div class="kpi-legend-item"><span class="kl-dot" style="background:#f1c40f"></span><span class="kl-name">Scheduled</span><span class="kl-sep">—</span><span class="kl-desc">Upcoming matches yet to be played</span></div>
-  <div class="kpi-legend-item"><span class="kl-dot" style="background:#2ecc71"></span><span class="kl-name">Completed</span><span class="kl-sep">—</span><span class="kl-desc">Matches finished with final results</span></div>
-</div>
 
     <div id="liveScoresContent">
         <div class="skeleton skel-card"></div>
@@ -16165,16 +16139,13 @@ body.light-theme input,body.light-theme select{background:rgba(255,253,246,.8);c
 
     <!-- Tournament KPI Cards -->
     <div class="ms-kpi-row" id="gamesKpiRow" style="margin-bottom:1rem">
-      <div class="stat-card live"><div class="stat-value" id="gkSegments">0</div><div class="stat-label">Magical Realms</div><i class="fas fa-layer-group stat-icon"></i></div>
-      <div class="stat-card completed"><div class="stat-value" id="gkGames">0</div><div class="stat-label">Enchanted Games</div><i class="fas fa-broom-ball stat-icon"></i></div>
-      <div class="stat-card players"><div class="stat-value" id="gkCategories">0</div><div class="stat-label">Spell Categories</div><i class="fas fa-wand-sparkles stat-icon"></i></div>
+      <div class="stat-card live"><div class="stat-value" id="gkSegments">0</div><div class="stat-label">Magical Realms</div><i class="fas fa-layer-group stat-icon"></i>
+<div class="stat-hint">Tournament segments (Indoor, Outdoor, etc.)</div></div>
+      <div class="stat-card completed"><div class="stat-value" id="gkGames">0</div><div class="stat-label">Enchanted Games</div><i class="fas fa-broom-ball stat-icon"></i>
+<div class="stat-hint">Total different games in the tournament</div></div>
+      <div class="stat-card players"><div class="stat-value" id="gkCategories">0</div><div class="stat-label">Spell Categories</div><i class="fas fa-wand-sparkles stat-icon"></i>
+<div class="stat-hint">Categories like Men Singles, Women Doubles</div></div>
     </div>
-    <div class="kpi-legend">
-  <div class="kpi-legend-title"><i class="fas fa-circle-info"></i> KPI Guide</div>
-  <div class="kpi-legend-item"><span class="kl-dot" style="background:var(--neon-red)"></span><span class="kl-name">Magical Realms</span><span class="kl-sep">—</span><span class="kl-desc">Number of tournament segments (Indoor, Outdoor, Cultural, etc.)</span></div>
-  <div class="kpi-legend-item"><span class="kl-dot" style="background:var(--neon-green)"></span><span class="kl-name">Enchanted Games</span><span class="kl-sep">—</span><span class="kl-desc">Total different games/sports in the tournament</span></div>
-  <div class="kpi-legend-item"><span class="kl-dot" style="background:var(--neon-purple)"></span><span class="kl-name">Spell Categories</span><span class="kl-sep">—</span><span class="kl-desc">Game categories like Men Singles, Women Doubles, Team Match, etc.</span></div>
-</div>
 
 
     <div id="gamesContent">
@@ -16227,19 +16198,15 @@ body.light-theme input,body.light-theme select{background:rgba(255,253,246,.8);c
 
     <!-- Wizards KPI Cards -->
     <div class="ms-kpi-row" id="wizKpiRow" style="margin-bottom:1rem">
-      <div class="stat-card players"><div class="stat-value" id="wizTotalStat">0</div><div class="stat-label">Qualified Wizards</div><i class="fas fa-hat-wizard stat-icon"></i></div>
-      <div class="stat-card live"><div class="stat-value" id="wizTopPts" style="font-size:clamp(0.7rem,2vw,0.9rem);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">—</div><div class="stat-label">Supreme Sorcerer</div><i class="fas fa-crown stat-icon"></i></div>
-      <div class="stat-card completed"><div class="stat-value" id="wizTopWins" style="font-size:clamp(0.7rem,2vw,0.9rem);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">—</div><div class="stat-label">Champion of Duels</div><i class="fas fa-medal stat-icon"></i></div>
-      <div class="stat-card scheduled"><div class="stat-value" id="wizHouseTop" style="font-size:clamp(0.7rem,2vw,0.9rem);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">—</div><div class="stat-label">Dominant House</div><i class="fas fa-shield-halved stat-icon"></i></div>
+      <div class="stat-card players"><div class="stat-value" id="wizTotalStat">0</div><div class="stat-label">Qualified Wizards</div><i class="fas fa-hat-wizard stat-icon"></i>
+<div class="stat-hint">Players in at least one game</div></div>
+      <div class="stat-card live"><div class="stat-value" id="wizTopPts" style="font-size:clamp(0.7rem,2vw,0.9rem);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">—</div><div class="stat-label">Supreme Sorcerer</div><i class="fas fa-crown stat-icon"></i>
+<div class="stat-hint">Player with highest total points</div></div>
+      <div class="stat-card completed"><div class="stat-value" id="wizTopWins" style="font-size:clamp(0.7rem,2vw,0.9rem);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">—</div><div class="stat-label">Champion of Duels</div><i class="fas fa-medal stat-icon"></i>
+<div class="stat-hint">Player with most 1st-place finishes</div></div>
+      <div class="stat-card scheduled"><div class="stat-value" id="wizHouseTop" style="font-size:clamp(0.7rem,2vw,0.9rem);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">—</div><div class="stat-label">Dominant House</div><i class="fas fa-shield-halved stat-icon"></i>
+<div class="stat-hint">House with most participating players</div></div>
     </div>
-
-    <div class="kpi-legend">
-  <div class="kpi-legend-title"><i class="fas fa-circle-info"></i> KPI Guide</div>
-  <div class="kpi-legend-item"><span class="kl-dot" style="background:var(--neon-green)"></span><span class="kl-name">Qualified Wizards</span><span class="kl-sep">—</span><span class="kl-desc">Total players who participated in at least one game</span></div>
-  <div class="kpi-legend-item"><span class="kl-dot" style="background:var(--gold)"></span><span class="kl-name">Supreme Sorcerer</span><span class="kl-sep">—</span><span class="kl-desc">Player with the highest total points across all games</span></div>
-  <div class="kpi-legend-item"><span class="kl-dot" style="background:var(--neon-red)"></span><span class="kl-name">Champion of Duels</span><span class="kl-sep">—</span><span class="kl-desc">Player with the most 1st-place finishes in the tournament</span></div>
-  <div class="kpi-legend-item"><span class="kl-dot" style="background:var(--neon-blue)"></span><span class="kl-name">Dominant House</span><span class="kl-sep">—</span><span class="kl-desc">House with the most participating players overall</span></div>
-</div>
 
     <div class="profile-filters">
 
@@ -16310,14 +16277,11 @@ body.light-theme input,body.light-theme select{background:rgba(255,253,246,.8);c
     </div>
     <div class="tab-guide" id="guide-gallery"><i class="fas fa-wand-sparkles"></i><span>The Pensieve holds every magical memory from our tournament. Browse by game, click to relive the moment. Drop photos and videos into the gallery folders and they appear here automatically.</span><span class="tab-guide-dismiss" onclick="this.parentElement.style.display='none';localStorage.setItem('guide-gallery','1')" title="Dismiss">&#x2716;</span></div>
     <div class="ms-kpi-row" id="galleryKpi" style="margin-bottom:1rem">
-      <div class="stat-card live"><div class="stat-value" id="galleryTotal">0</div><div class="stat-label">Memories</div><i class="fas fa-image stat-icon"></i></div>
-    <div class="kpi-legend">
-  <div class="kpi-legend-title"><i class="fas fa-circle-info"></i> KPI Guide</div>
-  <div class="kpi-legend-item"><span class="kl-dot" style="background:var(--neon-purple)"></span><span class="kl-name">Memories</span><span class="kl-sep">—</span><span class="kl-desc">Total photos and videos in the gallery across all events</span></div>
-  <div class="kpi-legend-item"><span class="kl-dot" style="background:var(--neon-green)"></span><span class="kl-name">Enchanted Events</span><span class="kl-sep">—</span><span class="kl-desc">Number of games/events that have gallery media uploaded</span></div>
-</div>
+      <div class="stat-card live"><div class="stat-value" id="galleryTotal">0</div><div class="stat-label">Memories</div><i class="fas fa-image stat-icon"></i>
+<div class="stat-hint">Total photos & videos in gallery</div></div>
 
-      <div class="stat-card completed"><div class="stat-value" id="galleryGames">0</div><div class="stat-label">Enchanted Events</div><i class="fas fa-wand-sparkles stat-icon"></i></div>
+      <div class="stat-card completed"><div class="stat-value" id="galleryGames">0</div><div class="stat-label">Enchanted Events</div><i class="fas fa-wand-sparkles stat-icon"></i>
+<div class="stat-hint">Games with gallery media uploaded</div></div>
     </div>
     <div class="gallery-filter-pills" id="galleryPills"></div>
     <div id="galleryContent"><div class="skeleton skel-card"></div></div>
@@ -18502,7 +18466,7 @@ var App = {
 
 
 
-        '<div class="stat-card live"><div class="stat-value" id="dTotal">0</div><div class="stat-label">Total Scheduled</div><i class="fas fa-scroll stat-icon"></i>' +
+        '<div class="stat-card live"><div class="stat-value" id="dTotal">0</div><div class="stat-label">Total Scheduled</div><i class="fas fa-scroll stat-icon"></i><div class="stat-hint">Total matches planned in the tournament</div>' +
 
 
 
@@ -18510,7 +18474,7 @@ var App = {
 
 
 
-        '<div class="stat-card completed"><div class="stat-value" id="dCompPct">0</div><div class="stat-label">Completion %</div><i class="fas fa-flag-checkered stat-icon"></i>' +
+        '<div class="stat-card completed"><div class="stat-value" id="dCompPct">0</div><div class="stat-label">Completion %</div><i class="fas fa-flag-checkered stat-icon"></i><div class="stat-hint">% of scheduled matches completed</div>' +
 
 
 
@@ -18518,7 +18482,7 @@ var App = {
 
 
 
-        '<div class="stat-card players"><div class="stat-value" id="dPlayers">0</div><div class="stat-label">Wizards</div><i class="fas fa-hat-wizard stat-icon"></i>' +
+        '<div class="stat-card players"><div class="stat-value" id="dPlayers">0</div><div class="stat-label">Wizards</div><i class="fas fa-hat-wizard stat-icon"></i><div class="stat-hint">Total registered players</div>' +
 
 
 
@@ -18526,7 +18490,7 @@ var App = {
 
 
 
-        '<div class="stat-card scheduled" style="border-color:var(--gold);border-width:1px;border-style:solid;border-image:none;position:relative;overflow:hidden"><div id="dLeaderLogo" style="position:absolute;right:-8px;top:50%;transform:translateY(-50%);width:70px;height:70px;opacity:0.15;pointer-events:none"></div><div class="stat-value" id="dLeader" style="color:var(--gold);font-size:clamp(0.7rem,2.2vw,0.95rem);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%;display:block">—</div><div class="stat-label">Cup Leader</div><i class="fas fa-crown stat-icon" style="color:var(--gold)"></i>' +
+        '<div class="stat-card scheduled" style="border-color:var(--gold);border-width:1px;border-style:solid;border-image:none;position:relative;overflow:hidden"><div id="dLeaderLogo" style="position:absolute;right:-8px;top:50%;transform:translateY(-50%);width:70px;height:70px;opacity:0.15;pointer-events:none"></div><div class="stat-value" id="dLeader" style="color:var(--gold);font-size:clamp(0.7rem,2.2vw,0.95rem);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%;display:block">—</div><div class="stat-label">Cup Leader</div><i class="fas fa-crown stat-icon" style="color:var(--gold)"></i><div class="stat-hint">House leading the overall points race</div>' +
 
 
 

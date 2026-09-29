@@ -1,0 +1,83 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 250">
+  <defs>
+    <linearGradient id="qRobe" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#7b1a1a"/><stop offset="100%" stop-color="#c0392b"/>
+    </linearGradient>
+    <linearGradient id="qBroom" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#6B3410"/><stop offset="100%" stop-color="#4A2508"/>
+    </linearGradient>
+    <filter id="qGlow"><feGaussianBlur stdDeviation="3"/></filter>
+  </defs>
+  
+  <!-- Racing Broom — sleeker, aerodynamic -->
+  <rect x="40" y="112" width="310" height="6" rx="3" fill="url(#qBroom)"/>
+  <rect x="40" y="113" width="310" height="2.5" rx="1" fill="#8B6540" opacity="0.4"/>
+  <!-- Gold accents -->
+  <rect x="80" y="109" width="4" height="12" rx="2" fill="#d4a017" opacity="0.7"/>
+  <rect x="100" y="109" width="4" height="12" rx="2" fill="#d4a017" opacity="0.5"/>
+  <rect x="120" y="109" width="4" height="12" rx="2" fill="#d4a017" opacity="0.3"/>
+  <!-- Aerodynamic bristles -->
+  <path d="M350 115 Q370 105 392 98 Q380 112 392 128 Q370 122 350 115Z" fill="#4A2508"/>
+  <path d="M352 113 Q375 102 395 94" stroke="#3E1F00" stroke-width="1.2" fill="none"/>
+  <path d="M352 115 Q378 110 398 106" stroke="#3E1F00" stroke-width="1" fill="none" opacity="0.7"/>
+  <path d="M352 117 Q375 124 395 132" stroke="#3E1F00" stroke-width="1.2" fill="none"/>
+  
+  <!-- Body — leaning forward aggressively -->
+  <g transform="rotate(-12 170 90)">
+    <!-- Quidditch Robes -->
+    <path d="M140 68 Q152 50 175 45 L192 46 Q215 54 218 72 L220 110 Q205 120 175 118 Q148 118 142 108 Z" fill="url(#qRobe)"/>
+    <!-- Gold trim lines -->
+    <path d="M148 75 L210 75" stroke="#d4a017" stroke-width="1.5" opacity="0.4"/>
+    <path d="M150 90 L208 90" stroke="#d4a017" stroke-width="1" opacity="0.3"/>
+    <!-- Number on back -->
+    <text x="175" y="95" font-size="22" fill="#d4a017" font-family="serif" font-weight="bold" text-anchor="middle" opacity="0.7">07</text>
+    <!-- Arm padding (Quidditch gear) -->
+    <ellipse cx="145" cy="80" rx="12" ry="8" fill="#8b1a1a" opacity="0.6"/>
+    <ellipse cx="215" cy="78" rx="12" ry="8" fill="#8b1a1a" opacity="0.6"/>
+  </g>
+  
+  <!-- Legs tucked tight -->
+  <path d="M175 125 Q190 130 210 122 L218 115" stroke="#5a1515" stroke-width="8" fill="none" stroke-linecap="round"/>
+  <path d="M170 128 Q160 135 155 130" stroke="#5a1515" stroke-width="6" fill="none" stroke-linecap="round"/>
+  
+  <!-- Cape billowing dramatically -->
+  <path d="M200 85 Q220 100 245 118 Q235 125 222 130 Q240 140 260 150 Q240 142 225 135 Q215 125 210 110Z" fill="#c0392b" opacity="0.65">
+    <animate attributeName="d" dur="1.8s" repeatCount="indefinite" values="
+      M200 85 Q220 100 245 118 Q235 125 222 130 Q240 140 260 150 Q240 142 225 135 Q215 125 210 110Z;
+      M200 85 Q225 105 252 122 Q240 128 228 135 Q248 148 270 158 Q248 148 232 138 Q220 128 212 112Z;
+      M200 85 Q220 100 245 118 Q235 125 222 130 Q240 140 260 150 Q240 142 225 135 Q215 125 210 110Z"/>
+  </path>
+  
+  <!-- Head -->
+  <circle cx="155" cy="48" r="16" fill="#e8c9a0"/>
+  <!-- Goggles -->
+  <ellipse cx="148" cy="45" rx="9" ry="7" fill="none" stroke="#2c1810" stroke-width="2"/>
+  <ellipse cx="148" cy="45" rx="7" ry="5.5" fill="#3d2b1f" opacity="0.4"/>
+  <circle cx="146" cy="44" r="2" fill="#fff" opacity="0.3"/>
+  <ellipse cx="162" cy="45" rx="9" ry="7" fill="none" stroke="#2c1810" stroke-width="2"/>
+  <ellipse cx="162" cy="45" rx="7" ry="5.5" fill="#3d2b1f" opacity="0.4"/>
+  <circle cx="160" cy="44" r="2" fill="#fff" opacity="0.3"/>
+  <!-- Goggle strap -->
+  <path d="M140 45 Q135 42 133 45 Q135 48 140 45" fill="#2c1810"/>
+  <path d="M170 45 Q175 42 177 45 Q175 48 170 45" fill="#2c1810"/>
+  
+  <!-- Helmet/Cap -->
+  <path d="M140 48 Q135 38 140 28 Q148 20 162 22 Q172 26 170 38 Q165 32 155 30 Q145 32 140 48Z" fill="#7b1a1a"/>
+  <path d="M140 48 Q145 42 155 40 Q165 42 170 48" fill="#d4a017" opacity="0.4"/>
+  
+  <!-- Wind-swept hair -->
+  <path d="M168 35 Q175 38 180 48 Q176 42 174 46 Q178 52 175 58" stroke="#2c1810" stroke-width="2.5" fill="none" opacity="0.7"/>
+  
+  <!-- Arms gripping broom handle -->
+  <path d="M148 72 L130 95 L115 108" stroke="#e8c9a0" stroke-width="5" fill="none" stroke-linecap="round"/>
+  <path d="M165 75 L155 95 L140 108" stroke="#e8c9a0" stroke-width="5" fill="none" stroke-linecap="round"/>
+  <!-- Gloved hands -->
+  <circle cx="113" cy="110" r="5" fill="#2c1810"/>
+  <circle cx="138" cy="110" r="5" fill="#2c1810"/>
+  
+  <!-- Speed lines -->
+  <line x1="280" y1="90" x2="350" y2="88" stroke="#fff" stroke-width="1" opacity="0.15"/>
+  <line x1="270" y1="105" x2="360" y2="103" stroke="#fff" stroke-width="0.8" opacity="0.1"/>
+  <line x1="275" y1="130" x2="345" y2="128" stroke="#fff" stroke-width="1" opacity="0.12"/>
+  <line x1="260" y1="145" x2="330" y2="142" stroke="#fff" stroke-width="0.6" opacity="0.08"/>
+</svg>

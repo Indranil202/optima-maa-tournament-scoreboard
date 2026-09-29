@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 80">
+  <defs>
+    <radialGradient id="snitchBody" cx="40%" cy="35%">
+      <stop offset="0%" stop-color="#fff8dc"/><stop offset="30%" stop-color="#ffd700"/><stop offset="80%" stop-color="#b8860b"/><stop offset="100%" stop-color="#8B6914"/>
+    </radialGradient>
+    <filter id="sGlow"><feGaussianBlur stdDeviation="3"/></filter>
+  </defs>
+  <!-- Glow aura -->
+  <circle cx="60" cy="40" r="25" fill="#ffd700" opacity="0.15" filter="url(#sGlow)"/>
+  <!-- Left wing -->
+  <path d="M48 40 Q35 25 18 15 Q22 22 15 28 Q22 30 20 38 Q30 35 40 38Z" fill="#e8dcc8" stroke="#d4a017" stroke-width="0.5" opacity="0.85">
+    <animate attributeName="d" dur="0.4s" repeatCount="indefinite" values="
+      M48 40 Q35 25 18 15 Q22 22 15 28 Q22 30 20 38 Q30 35 40 38Z;
+      M48 40 Q38 35 25 32 Q28 36 22 40 Q28 42 26 46 Q34 42 42 40Z;
+      M48 40 Q35 25 18 15 Q22 22 15 28 Q22 30 20 38 Q30 35 40 38Z"/>
+  </path>
+  <!-- Wing veins left -->
+  <path d="M42 36 Q32 28 22 22" stroke="#d4a017" stroke-width="0.5" fill="none" opacity="0.4"/>
+  <path d="M44 38 Q35 32 25 30" stroke="#d4a017" stroke-width="0.4" fill="none" opacity="0.3"/>
+  <!-- Right wing -->
+  <path d="M72 40 Q85 25 102 15 Q98 22 105 28 Q98 30 100 38 Q90 35 80 38Z" fill="#e8dcc8" stroke="#d4a017" stroke-width="0.5" opacity="0.85">
+    <animate attributeName="d" dur="0.4s" repeatCount="indefinite" values="
+      M72 40 Q85 25 102 15 Q98 22 105 28 Q98 30 100 38 Q90 35 80 38Z;
+      M72 40 Q82 35 95 32 Q92 36 98 40 Q92 42 94 46 Q86 42 78 40Z;
+      M72 40 Q85 25 102 15 Q98 22 105 28 Q98 30 100 38 Q90 35 80 38Z"/>
+  </path>
+  <!-- Wing veins right -->
+  <path d="M78 36 Q88 28 98 22" stroke="#d4a017" stroke-width="0.5" fill="none" opacity="0.4"/>
+  <path d="M76 38 Q85 32 95 30" stroke="#d4a017" stroke-width="0.4" fill="none" opacity="0.3"/>
+  <!-- Ball body -->
+  <circle cx="60" cy="40" r="12" fill="url(#snitchBody)" stroke="#b8860b" stroke-width="1"/>
+  <!-- Engraved pattern -->
+  <path d="M52 36 Q60 32 68 36" stroke="#b8860b" stroke-width="0.8" fill="none" opacity="0.5"/>
+  <path d="M52 44 Q60 48 68 44" stroke="#b8860b" stroke-width="0.8" fill="none" opacity="0.5"/>
+  <line x1="60" y1="28" x2="60" y2="52" stroke="#b8860b" stroke-width="0.5" opacity="0.3"/>
+  <!-- Highlight -->
+  <ellipse cx="55" cy="35" rx="4" ry="3" fill="#fff" opacity="0.4"/>
+</svg>

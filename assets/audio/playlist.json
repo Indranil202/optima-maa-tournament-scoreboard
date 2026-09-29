@@ -1,0 +1,71 @@
+{
+  "tracks": [
+    {
+      "title": "Hedwig's Theme",
+      "file": "hedwigs-theme.mp3",
+      "category": "Great Hall",
+      "icon": "fa-hat-wizard"
+    },
+    {
+      "title": "Hogwarts March",
+      "file": "hogwarts-march.mp3",
+      "category": "Great Hall",
+      "icon": "fa-landmark"
+    },
+    {
+      "title": "Nimbus 2000",
+      "file": "nimbus-2000.mp3",
+      "category": "Quidditch",
+      "icon": "fa-broom-ball"
+    },
+    {
+      "title": "Quidditch Match",
+      "file": "quidditch-match.mp3",
+      "category": "Quidditch",
+      "icon": "fa-broom-ball"
+    },
+    {
+      "title": "The Invisibility Cloak",
+      "file": "invisibility-cloak.mp3",
+      "category": "Adventure",
+      "icon": "fa-ghost"
+    },
+    {
+      "title": "Dumbledore's Army",
+      "file": "dumbledores-army.mp3",
+      "category": "Battle",
+      "icon": "fa-shield-halved"
+    },
+    {
+      "title": "Wizard Chess",
+      "file": "wizard-chess.mp3",
+      "category": "Great Hall",
+      "icon": "fa-chess"
+    },
+    {
+      "title": "Fawkes the Phoenix",
+      "file": "fawkes-phoenix.mp3",
+      "category": "Celebration",
+      "icon": "fa-fire"
+    },
+    {
+      "title": "A Window to the Past",
+      "file": "window-to-past.mp3",
+      "category": "Adventure",
+      "icon": "fa-clock-rotate-left"
+    },
+    {
+      "title": "Leaving Hogwarts",
+      "file": "leaving-hogwarts.mp3",
+      "category": "Celebration",
+      "icon": "fa-train"
+    }
+  ],
+  "categories": [
+    { "name": "Great Hall", "icon": "fa-landmark", "color": "#ffd700" },
+    { "name": "Quidditch", "icon": "fa-broom-ball", "color": "#e74c3c" },
+    { "name": "Adventure", "icon": "fa-compass", "color": "#3498db" },
+    { "name": "Battle", "icon": "fa-shield-halved", "color": "#9b59b6" },
+    { "name": "Celebration", "icon": "fa-champagne-glasses", "color": "#2ecc71" }
+  ]
+}

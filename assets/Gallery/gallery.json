@@ -28,7 +28,13 @@
       "name": "Chess",
       "folder": "Chess",
       "icon": "fa-chess",
-      "photos": []
+      "photos": [
+        "3.mp4",
+        "Chess begin.jpeg",
+        "Chess.jpg",
+        "V1.mp4",
+        "V2.mp4"
+      ]
     },
     {
       "name": "Cricket",

@@ -22,19 +22,27 @@
       "name": "Carrom",
       "folder": "Carrom",
       "icon": "fa-bullseye",
-      "photos": []
+      "photos": [
+        "IMG-20260929-WA0055.jpg.jpeg",
+        "IMG-20260929-WA0058.jpg.jpeg",
+        "IMG-20260929-WA0065.jpg.jpeg",
+        "IMG-20260929-WA0086.jpg.jpeg",
+        "IMG-20260929-WA0090.jpg.jpeg",
+        "IMG-20260929-WA0092.jpg.jpeg",
+        "IMG-20260929-WA0096.jpg.jpeg",
+        "IMG-20260929-WA0098.jpg.jpeg",
+        "IMG-20260929-WA0104.jpg.jpeg",
+        "V1.mp4",
+        "V2.mp4",
+        "VID-20260929-WA0067.mp4",
+        "VID-20260929-WA0070.mp4"
+      ]
     },
     {
       "name": "Chess",
       "folder": "Chess",
       "icon": "fa-chess",
-      "photos": [
-        "3.mp4",
-        "Chess begin.jpeg",
-        "Chess.jpg",
-        "V1.mp4",
-        "V2.mp4"
-      ]
+      "photos": []
     },
     {
       "name": "Cricket",
@@ -67,6 +75,33 @@
       "photos": []
     },
     {
+      "name": "Mascot",
+      "folder": "Mascot",
+      "icon": "fa-wand-sparkles",
+      "photos": [
+        "WhatsApp Image 2026-09-30 at 17.21.52.jpeg",
+        "WhatsApp Image 2026-09-30 at 17.21.54.jpeg",
+        "WhatsApp Image 2026-09-30 at 17.21.57.jpeg",
+        "WhatsApp Image 2026-09-30 at 17.21.59.jpeg",
+        "WhatsApp Image 2026-09-30 at 17.22.05.jpeg",
+        "WhatsApp Image 2026-09-30 at 17.22.29.jpeg",
+        "WhatsApp Image 2026-09-30 at 17.22.31.jpeg",
+        "WhatsApp Image 2026-09-30 at 17.22.32.jpeg",
+        "WhatsApp Image 2026-09-30 at 17.22.33.jpeg",
+        "WhatsApp Image 2026-09-30 at 17.22.36 (1).jpeg",
+        "WhatsApp Image 2026-09-30 at 17.22.36.jpeg",
+        "WhatsApp Image 2026-09-30 at 17.22.37 (1).jpeg",
+        "WhatsApp Image 2026-09-30 at 17.22.37.jpeg",
+        "WhatsApp Image 2026-09-30 at 17.22.39.jpeg",
+        "WhatsApp Image 2026-09-30 at 17.22.44.jpeg",
+        "WhatsApp Image 2026-09-30 at 17.22.45 (1).jpeg",
+        "WhatsApp Image 2026-09-30 at 17.22.45.jpeg",
+        "WhatsApp Image 2026-09-30 at 17.22.46.jpeg",
+        "WhatsApp Image 2026-09-30 at 17.22.47.jpeg",
+        "WhatsApp Image 2026-09-30 at 17.22.48.jpeg"
+      ]
+    },
+    {
       "name": "Mortal Combat",
       "folder": "Mortal Combat",
       "icon": "fa-hand-fist",
@@ -76,7 +111,21 @@
       "name": "PUBG",
       "folder": "PUBG",
       "icon": "fa-crosshairs",
-      "photos": []
+      "photos": [
+        "1.jpeg",
+        "2.jpeg",
+        "3.jpeg",
+        "4.jpeg",
+        "5.jpeg",
+        "WhatsApp Image 2026-09-30 at 17.09.49.jpeg",
+        "WhatsApp Image 2026-09-30 at 17.09.51 (1).jpeg",
+        "WhatsApp Image 2026-09-30 at 17.09.51 (2).jpeg",
+        "WhatsApp Image 2026-09-30 at 17.09.51.jpeg",
+        "WhatsApp Image 2026-09-30 at 17.09.52 (1).jpeg",
+        "WhatsApp Image 2026-09-30 at 17.09.52 (2).jpeg",
+        "WhatsApp Image 2026-09-30 at 17.09.52.jpeg",
+        "WhatsApp Image 2026-09-30 at 17.09.53.jpeg"
+      ]
     },
     {
       "name": "Table Tennis",

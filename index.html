@@ -15092,19 +15092,37 @@ body.light-theme input,body.light-theme select{background:rgba(255,253,246,.8);c
 
 
 /* ═══ QUIZ — Dashboard Bar + Modal ═══ */
-.quiz-dash-bar{margin:12px 0 16px;display:flex;flex-direction:column;gap:0}
-.quiz-dash-btn{
-  display:flex;align-items:center;gap:10px;width:100%;
-  padding:12px 18px;border:1px solid rgba(212,160,23,.2);border-radius:10px 10px 0 0;
-  background:linear-gradient(135deg,rgba(212,160,23,.06),rgba(139,109,56,.03));
-  cursor:pointer;font-size:.9rem;color:var(--text-primary);
-  font-family:inherit;transition:all .3s;text-align:left;
+/* ── Quiz Hero Button (beside search bar) ── */
+.quiz-hero-btn{
+  position:relative;overflow:hidden;
+  display:flex;align-items:center;gap:7px;
+  padding:0 18px;height:42px;flex-shrink:0;
+  border:none;border-radius:var(--radius-sm);cursor:pointer;
+  font-family:'Cinzel',serif;font-size:.75rem;font-weight:700;letter-spacing:1.5px;
+  color:#1a1408;
+  background:linear-gradient(135deg,#d4a017 0%,#f0c040 40%,#d4a017 80%,#f7d96e 100%);
+  background-size:200% auto;
+  box-shadow:0 2px 12px rgba(212,160,23,.35),inset 0 1px 0 rgba(255,255,255,.15);
+  transition:all .3s ease;
+  animation:quizBtnShimmer 3s ease infinite;
 }
-.quiz-dash-btn:hover{background:linear-gradient(135deg,rgba(212,160,23,.12),rgba(139,109,56,.06));border-color:rgba(212,160,23,.4)}
-.quiz-dash-btn i:first-child{color:#d4a017;font-size:1.1rem}
-.quiz-dash-btn strong{color:#d4a017;letter-spacing:.5px}
-.quiz-dash-arrow{margin-left:auto;color:#a08030;font-size:.7rem;transition:transform .2s}
-.quiz-dash-btn:hover .quiz-dash-arrow{transform:translateX(3px)}
+@keyframes quizBtnShimmer{0%,100%{background-position:0% center}50%{background-position:100% center}}
+.quiz-hero-btn:hover{
+  transform:translateY(-1px) scale(1.03);
+  box-shadow:0 4px 24px rgba(212,160,23,.5),0 0 40px rgba(212,160,23,.15);
+}
+.quiz-hero-btn i{font-size:.85rem;filter:drop-shadow(0 0 4px rgba(0,0,0,.2))}
+.quiz-hero-text{white-space:nowrap}
+.quiz-hero-sparkle{
+  position:absolute;top:0;left:-75%;width:50%;height:100%;
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,.25),transparent);
+  transform:skewX(-20deg);
+  animation:quizSparkle 4s ease-in-out infinite;
+}
+@keyframes quizSparkle{0%,100%{left:-75%}50%{left:125%}}
+
+/* ── Scoreboard bar (below search) ── */
+.quiz-scoreboard-bar{margin:6px 0 0}
 .quiz-sb-toggle{
   display:flex;align-items:center;gap:8px;width:100%;
   padding:8px 18px;border:1px solid rgba(139,109,56,.1);border-top:none;
@@ -16094,8 +16112,24 @@ body.light-theme input,body.light-theme select{background:rgba(255,253,246,.8);c
 
     <button onclick="forceRefreshAll()" title="Refresh all data from Google Sheets" style="background:var(--bg-glass);border:1px solid var(--border-glass);color:var(--gold);width:42px;height:42px;border-radius:var(--radius-sm);cursor:pointer;font-size:0.9rem;display:flex;align-items:center;justify-content:center;transition:var(--transition);flex-shrink:0" onmouseover="this.style.borderColor='rgba(212,160,23,0.4)';this.style.boxShadow='0 0 12px rgba(212,160,23,0.1)'" onmouseout="this.style.borderColor='';this.style.boxShadow=''"><i class="fas fa-sync-alt"></i></button>
 
+    <!-- Quiz Button -->
+    <button class="quiz-hero-btn" onclick="Quiz.openModal()" title="Hogwarts House Lore Quiz">
+      <span class="quiz-hero-sparkle"></span>
+      <i class="fas fa-bolt"></i>
+      <span class="quiz-hero-text">LORE QUIZ</span>
+    </button>
 
+  </div>
 
+  <!-- Scoreboard (collapsible, below search bar) -->
+  <div class="quiz-scoreboard-bar" id="quizScoreboardBar">
+    <button class="quiz-sb-toggle" onclick="Quiz.toggleScoreboard()">
+      <i class="fas fa-ranking-star"></i> <span>Quiz Scoreboard</span>
+      <i class="fas fa-chevron-down quiz-sb-chevron" id="quizSbChevron"></i>
+    </button>
+    <div class="quiz-sb-body" id="quizSbBody" style="display:none">
+      <div id="quizLbBody"><p style="color:var(--text-muted);text-align:center;padding:1rem;font-size:.85rem">Click to load scores</p></div>
+    </div>
   </div>
 
 
@@ -16178,23 +16212,6 @@ body.light-theme input,body.light-theme select{background:rgba(255,253,246,.8);c
       </div>
     </div>
 
-    <!-- Hogwarts Lore Quiz -->
-    <div class="quiz-dash-bar">
-      <button class="quiz-dash-btn" onclick="Quiz.openModal()">
-        <i class="fas fa-bolt"></i>
-        <span>How well do you know <strong>HOGWARTS HOUSE LORE?</strong></span>
-        <i class="fas fa-chevron-right quiz-dash-arrow"></i>
-      </button>
-      <div class="quiz-dash-scoreboard">
-        <button class="quiz-sb-toggle" onclick="Quiz.toggleScoreboard()">
-          <i class="fas fa-ranking-star"></i> <span>Scoreboard</span>
-          <i class="fas fa-chevron-down quiz-sb-chevron" id="quizSbChevron"></i>
-        </button>
-        <div class="quiz-sb-body" id="quizSbBody" style="display:none">
-          <div id="quizLbBody"><p style="color:var(--text-muted);text-align:center;padding:1rem;font-size:.85rem">Click to load scores</p></div>
-        </div>
-      </div>
-    </div>
     <div class="gh-row2">
 
 

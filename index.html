@@ -4939,7 +4939,7 @@ body::after {
 
 
 
-.gt-side.right { justify-content: flex-end; flex-direction: row-reverse; }
+.gt-side.right { justify-content: flex-end; flex-direction: row-reverse; text-align: right; }
 
 
 .gt-side.right .gt-side-info { text-align: right; align-items: flex-end; }
@@ -4997,7 +4997,7 @@ body::after {
 
 .gt-side-players {
   font-size: 0.6rem; color: var(--text-muted); opacity: 0.8;
-  white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 140px;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 180px;
 }
 
 .gt-score {
@@ -17356,7 +17356,7 @@ function updateStatusTicker() {
 
 
 
-        var st = ((sd[i][6]||'')+'').toLowerCase();
+        var st = ((sd[i][8]||'')+'').toLowerCase();
 
 
 
@@ -17440,7 +17440,7 @@ function updateStatusTicker() {
 
 
 
-        var ls = ((ld[j][5]||'')+'').toLowerCase();
+        var ls = ((ld[j][8]||'')+'').toLowerCase();
 
 
 
@@ -17448,7 +17448,7 @@ function updateStatusTicker() {
 
 
 
-          lastResult = { t1: ld[j][1]||'', t2: ld[j][2]||'', score: ld[j][3]||'' };
+          lastResult = { t1: ld[j][3]||'', t2: ld[j][4]||'', score: ld[j][5]||'' };
 
 
 
@@ -18738,7 +18738,7 @@ var App = {
 
 
 
-          var status = ((ld[ri][5]||'')+'').toLowerCase();
+          var status = ((ld[ri][8]||'')+'').toLowerCase();
 
 
 
@@ -18746,7 +18746,7 @@ var App = {
 
 
 
-            completed.push({ game: ld[ri][0]||'', t1: ld[ri][1]||'', t2: ld[ri][2]||'', score: ld[ri][3]||'', status: status, p1a: ld[ri][6]||'', p2a: ld[ri][8]||'' });
+            completed.push({ game: ld[ri][0]||'', t1: ld[ri][3]||'', t2: ld[ri][4]||'', score: ld[ri][5]||'', status: status, p1a: ld[ri][9]||'', p2a: ld[ri][11]||'' });
 
 
 
@@ -18927,7 +18927,7 @@ var App = {
 
 
 
-          var sStatus = ((sd[si][6]||'')+'').toLowerCase();
+          var sStatus = ((sd[si][8]||'')+'').toLowerCase();
 
 
 
@@ -18935,7 +18935,7 @@ var App = {
 
 
 
-            upcoming.push({ id: sd[si][0]||'', date: sd[si][1]||'', time: sd[si][2]||'', t1: sd[si][3]||'', t2: sd[si][4]||'', venue: sd[si][5]||'' });
+            upcoming.push({ id: sd[si][0]||'', date: sd[si][1]||'', time: sd[si][2]||'', t1: sd[si][3]||'', t2: sd[si][4]||'', venue: sd[si][7]||'' });
 
 
 

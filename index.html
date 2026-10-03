@@ -29425,29 +29425,40 @@ var Gallery = {
 
 // ======= HOGWARTS LORE QUIZ — Modal + Leaderboard =======
 var Quiz = {
-  _questions: [
-    { q: "What is the name of the magical map that shows every person's location within Hogwarts?",
-      opts: ["The Tracing Chart", "The Marauder's Map", "The Hogwarts Atlas", "The Seeker's Scroll"], ans: 1 },
-    { q: "Which spell is used to disarm an opponent?",
-      opts: ["Stupefy", "Expelliarmus", "Petrificus Totalus", "Reducto"], ans: 1 },
-    { q: "What creature guards the entrance to the Gryffindor common room?",
-      opts: ["A Sphinx", "A Dragon", "The Fat Lady", "A House Elf"], ans: 2 },
-    { q: "What is the core of Harry Potter's wand?",
-      opts: ["Dragon Heartstring", "Unicorn Hair", "Phoenix Feather", "Thestral Tail Hair"], ans: 2 },
-    { q: "Which Hogwarts house values wit, learning, and wisdom above all?",
-      opts: ["Gryffindor", "Hufflepuff", "Slytherin", "Ravenclaw"], ans: 3 },
-    { q: "What is the name of Hagrid's three-headed dog?",
-      opts: ["Fang", "Fluffy", "Norbert", "Buckbeak"], ans: 1 },
-    { q: "How many Horcruxes did Voldemort intentionally create?",
-      opts: ["5", "6", "7", "8"], ans: 1 },
-    { q: "What potion is known as 'Liquid Luck'?",
-      opts: ["Amortentia", "Polyjuice Potion", "Veritaserum", "Felix Felicis"], ans: 3 },
-    { q: "Which position does Harry play on the Gryffindor Quidditch team?",
-      opts: ["Chaser", "Beater", "Keeper", "Seeker"], ans: 3 },
-    { q: "What is the name of the wizarding prison guarded by Dementors?",
-      opts: ["Nurmengard", "Azkaban", "The Ministry Vault", "Durmstrang Dungeon"], ans: 1 }
-  ],
+  _allQuestions: [],  // Full bank fetched from Google Sheet
+  _questions: [],     // 10 shuffled questions for current round
   _current: 0, _score: 0, _timer: null, _seconds: 0, _answered: false, _selectedHouse: '',
+  _loaded: false,
+
+  _shuffle: function(arr) {
+    var a = arr.slice();
+    for (var i = a.length - 1; i > 0; i--) {
+      var j = Math.floor(Math.random() * (i + 1));
+      var t = a[i]; a[i] = a[j]; a[j] = t;
+    }
+    return a;
+  },
+
+  _fetchQuestions: function(cb) {
+    if (this._allQuestions.length > 0) { cb(); return; }
+    var self = this;
+    fetch(GAS_API_URL + '?action=getQuizQuestions')
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+      if (data && data.length) self._allQuestions = data;
+      self._loaded = true;
+      cb();
+    })
+    .catch(function(err) {
+      console.error('Quiz questions fetch error:', err);
+      cb();
+    });
+  },
+
+  _pickRound: function() {
+    var shuffled = this._shuffle(this._allQuestions);
+    this._questions = shuffled.slice(0, 10);
+  },
 
   openModal: function() {
     document.getElementById('quizModal').style.display = 'flex';
@@ -29462,11 +29473,24 @@ var Quiz = {
     document.body.style.overflow = '';
   },
   start: function() {
-    this._current = 0; this._score = 0; this._seconds = 0; this._answered = false; this._selectedHouse = '';
-    document.getElementById('quizStart').style.display = 'none';
-    document.getElementById('quizResult').style.display = 'none';
-    document.getElementById('quizPlay').style.display = 'block';
-    this._startTimer(); this._showQuestion();
+    var self = this;
+    var startEl = document.getElementById('quizStart');
+    // Show loading state on button
+    var btn = startEl ? startEl.querySelector('.quiz-jackpot-go') : null;
+    if (btn) { btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Loading questions...'; }
+    this._fetchQuestions(function() {
+      if (btn) { btn.disabled = false; btn.innerHTML = '<i class="fas fa-wand-sparkles"></i> SPIN THE QUESTION BANK'; }
+      if (!self._allQuestions.length) {
+        alert('Could not load questions. Please try again.');
+        return;
+      }
+      self._pickRound();
+      self._current = 0; self._score = 0; self._seconds = 0; self._answered = false; self._selectedHouse = '';
+      document.getElementById('quizStart').style.display = 'none';
+      document.getElementById('quizResult').style.display = 'none';
+      document.getElementById('quizPlay').style.display = 'block';
+      self._startTimer(); self._showQuestion();
+    });
   },
   restart: function() {
     document.getElementById('quizResult').style.display = 'none';

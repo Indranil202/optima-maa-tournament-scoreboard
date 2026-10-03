@@ -15090,108 +15090,138 @@ body.light-theme input,body.light-theme select{background:rgba(255,253,246,.8);c
 
 
 
-/* ======= TRIVIA / O.W.L. QUIZ ======= */
-#quiz.section{max-width:800px;margin:0 auto}
-.quiz-start-screen{text-align:center;padding:3rem 1.5rem}
-.quiz-start-icon{font-size:3.5rem;color:#d4a017;margin-bottom:1rem;text-shadow:0 0 30px rgba(212,160,23,.3)}
-.quiz-start-title{font-family:'Cinzel Decorative','Cinzel',serif;font-size:1.8rem;color:#d4a017;letter-spacing:3px;margin-bottom:.8rem;text-shadow:0 0 20px rgba(212,160,23,.15)}
-.quiz-start-desc{color:var(--text-muted);font-size:.95rem;line-height:1.6;margin-bottom:2rem}
-.quiz-start-stats{display:flex;gap:1.5rem;justify-content:center;margin-bottom:2rem;flex-wrap:wrap}
-.quiz-start-stat{display:flex;align-items:center;gap:8px;color:#a08030;font-size:.85rem;background:rgba(139,109,56,.08);padding:8px 16px;border-radius:20px;border:1px solid rgba(139,109,56,.15)}
-.quiz-start-stat i{color:#d4a017}
-.quiz-start-btn{display:inline-flex;align-items:center;gap:10px;padding:14px 36px;border:none;border-radius:8px;cursor:pointer;font-family:'Cinzel',serif;font-size:1rem;font-weight:700;letter-spacing:1px;color:#1a1408;background:linear-gradient(135deg,#d4a017,#f0c040,#d4a017);box-shadow:0 4px 20px rgba(212,160,23,.3);transition:all .3s}
-.quiz-start-btn:hover{transform:translateY(-2px);box-shadow:0 6px 30px rgba(212,160,23,.5)}
 
-.quiz-play-screen{padding:1rem 0}
-.quiz-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:1.5rem;gap:1rem}
-.quiz-progress{flex:1}
-.quiz-qnum{font-family:'Cinzel',serif;color:#d4a017;font-size:.9rem;font-weight:700;letter-spacing:1px}
-.quiz-progress-bar{height:6px;background:rgba(139,109,56,.15);border-radius:3px;margin-top:6px;overflow:hidden}
-.quiz-progress-fill{height:100%;background:linear-gradient(90deg,#d4a017,#f0c040);border-radius:3px;transition:width .4s ease}
-.quiz-timer{display:flex;align-items:center;gap:8px;font-family:'Orbitron','Courier New',monospace;font-size:1.1rem;color:#d4a017;background:rgba(139,109,56,.08);padding:8px 16px;border-radius:8px;border:1px solid rgba(139,109,56,.2);min-width:110px;justify-content:center;text-shadow:0 0 10px rgba(212,160,23,.2)}
-.quiz-timer i{font-size:.85rem}
-
-.quiz-question-card{background:rgba(139,109,56,.04);border:1px solid rgba(139,109,56,.12);border-radius:12px;padding:2rem 1.5rem;box-shadow:0 4px 30px rgba(0,0,0,.15)}
-.quiz-question{font-size:1.15rem;color:var(--text-primary);line-height:1.7;margin-bottom:1.5rem;font-weight:500;text-align:center}
-
-.quiz-options{display:flex;flex-direction:column;gap:10px}
-.quiz-option{display:flex;align-items:center;gap:12px;padding:14px 18px;border-radius:10px;cursor:pointer;background:rgba(139,109,56,.05);border:1px solid rgba(139,109,56,.12);color:var(--text-primary);font-size:.95rem;transition:all .25s;position:relative}
-.quiz-option:hover:not(.disabled){background:rgba(139,109,56,.12);border-color:rgba(201,162,39,.3);transform:translateX(4px)}
-.quiz-option .opt-letter{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Cinzel',serif;font-weight:700;font-size:.85rem;background:rgba(139,109,56,.1);color:#a08030;border:1px solid rgba(139,109,56,.2);flex-shrink:0;transition:all .25s}
-.quiz-option:hover:not(.disabled) .opt-letter{background:rgba(201,162,39,.2);color:#d4a017;border-color:#d4a017}
-
+/* ═══ QUIZ — Dashboard Bar + Modal ═══ */
+.quiz-dash-bar{margin:12px 0 16px;display:flex;flex-direction:column;gap:0}
+.quiz-dash-btn{
+  display:flex;align-items:center;gap:10px;width:100%;
+  padding:12px 18px;border:1px solid rgba(212,160,23,.2);border-radius:10px 10px 0 0;
+  background:linear-gradient(135deg,rgba(212,160,23,.06),rgba(139,109,56,.03));
+  cursor:pointer;font-size:.9rem;color:var(--text-primary);
+  font-family:inherit;transition:all .3s;text-align:left;
+}
+.quiz-dash-btn:hover{background:linear-gradient(135deg,rgba(212,160,23,.12),rgba(139,109,56,.06));border-color:rgba(212,160,23,.4)}
+.quiz-dash-btn i:first-child{color:#d4a017;font-size:1.1rem}
+.quiz-dash-btn strong{color:#d4a017;letter-spacing:.5px}
+.quiz-dash-arrow{margin-left:auto;color:#a08030;font-size:.7rem;transition:transform .2s}
+.quiz-dash-btn:hover .quiz-dash-arrow{transform:translateX(3px)}
+.quiz-sb-toggle{
+  display:flex;align-items:center;gap:8px;width:100%;
+  padding:8px 18px;border:1px solid rgba(139,109,56,.1);border-top:none;
+  border-radius:0 0 10px 10px;background:rgba(139,109,56,.03);
+  cursor:pointer;font-size:.78rem;color:#a08030;font-family:'Cinzel',serif;
+  letter-spacing:.5px;transition:all .2s;
+}
+.quiz-sb-toggle:hover{background:rgba(139,109,56,.06);color:#d4a017}
+.quiz-sb-chevron{margin-left:auto;font-size:.6rem;transition:transform .3s}
+.quiz-sb-chevron.open{transform:rotate(180deg)}
+.quiz-sb-body{border:1px solid rgba(139,109,56,.1);border-top:none;border-radius:0 0 10px 10px;padding:8px 12px;max-height:300px;overflow-y:auto;background:rgba(10,8,4,.3)}
+.quiz-modal-overlay{
+  position:fixed;inset:0;z-index:99999;
+  background:rgba(5,3,1,.85);backdrop-filter:blur(4px);
+  display:flex;align-items:center;justify-content:center;
+  animation:quizFadeIn .25s ease;
+}
+@keyframes quizFadeIn{0%{opacity:0}100%{opacity:1}}
+.quiz-modal{
+  position:relative;width:92vw;max-width:520px;max-height:90vh;overflow-y:auto;
+  background:linear-gradient(160deg,#1a1408 0%,#0d0b06 60%,#1a1408 100%);
+  border:1px solid rgba(212,160,23,.2);border-radius:16px;
+  padding:2rem 1.5rem;
+  box-shadow:0 0 80px rgba(212,160,23,.08),0 20px 60px rgba(0,0,0,.5);
+}
+.quiz-modal-close{
+  position:absolute;top:12px;right:14px;background:none;border:none;
+  color:#a08030;font-size:1.1rem;cursor:pointer;z-index:5;
+  width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+  transition:all .2s;
+}
+.quiz-modal-close:hover{color:#d4a017;background:rgba(139,109,56,.1)}
+.quiz-start-screen{text-align:center}
+.quiz-jackpot-icon{font-size:3rem;color:#d4a017;margin-bottom:.5rem;animation:jackpotSpin 3s ease-in-out infinite}
+@keyframes jackpotSpin{0%,100%{transform:rotate(0)}25%{transform:rotate(15deg)}75%{transform:rotate(-15deg)}}
+.quiz-jackpot-title{font-family:'Cinzel Decorative','Cinzel',serif;font-size:1.4rem;color:#d4a017;letter-spacing:3px;margin-bottom:.3rem;text-shadow:0 0 20px rgba(212,160,23,.15)}
+.quiz-jackpot-subtitle{color:var(--text-muted);font-size:.9rem;margin-bottom:1.2rem}
+.quiz-jackpot-stats{display:flex;gap:1rem;justify-content:center;margin-bottom:1.5rem}
+.quiz-jackpot-stats span{display:flex;align-items:center;gap:6px;color:#a08030;font-size:.8rem;background:rgba(139,109,56,.08);padding:6px 14px;border-radius:20px;border:1px solid rgba(139,109,56,.12)}
+.quiz-jackpot-stats i{color:#d4a017;font-size:.75rem}
+.quiz-jackpot-go{display:inline-flex;align-items:center;gap:10px;padding:13px 30px;border:none;border-radius:8px;cursor:pointer;font-family:'Cinzel',serif;font-size:.95rem;font-weight:700;letter-spacing:1px;color:#1a1408;background:linear-gradient(135deg,#d4a017,#f0c040,#d4a017);box-shadow:0 4px 20px rgba(212,160,23,.3);transition:all .3s;background-size:200% auto}
+.quiz-jackpot-go:hover{background-position:right center;transform:translateY(-2px);box-shadow:0 6px 30px rgba(212,160,23,.5)}
+.quiz-play-screen{text-align:center}
+.quiz-play-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+.quiz-qnum{font-family:'Cinzel',serif;color:#d4a017;font-size:.85rem;font-weight:700;letter-spacing:1px}
+.quiz-timer{display:flex;align-items:center;gap:6px;font-family:'Orbitron',monospace;font-size:1rem;color:#d4a017;text-shadow:0 0 8px rgba(212,160,23,.2)}
+.quiz-timer i{font-size:.8rem}
+.quiz-progress-bar{height:5px;background:rgba(139,109,56,.12);border-radius:3px;margin-bottom:1.2rem;overflow:hidden}
+.quiz-progress-fill{height:100%;background:linear-gradient(90deg,#d4a017,#f0c040);border-radius:3px;transition:width .4s}
+.quiz-jackpot-reel{background:rgba(139,109,56,.04);border:1px solid rgba(139,109,56,.1);border-radius:10px;padding:1.2rem 1rem;margin-bottom:1rem;position:relative;overflow:hidden}
+.quiz-jackpot-reel::before,.quiz-jackpot-reel::after{content:'';position:absolute;left:0;right:0;height:20px;z-index:2;pointer-events:none}
+.quiz-jackpot-reel::before{top:0;background:linear-gradient(180deg,rgba(26,20,8,.8),transparent)}
+.quiz-jackpot-reel::after{bottom:0;background:linear-gradient(0deg,rgba(26,20,8,.8),transparent)}
+.quiz-question{font-size:1.05rem;color:var(--text-primary);line-height:1.7;font-weight:500;padding:8px 0}
+.quiz-options{display:flex;flex-direction:column;gap:8px}
+.quiz-option{display:flex;align-items:center;gap:12px;padding:12px 16px;border-radius:10px;cursor:pointer;background:rgba(139,109,56,.04);border:1px solid rgba(139,109,56,.1);color:var(--text-primary);font-size:.9rem;text-align:left;transition:all .25s}
+.quiz-option:hover:not(.disabled){background:rgba(139,109,56,.1);border-color:rgba(201,162,39,.3);transform:translateX(3px)}
+.quiz-option .opt-letter{width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Cinzel',serif;font-weight:700;font-size:.8rem;background:rgba(139,109,56,.08);color:#a08030;border:1px solid rgba(139,109,56,.15);flex-shrink:0;transition:all .25s}
+.quiz-option:hover:not(.disabled) .opt-letter{background:rgba(201,162,39,.15);color:#d4a017;border-color:#d4a017}
 .quiz-option.correct{background:rgba(78,205,196,.12)!important;border-color:rgba(78,205,196,.5)!important;color:#4ecdc4!important}
 .quiz-option.correct .opt-letter{background:#4ecdc4!important;color:#0a1628!important;border-color:#4ecdc4!important}
 .quiz-option.wrong{background:rgba(231,76,60,.12)!important;border-color:rgba(231,76,60,.5)!important;color:#e74c3c!important}
 .quiz-option.wrong .opt-letter{background:#e74c3c!important;color:#fff!important;border-color:#e74c3c!important}
-.quiz-option.disabled{pointer-events:none;opacity:.6}
+.quiz-option.disabled{pointer-events:none;opacity:.5}
 .quiz-option.correct.disabled,.quiz-option.wrong.disabled{opacity:1}
-.quiz-feedback{text-align:center;margin-top:1rem;font-size:.9rem;color:var(--text-muted);min-height:24px}
-
-.quiz-result-screen{text-align:center;padding:2.5rem 1.5rem}
-.quiz-result-icon{font-size:3rem;margin-bottom:1rem}
-.quiz-result-title{font-family:'Cinzel Decorative','Cinzel',serif;font-size:1.5rem;color:#d4a017;letter-spacing:2px;margin-bottom:1.5rem}
-.quiz-result-score{display:flex;justify-content:center;margin-bottom:1.5rem}
-.quiz-score-circle{width:140px;height:140px;border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center;border:3px solid;box-shadow:0 0 40px rgba(0,0,0,.3)}
-.quiz-score-num{font-family:'Orbitron',monospace;font-size:2.8rem;font-weight:900;line-height:1}
-.quiz-score-den{font-size:.85rem;color:var(--text-muted);margin-top:2px}
-.quiz-result-stats{display:flex;gap:1.5rem;justify-content:center;margin-bottom:1.5rem;flex-wrap:wrap}
-.quiz-result-stat{display:flex;align-items:center;gap:8px;font-size:.9rem;color:var(--text-secondary);background:rgba(139,109,56,.05);padding:8px 16px;border-radius:8px;border:1px solid rgba(139,109,56,.1)}
-.quiz-result-grade{font-family:'Cinzel',serif;font-size:1rem;color:#a08030;letter-spacing:2px;padding:10px 24px;display:inline-block;border:1px solid rgba(139,109,56,.2);border-radius:8px;background:rgba(139,109,56,.05)}
-
-@media(max-width:600px){
-  .quiz-start-title{font-size:1.3rem;letter-spacing:1px}
-  .quiz-question-card{padding:1.2rem 1rem}
-  .quiz-question{font-size:1rem}
-  .quiz-option{padding:11px 14px;font-size:.88rem}
-  .quiz-start-stats{flex-direction:column;align-items:center;gap:8px}
-  .quiz-score-circle{width:110px;height:110px}
-  .quiz-score-num{font-size:2.2rem}
-  .quiz-result-stats{flex-direction:column;align-items:center}
-  .quiz-header{flex-direction:column;align-items:stretch}
-}
-
-
-/* ── Quiz Name Prompt ── */
-.quiz-name-prompt{text-align:center;padding:2rem 1rem;animation:prophetUnfold .4s ease-out}
-.quiz-name-card{max-width:400px;margin:0 auto;background:rgba(139,109,56,.04);border:1px solid rgba(139,109,56,.15);border-radius:12px;padding:2rem 1.5rem}
-.quiz-name-icon{font-size:2rem;color:#d4a017;margin-bottom:.8rem}
-.quiz-name-title{font-family:'Cinzel',serif;color:#d4a017;font-size:1.1rem;letter-spacing:1px;margin-bottom:.5rem}
-.quiz-name-desc{color:var(--text-muted);font-size:.85rem;margin-bottom:1.2rem}
-.quiz-name-input-wrap{display:flex;gap:8px;margin-bottom:.8rem}
-.quiz-name-input{flex:1;padding:10px 14px;border-radius:8px;border:1px solid rgba(139,109,56,.2);background:rgba(10,8,4,.5);color:var(--text-primary);font-size:.95rem;font-family:inherit;outline:none;transition:border-color .2s}
+.quiz-feedback{min-height:22px;margin-top:8px;font-size:.8rem;color:var(--text-muted)}
+.quiz-result-screen{text-align:center}
+.quiz-result-icon{font-size:2.5rem;margin-bottom:.5rem}
+.quiz-result-title{font-family:'Cinzel Decorative','Cinzel',serif;font-size:1.3rem;color:#d4a017;letter-spacing:2px;margin-bottom:1rem}
+.quiz-result-score{display:flex;justify-content:center;margin-bottom:1rem}
+.quiz-score-circle{width:120px;height:120px;border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center;border:3px solid;box-shadow:0 0 30px rgba(0,0,0,.3)}
+.quiz-score-num{font-family:'Orbitron',monospace;font-size:2.4rem;font-weight:900;line-height:1}
+.quiz-score-den{font-size:.8rem;color:var(--text-muted);margin-top:2px}
+.quiz-result-stats{display:flex;gap:1rem;justify-content:center;margin-bottom:1rem;flex-wrap:wrap}
+.quiz-result-stat{display:flex;align-items:center;gap:6px;font-size:.8rem;color:var(--text-secondary);background:rgba(139,109,56,.04);padding:6px 12px;border-radius:8px;border:1px solid rgba(139,109,56,.08)}
+.quiz-result-grade{font-family:'Cinzel',serif;font-size:.9rem;color:#a08030;letter-spacing:1px;padding:8px 18px;display:inline-block;border:1px solid rgba(139,109,56,.15);border-radius:8px;background:rgba(139,109,56,.04);margin-bottom:1rem}
+.quiz-name-section{margin-top:1rem;padding-top:1rem;border-top:1px solid rgba(139,109,56,.1)}
+.quiz-name-label{color:var(--text-muted);font-size:.8rem;margin-bottom:6px}
+.quiz-name-input{width:100%;padding:10px 14px;border-radius:8px;box-sizing:border-box;border:1px solid rgba(139,109,56,.2);background:rgba(10,8,4,.5);color:var(--text-primary);font-size:.9rem;font-family:inherit;outline:none;transition:border-color .2s}
 .quiz-name-input:focus{border-color:#d4a017}
-.quiz-name-input::placeholder{color:rgba(160,128,48,.4)}
-.quiz-name-submit{padding:10px 16px;border:none;border-radius:8px;cursor:pointer;background:linear-gradient(135deg,#d4a017,#f0c040);color:#1a1408;font-size:1rem;transition:all .2s}
-.quiz-name-submit:hover{transform:scale(1.05);box-shadow:0 0 15px rgba(212,160,23,.3)}
-.quiz-name-skip{background:none;border:none;color:var(--text-muted);font-size:.8rem;cursor:pointer;padding:4px 8px;transition:color .2s}
+.quiz-name-input::placeholder{color:rgba(160,128,48,.3)}
+.quiz-house-options{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:6px}
+.quiz-house-opt{display:flex;flex-direction:column;align-items:center;gap:4px;padding:8px 4px;border-radius:8px;cursor:pointer;border:2px solid rgba(139,109,56,.1);background:rgba(139,109,56,.03);transition:all .2s}
+.quiz-house-opt img{width:32px;height:32px;object-fit:contain}
+.quiz-house-opt span{font-size:.6rem;color:var(--text-muted);letter-spacing:.5px;font-family:'Cinzel',serif}
+.quiz-house-opt:hover{border-color:rgba(201,162,39,.3);background:rgba(139,109,56,.06)}
+.quiz-house-opt.selected{border-color:#d4a017;background:rgba(212,160,23,.1);box-shadow:0 0 12px rgba(212,160,23,.15)}
+.quiz-house-opt.selected span{color:#d4a017;font-weight:700}
+.quiz-name-skip{background:none;border:none;color:var(--text-muted);font-size:.75rem;cursor:pointer;margin-top:6px;transition:color .2s}
 .quiz-name-skip:hover{color:#d4a017}
-
-/* ── Quiz Leaderboard ── */
-.quiz-leaderboard{margin-top:2rem;border-top:1px solid rgba(139,109,56,.1);padding-top:1.5rem}
-.quiz-lb-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem}
-.quiz-lb-header h3{font-family:'Cinzel',serif;color:#d4a017;font-size:1rem;letter-spacing:1px;display:flex;align-items:center;gap:8px}
-.quiz-lb-header h3 i{font-size:.9rem}
-.quiz-lb-refresh{background:none;border:1px solid rgba(139,109,56,.15);color:#a08030;width:30px;height:30px;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s;font-size:.75rem}
-.quiz-lb-refresh:hover{border-color:#d4a017;color:#d4a017;transform:rotate(180deg)}
-
-.quiz-lb-table{width:100%;border-collapse:collapse;font-size:.85rem}
-.quiz-lb-table th{text-align:left;padding:8px 10px;color:#a08030;font-family:'Cinzel',serif;font-size:.75rem;letter-spacing:1px;border-bottom:1px solid rgba(139,109,56,.15);text-transform:uppercase}
-.quiz-lb-table td{padding:8px 10px;border-bottom:1px solid rgba(139,109,56,.06);color:var(--text-secondary)}
+.quiz-disclaimer{font-size:.7rem;color:var(--text-muted);margin-top:1rem;padding:6px 10px;border:1px dashed rgba(139,109,56,.15);border-radius:6px;background:rgba(139,109,56,.02)}
+.quiz-disclaimer i{color:#f39c12;margin-right:4px}
+.quiz-disclaimer strong{color:#e74c3c}
+.quiz-retry-btn{display:inline-flex;align-items:center;gap:8px;margin-top:.8rem;padding:8px 20px;border:1px solid rgba(139,109,56,.2);border-radius:6px;background:rgba(139,109,56,.05);color:#a08030;cursor:pointer;font-size:.8rem;font-family:'Cinzel',serif;transition:all .2s}
+.quiz-retry-btn:hover{border-color:#d4a017;color:#d4a017;background:rgba(139,109,56,.1)}
+.quiz-lb-table{width:100%;border-collapse:collapse;font-size:.8rem}
+.quiz-lb-table th{text-align:left;padding:6px 8px;color:#a08030;font-family:'Cinzel',serif;font-size:.7rem;letter-spacing:.5px;border-bottom:1px solid rgba(139,109,56,.12);text-transform:uppercase}
+.quiz-lb-table td{padding:6px 8px;border-bottom:1px solid rgba(139,109,56,.05);color:var(--text-secondary)}
 .quiz-lb-table tr:hover td{background:rgba(139,109,56,.04)}
-.quiz-lb-rank{font-family:'Orbitron',monospace;font-weight:700;font-size:.8rem;width:36px}
-.quiz-lb-rank.gold{color:#d4a017}
-.quiz-lb-rank.silver{color:#a8a8a8}
-.quiz-lb-rank.bronze{color:#cd7f32}
+.quiz-lb-rank{font-family:'Orbitron',monospace;font-weight:700;font-size:.75rem;width:30px}
+.quiz-lb-rank.gold{color:#d4a017}.quiz-lb-rank.silver{color:#a8a8a8}.quiz-lb-rank.bronze{color:#cd7f32}
 .quiz-lb-name{font-weight:600;color:var(--text-primary)}
+.quiz-lb-house-logo{width:18px;height:18px;object-fit:contain;border-radius:50%;vertical-align:middle;margin-right:4px}
 .quiz-lb-score{font-family:'Orbitron',monospace;font-weight:700}
-.quiz-lb-score.perfect{color:#4ecdc4}
-.quiz-lb-score.great{color:#d4a017}
-.quiz-lb-score.good{color:#f39c12}
-.quiz-lb-time{font-family:'Orbitron',monospace;font-size:.8rem;color:var(--text-muted)}
-.quiz-lb-date{font-size:.75rem;color:var(--text-muted)}
-.quiz-lb-medal{font-size:1rem;margin-right:2px}
-.quiz-lb-empty{text-align:center;padding:1.5rem;color:var(--text-muted);font-style:italic}
+.quiz-lb-score.perfect{color:#4ecdc4}.quiz-lb-score.great{color:#d4a017}.quiz-lb-score.good{color:#f39c12}
+.quiz-lb-time{font-family:'Orbitron',monospace;font-size:.75rem;color:var(--text-muted)}
+.quiz-lb-empty{text-align:center;padding:1rem;color:var(--text-muted);font-style:italic;font-size:.8rem}
+@media(max-width:480px){
+  .quiz-modal{padding:1.2rem 1rem;max-width:95vw}
+  .quiz-jackpot-title{font-size:1.1rem;letter-spacing:1px}
+  .quiz-question{font-size:.92rem}
+  .quiz-option{padding:10px 12px;font-size:.83rem}
+  .quiz-house-options{grid-template-columns:repeat(2,1fr)}
+  .quiz-score-circle{width:100px;height:100px}
+  .quiz-score-num{font-size:2rem}
+  .quiz-result-stats{flex-direction:column;align-items:center}
+}
 
 /* ── Responsive newspaper ── */
 @media (max-width:768px){
@@ -15960,7 +15990,6 @@ body.light-theme input,body.light-theme select{background:rgba(255,253,246,.8);c
 
     <button class="nav-btn" data-tab="playerProfiles"><i class="fas fa-hat-wizard"></i> Wizard Registry</button>
     <button class="nav-btn" data-tab="gallery"><i class="fas fa-wand-sparkles"></i> Pensieve</button>
-    <button class="nav-btn" data-tab="quiz"><i class="fas fa-scroll"></i> Trivia</button>
 
     <button class="notif-btn" id="notifBell" onclick="OwlPost.showHistory()" title="Owl Post"><i class="fas fa-bell"></i><span class="notif-badge" id="notifCount" style="display:none">0</span></button>
 
@@ -16148,7 +16177,25 @@ body.light-theme input,body.light-theme select{background:rgba(255,253,246,.8);c
         <div class="cd-unit"><span class="cd-num" id="cdSecs">00</span><div class="cd-unit-lbl">Sec</div></div>
       </div>
     </div>
-<div class="gh-row2">
+
+    <!-- Hogwarts Lore Quiz -->
+    <div class="quiz-dash-bar">
+      <button class="quiz-dash-btn" onclick="Quiz.openModal()">
+        <i class="fas fa-bolt"></i>
+        <span>How well do you know <strong>HOGWARTS HOUSE LORE?</strong></span>
+        <i class="fas fa-chevron-right quiz-dash-arrow"></i>
+      </button>
+      <div class="quiz-dash-scoreboard">
+        <button class="quiz-sb-toggle" onclick="Quiz.toggleScoreboard()">
+          <i class="fas fa-ranking-star"></i> <span>Scoreboard</span>
+          <i class="fas fa-chevron-down quiz-sb-chevron" id="quizSbChevron"></i>
+        </button>
+        <div class="quiz-sb-body" id="quizSbBody" style="display:none">
+          <div id="quizLbBody"><p style="color:var(--text-muted);text-align:center;padding:1rem;font-size:.85rem">Click to load scores</p></div>
+        </div>
+      </div>
+    </div>
+    <div class="gh-row2">
 
 
 
@@ -16935,29 +16982,6 @@ body.light-theme input,body.light-theme select{background:rgba(255,253,246,.8);c
   </div>
 
 
-  <!-- ======= TRIVIA CHALLENGE ======= -->
-  <div id="quiz" class="section">
-    <div class="tab-guide" id="guide-quiz"><i class="fas fa-scroll"></i><span>Test your wizarding knowledge! 10 enchanted questions await. Green means correct, red means you have been jinxed! Your final score and time are revealed at the end.</span><span class="tab-guide-dismiss" onclick="this.parentElement.style.display='none';localStorage.setItem('guide-quiz','1')" title="Dismiss">&#x2716;</span></div>
-
-    <div id="quizContainer">
-      <div id="quizStart" class="quiz-start-screen">
-        <div class="quiz-start-icon"><i class="fas fa-hat-wizard"></i></div>
-        <h2 class="quiz-start-title">The O.W.L. Examination</h2>
-        <p class="quiz-start-desc">Ordinary Wizarding Level &mdash; 10 questions to test your magical knowledge.<br>Answer wisely, the clock is watching!</p>
-        <div class="quiz-start-stats">
-          <div class="quiz-start-stat"><i class="fas fa-scroll"></i><span>10 Questions</span></div>
-          <div class="quiz-start-stat"><i class="fas fa-list-check"></i><span>4 Options Each</span></div>
-          <div class="quiz-start-stat"><i class="fas fa-hourglass-half"></i><span>Timed</span></div>
-        </div>
-        <button class="quiz-start-btn" onclick="Quiz.start()"><i class="fas fa-wand-sparkles"></i> Begin Examination</button>
-      </div>
-
-      <div id="quizPlay" class="quiz-play-screen" style="display:none">
-        <div class="quiz-header">
-          <div class="quiz-progress">
-            <span class="quiz-qnum" id="quizQNum">1 / 10</span>
-            <div class="quiz-progress-bar"><div class="quiz-progress-fill" id="quizProgressFill" style="width:10%"></div></div>
-          </div>
           <div class="quiz-timer" id="quizTimer"><i class="fas fa-hourglass-half"></i> <span id="quizTime">00:00</span></div>
         </div>
         <div class="quiz-question-card">
@@ -17022,6 +17046,62 @@ body.light-theme input,body.light-theme select{background:rgba(255,253,246,.8);c
 
 
 
+
+
+<!-- QUIZ MODAL -->
+<div class="quiz-modal-overlay" id="quizModal" style="display:none" onclick="if(event.target===this)Quiz.closeModal()">
+  <div class="quiz-modal">
+    <button class="quiz-modal-close" onclick="Quiz.closeModal()"><i class="fas fa-xmark"></i></button>
+    <div id="quizStart" class="quiz-start-screen">
+      <div class="quiz-jackpot-icon"><i class="fas fa-dice"></i></div>
+      <h2 class="quiz-jackpot-title">HOGWARTS HOUSE LORE</h2>
+      <p class="quiz-jackpot-subtitle">Test your wizarding knowledge!</p>
+      <div class="quiz-jackpot-stats">
+        <span><i class="fas fa-scroll"></i> 10 Questions</span>
+        <span><i class="fas fa-hourglass-half"></i> Timed</span>
+      </div>
+      <button class="quiz-jackpot-go" onclick="Quiz.start()"><i class="fas fa-wand-sparkles"></i> SPIN THE QUESTION BANK</button>
+    </div>
+    <div id="quizPlay" class="quiz-play-screen" style="display:none">
+      <div class="quiz-play-top">
+        <span class="quiz-qnum" id="quizQNum">1 / 10</span>
+        <div class="quiz-timer"><i class="fas fa-stopwatch"></i> <span id="quizTime">00:00</span></div>
+      </div>
+      <div class="quiz-progress-bar"><div class="quiz-progress-fill" id="quizProgressFill" style="width:10%"></div></div>
+      <div class="quiz-jackpot-reel"><div class="quiz-question" id="quizQuestion"></div></div>
+      <div class="quiz-options" id="quizOptions"></div>
+      <div class="quiz-feedback" id="quizFeedback"></div>
+    </div>
+    <div id="quizResult" class="quiz-result-screen" style="display:none">
+      <div class="quiz-result-icon" id="quizResultIcon"><i class="fas fa-trophy"></i></div>
+      <h2 class="quiz-result-title" id="quizResultTitle">Complete!</h2>
+      <div class="quiz-result-score"><div class="quiz-score-circle" id="quizScoreCircle"><span class="quiz-score-num" id="quizScoreNum">0</span><span class="quiz-score-den">/ 10</span></div></div>
+      <div class="quiz-result-stats">
+        <div class="quiz-result-stat"><i class="fas fa-check-circle" style="color:#4ecdc4"></i> Correct: <strong id="quizCorrectCount">0</strong></div>
+        <div class="quiz-result-stat"><i class="fas fa-times-circle" style="color:#e74c3c"></i> Wrong: <strong id="quizWrongCount">0</strong></div>
+        <div class="quiz-result-stat"><i class="fas fa-stopwatch" style="color:#d4a017"></i> Time: <strong id="quizFinalTime">00:00</strong></div>
+      </div>
+      <div class="quiz-result-grade" id="quizResultGrade"></div>
+      <div class="quiz-name-section" id="quizNameSection">
+        <p class="quiz-name-label">Inscribe your name for the leaderboard:</p>
+        <input type="text" id="quizNameInput" class="quiz-name-input" placeholder="Your name..." maxlength="30" onkeydown="if(event.key==='Enter')document.querySelector('.quiz-house-opt').focus()">
+        <div class="quiz-house-pick">
+          <p class="quiz-name-label" style="margin-top:10px">Choose your House:</p>
+          <div class="quiz-house-options">
+            <label class="quiz-house-opt" data-house="Gryffindor" onclick="Quiz.pickHouse(this)"><img src="assets/House%20logo/Gryffindor.png" alt="G"><span>Gryffindor</span></label>
+            <label class="quiz-house-opt" data-house="Slytherin" onclick="Quiz.pickHouse(this)"><img src="assets/House%20logo/Slytherin.png" alt="S"><span>Slytherin</span></label>
+            <label class="quiz-house-opt" data-house="Ravenclaw" onclick="Quiz.pickHouse(this)"><img src="assets/House%20logo/Ravenclaw.png" alt="R"><span>Ravenclaw</span></label>
+            <label class="quiz-house-opt" data-house="Hufflepuff" onclick="Quiz.pickHouse(this)"><img src="assets/House%20logo/Hufflepuff.png" alt="H"><span>Hufflepuff</span></label>
+          </div>
+        </div>
+        <button class="quiz-jackpot-go" onclick="Quiz.submitScore()" style="margin-top:12px;font-size:.85rem;padding:10px 24px"><i class="fas fa-paper-plane"></i> Submit Score</button>
+        <button class="quiz-name-skip" onclick="Quiz.closeModal()">Skip</button>
+      </div>
+      <p class="quiz-disclaimer"><i class="fas fa-info-circle"></i> These scores will <strong>NOT</strong> be added in the Hogwarts Tournament.</p>
+      <button class="quiz-retry-btn" onclick="Quiz.restart()"><i class="fas fa-redo"></i> Try Again</button>
+    </div>
+  </div>
+</div>
 
 <!-- Toast container -->
 
@@ -18358,7 +18438,7 @@ var App = {
 
     // Hide dismissed tab guides
 
-    ['dashboard','matchCentre','rankings','games','playerProfiles','houses','gallery','quiz'].forEach(function(t) {
+    ['dashboard','matchCentre','rankings','games','playerProfiles','houses','gallery'].forEach(function(t) {
 
       if (localStorage.getItem('guide-' + t)) { var g = document.getElementById('guide-' + t); if (g) g.style.display = 'none'; }
 
@@ -29325,7 +29405,8 @@ var Gallery = {
 
 
 
-// ======= TRIVIA / O.W.L. QUIZ ENGINE =======
+
+// ======= HOGWARTS LORE QUIZ — Modal + Leaderboard =======
 var Quiz = {
   _questions: [
     { q: "What is the name of the magical map that shows every person's location within Hogwarts?",
@@ -29349,55 +29430,61 @@ var Quiz = {
     { q: "What is the name of the wizarding prison guarded by Dementors?",
       opts: ["Nurmengard", "Azkaban", "The Ministry Vault", "Durmstrang Dungeon"], ans: 1 }
   ],
-  _current: 0, _score: 0, _timer: null, _seconds: 0, _answered: false,
+  _current: 0, _score: 0, _timer: null, _seconds: 0, _answered: false, _selectedHouse: '',
 
+  openModal: function() {
+    document.getElementById('quizModal').style.display = 'flex';
+    document.getElementById('quizStart').style.display = 'block';
+    document.getElementById('quizPlay').style.display = 'none';
+    document.getElementById('quizResult').style.display = 'none';
+    document.body.style.overflow = 'hidden';
+  },
+  closeModal: function() {
+    if (this._timer) clearInterval(this._timer);
+    document.getElementById('quizModal').style.display = 'none';
+    document.body.style.overflow = '';
+  },
   start: function() {
-    this._current = 0; this._score = 0; this._seconds = 0; this._answered = false;
+    this._current = 0; this._score = 0; this._seconds = 0; this._answered = false; this._selectedHouse = '';
     document.getElementById('quizStart').style.display = 'none';
     document.getElementById('quizResult').style.display = 'none';
     document.getElementById('quizPlay').style.display = 'block';
-    this._startTimer();
-    this._showQuestion();
+    this._startTimer(); this._showQuestion();
   },
-
   restart: function() {
     document.getElementById('quizResult').style.display = 'none';
-    document.getElementById('quizNamePrompt').style.display = 'none';
     document.getElementById('quizStart').style.display = 'block';
   },
-
   _startTimer: function() {
-    var self = this;
-    this._seconds = 0; this._updateTimerDisplay();
+    var self = this; this._seconds = 0; this._tick();
     if (this._timer) clearInterval(this._timer);
-    this._timer = setInterval(function() { self._seconds++; self._updateTimerDisplay(); }, 1000);
+    this._timer = setInterval(function(){ self._seconds++; self._tick(); }, 1000);
   },
-
-  _updateTimerDisplay: function() {
-    var m = Math.floor(this._seconds / 60);
-    var s = this._seconds % 60;
+  _tick: function() {
+    var m = Math.floor(this._seconds/60), s = this._seconds%60;
     var el = document.getElementById('quizTime');
-    if (el) el.textContent = (m<10?'0':'') + m + ':' + (s<10?'0':'') + s;
+    if (el) el.textContent = (m<10?'0':'')+m+':'+(s<10?'0':'')+s;
   },
-
+  _ts: function() {
+    var m = Math.floor(this._seconds/60), s = this._seconds%60;
+    return (m<10?'0':'')+m+':'+(s<10?'0':'')+s;
+  },
   _showQuestion: function() {
-    var q = this._questions[this._current];
-    if (!q) return;
+    var q = this._questions[this._current]; if (!q) return;
     this._answered = false;
-    var letters = ['A','B','C','D'];
-    document.getElementById('quizQNum').textContent = (this._current+1) + ' / ' + this._questions.length;
-    document.getElementById('quizProgressFill').style.width = ((this._current+1)/this._questions.length*100) + '%';
+    var L = ['A','B','C','D'];
+    document.getElementById('quizQNum').textContent = (this._current+1)+' / '+this._questions.length;
+    document.getElementById('quizProgressFill').style.width = ((this._current+1)/this._questions.length*100)+'%';
     document.getElementById('quizQuestion').textContent = q.q;
     document.getElementById('quizFeedback').textContent = '';
     var h = '';
     for (var i=0; i<q.opts.length; i++) {
       h += '<div class="quiz-option" onclick="Quiz.answer('+i+')">';
-      h += '<span class="opt-letter">'+letters[i]+'</span>';
+      h += '<span class="opt-letter">'+L[i]+'</span>';
       h += '<span>'+q.opts[i]+'</span></div>';
     }
     document.getElementById('quizOptions').innerHTML = h;
   },
-
   answer: function(idx) {
     if (this._answered) return;
     this._answered = true;
@@ -29405,168 +29492,122 @@ var Quiz = {
     var opts = document.querySelectorAll('#quizOptions .quiz-option');
     var fb = document.getElementById('quizFeedback');
     opts.forEach(function(o){ o.classList.add('disabled'); });
-    opts[q.ans].classList.remove('disabled');
-    opts[q.ans].classList.add('correct');
     if (idx === q.ans) {
       this._score++;
-      fb.innerHTML = '<span style="color:#4ecdc4"><i class="fas fa-check-circle"></i> Brilliant! Correct!</span>';
+      opts[idx].classList.remove('disabled'); opts[idx].classList.add('correct');
+      fb.innerHTML = '<span style="color:#4ecdc4"><i class="fas fa-check-circle"></i> Correct!</span>';
     } else {
-      opts[idx].classList.remove('disabled');
-      opts[idx].classList.add('wrong');
-      fb.innerHTML = '<span style="color:#e74c3c"><i class="fas fa-times-circle"></i> Jinxed! Answer: <strong>'+q.opts[q.ans]+'</strong></span>';
+      opts[idx].classList.remove('disabled'); opts[idx].classList.add('wrong');
+      fb.innerHTML = '<span style="color:#e74c3c"><i class="fas fa-times-circle"></i> Wrong!</span>';
     }
     var self = this;
     setTimeout(function(){
       self._current++;
-      if (self._current < self._questions.length) { self._showQuestion(); }
-      else { self._showResult(); }
-    }, 1500);
+      if (self._current < self._questions.length) self._showQuestion();
+      else self._showResult();
+    }, 1200);
   },
-
   _showResult: function() {
     clearInterval(this._timer);
     document.getElementById('quizPlay').style.display = 'none';
     document.getElementById('quizResult').style.display = 'block';
-    var total = this._questions.length;
-    var correct = this._score;
-    var wrong = total - correct;
+    var total = this._questions.length, correct = this._score, wrong = total-correct;
     var pct = Math.round(correct/total*100);
     document.getElementById('quizScoreNum').textContent = correct;
     document.getElementById('quizCorrectCount').textContent = correct;
     document.getElementById('quizWrongCount').textContent = wrong;
-    var m = Math.floor(this._seconds/60); var s = this._seconds%60;
-    document.getElementById('quizFinalTime').textContent = (m<10?'0':'')+m+':'+(s<10?'0':'')+s;
+    document.getElementById('quizFinalTime').textContent = this._ts();
     var circle = document.getElementById('quizScoreCircle');
     var icon = document.getElementById('quizResultIcon');
     var title = document.getElementById('quizResultTitle');
     var grade = document.getElementById('quizResultGrade');
+    var ns = document.getElementById('quizNameSection');
+    if (ns) ns.style.display = '';
+    document.getElementById('quizNameInput').value = '';
+    document.querySelectorAll('.quiz-house-opt').forEach(function(o){o.classList.remove('selected');});
+    this._selectedHouse = '';
     if (pct >= 80) {
-      circle.style.borderColor = '#4ecdc4';
-      circle.querySelector('.quiz-score-num').style.color = '#4ecdc4';
-      icon.innerHTML = '<i class="fas fa-trophy" style="color:#d4a017;text-shadow:0 0 30px rgba(212,160,23,.4)"></i>';
-      title.textContent = 'Outstanding!';
-      grade.textContent = 'O \u2014 Outstanding (O.W.L. Grade)';
+      circle.style.borderColor='#4ecdc4'; circle.querySelector('.quiz-score-num').style.color='#4ecdc4';
+      icon.innerHTML='<i class="fas fa-trophy" style="color:#d4a017;text-shadow:0 0 30px rgba(212,160,23,.4)"></i>';
+      title.textContent='Outstanding!'; grade.textContent='O \u2014 Outstanding';
     } else if (pct >= 60) {
-      circle.style.borderColor = '#d4a017';
-      circle.querySelector('.quiz-score-num').style.color = '#d4a017';
-      icon.innerHTML = '<i class="fas fa-star" style="color:#d4a017"></i>';
-      title.textContent = 'Exceeds Expectations!';
-      grade.textContent = 'E \u2014 Exceeds Expectations';
+      circle.style.borderColor='#d4a017'; circle.querySelector('.quiz-score-num').style.color='#d4a017';
+      icon.innerHTML='<i class="fas fa-star" style="color:#d4a017"></i>';
+      title.textContent='Exceeds Expectations!'; grade.textContent='E \u2014 Exceeds Expectations';
     } else if (pct >= 40) {
-      circle.style.borderColor = '#f39c12';
-      circle.querySelector('.quiz-score-num').style.color = '#f39c12';
-      icon.innerHTML = '<i class="fas fa-wand-sparkles" style="color:#f39c12"></i>';
-      title.textContent = 'Acceptable';
-      grade.textContent = 'A \u2014 Acceptable';
+      circle.style.borderColor='#f39c12'; circle.querySelector('.quiz-score-num').style.color='#f39c12';
+      icon.innerHTML='<i class="fas fa-wand-sparkles" style="color:#f39c12"></i>';
+      title.textContent='Acceptable'; grade.textContent='A \u2014 Acceptable';
     } else {
-      circle.style.borderColor = '#e74c3c';
-      circle.querySelector('.quiz-score-num').style.color = '#e74c3c';
-      icon.innerHTML = '<i class="fas fa-skull" style="color:#e74c3c"></i>';
-      title.textContent = 'More Practice Needed!';
-      grade.textContent = 'T \u2014 Troll';
+      circle.style.borderColor='#e74c3c'; circle.querySelector('.quiz-score-num').style.color='#e74c3c';
+      icon.innerHTML='<i class="fas fa-skull" style="color:#e74c3c"></i>';
+      title.textContent='More Practice Needed!'; grade.textContent='T \u2014 Troll';
     }
-    // Show name prompt after a short delay
-    var self = this;
-    setTimeout(function() {
-      document.getElementById('quizNamePrompt').style.display = 'block';
-      var inp = document.getElementById('quizNameInput');
-      if (inp) { inp.value = ''; inp.focus(); }
-    }, 800);
   },
-
-  _getTimeStr: function() {
-    var m = Math.floor(this._seconds/60); var s = this._seconds%60;
-    return (m<10?'0':'')+m+':'+(s<10?'0':'')+s;
+  pickHouse: function(el) {
+    document.querySelectorAll('.quiz-house-opt').forEach(function(o){o.classList.remove('selected');});
+    el.classList.add('selected');
+    this._selectedHouse = el.getAttribute('data-house') || '';
   },
-
   submitScore: function() {
-    var inp = document.getElementById('quizNameInput');
-    var name = (inp ? inp.value : '').trim();
-    if (!name) { inp.focus(); return; }
-    var btn = document.querySelector('.quiz-name-submit');
-    if (btn) { btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>'; }
-
-    var payload = {
-      action: 'submitQuizScore',
-      name: name,
-      score: this._score,
-      total: this._questions.length,
-      time: this._getTimeStr()
-    };
-
+    var name = (document.getElementById('quizNameInput').value||'').trim();
+    if (!name) { document.getElementById('quizNameInput').focus(); return; }
+    var house = this._selectedHouse;
+    var btn = document.querySelector('#quizResult .quiz-jackpot-go');
+    if (btn) { btn.disabled=true; btn.innerHTML='<i class="fas fa-spinner fa-spin"></i> Saving...'; }
+    var payload = { action:'submitQuizScore', name:name, score:this._score,
+      total:this._questions.length, time:this._ts(), house:house };
     var self = this;
-    fetch(GAS_API_URL, {
-      method: 'POST',
-      headers: { 'Content-Type': 'text/plain' },
-      body: JSON.stringify(payload)
-    })
-    .then(function(r) { return r.json(); })
-    .then(function(d) {
-      document.getElementById('quizNamePrompt').style.display = 'none';
+    fetch(GAS_API_URL, { method:'POST', headers:{'Content-Type':'text/plain'}, body:JSON.stringify(payload) })
+    .then(function(r){return r.json();})
+    .then(function(){
+      if (btn) { btn.disabled=false; btn.innerHTML='<i class="fas fa-check"></i> Saved!'; }
+      document.getElementById('quizNameSection').style.display='none';
       self.loadLeaderboard();
     })
-    .catch(function(err) {
-      console.error('Quiz score submit error:', err);
-      document.getElementById('quizNamePrompt').style.display = 'none';
-      self.loadLeaderboard();
+    .catch(function(err){
+      console.error('Quiz submit error:',err);
+      if (btn) { btn.disabled=false; btn.innerHTML='<i class="fas fa-paper-plane"></i> Submit'; }
     });
   },
-
-  skipName: function() {
-    document.getElementById('quizNamePrompt').style.display = 'none';
+  toggleScoreboard: function() {
+    var body = document.getElementById('quizSbBody');
+    var chev = document.getElementById('quizSbChevron');
+    if (!body) return;
+    var isOpen = body.style.display !== 'none';
+    body.style.display = isOpen ? 'none' : 'block';
+    if (chev) chev.classList.toggle('open', !isOpen);
+    if (!isOpen) this.loadLeaderboard();
   },
-
   loadLeaderboard: function() {
     var body = document.getElementById('quizLbBody');
     if (!body) return;
-    body.innerHTML = '<p style="color:var(--text-muted);text-align:center;padding:1rem"><i class="fas fa-spinner fa-spin"></i> Loading leaderboard...</p>';
-
-    fetch(GAS_API_URL + '?action=getQuizScores')
-    .then(function(r) { return r.json(); })
-    .then(function(scores) {
-      if (!scores || scores.length === 0) {
-        body.innerHTML = '<p class="quiz-lb-empty">No scores yet. Be the first wizard to attempt the O.W.L.!</p>';
-        return;
+    body.innerHTML = '<p style="color:var(--text-muted);text-align:center;padding:.5rem;font-size:.8rem"><i class="fas fa-spinner fa-spin"></i> Loading...</p>';
+    var HL = {'Gryffindor':'assets/House%20logo/Gryffindor.png','Slytherin':'assets/House%20logo/Slytherin.png','Ravenclaw':'assets/House%20logo/Ravenclaw.png','Hufflepuff':'assets/House%20logo/Hufflepuff.png'};
+    fetch(GAS_API_URL+'?action=getQuizScores')
+    .then(function(r){return r.json();})
+    .then(function(scores){
+      if (!scores||!scores.length){body.innerHTML='<p class="quiz-lb-empty">No scores yet. Be the first!</p>';return;}
+      var medals=['\u{1F947}','\u{1F948}','\u{1F949}'];
+      var h='<table class="quiz-lb-table"><thead><tr><th>#</th><th>Wizard</th><th>Score</th><th>Time</th></tr></thead><tbody>';
+      var n=Math.min(scores.length,20);
+      for(var i=0;i<n;i++){
+        var s=scores[i];
+        var rc=i===0?'gold':i===1?'silver':i===2?'bronze':'';
+        var m=i<3?'<span class="quiz-lb-medal">'+medals[i]+'</span>':'';
+        var sc=s.score===s.total?'perfect':s.score>=8?'great':s.score>=6?'good':'';
+        var logo=s.house&&HL[s.house]?'<img class="quiz-lb-house-logo" src="'+HL[s.house]+'" title="'+s.house+'"> ':'';
+        h+='<tr><td class="quiz-lb-rank '+rc+'">'+m+(i+1)+'</td>';
+        h+='<td class="quiz-lb-name">'+logo+s.name+'</td>';
+        h+='<td class="quiz-lb-score '+sc+'">'+s.score+'/'+s.total+'</td>';
+        h+='<td class="quiz-lb-time">'+s.time+'</td></tr>';
       }
-      var medals = ['\u{1F947}','\u{1F948}','\u{1F949}'];
-      var html = '<table class="quiz-lb-table"><thead><tr><th>#</th><th>Wizard</th><th>Score</th><th>Time</th><th>Date</th></tr></thead><tbody>';
-      var shown = Math.min(scores.length, 20);
-      for (var i = 0; i < shown; i++) {
-        var s = scores[i];
-        var rankCls = i===0?'gold':i===1?'silver':i===2?'bronze':'';
-        var medal = i < 3 ? '<span class="quiz-lb-medal">' + medals[i] + '</span>' : '';
-        var scoreCls = s.score === s.total ? 'perfect' : s.score >= 8 ? 'great' : s.score >= 6 ? 'good' : '';
-        html += '<tr>';
-        html += '<td class="quiz-lb-rank ' + rankCls + '">' + medal + (i+1) + '</td>';
-        html += '<td class="quiz-lb-name">' + s.name + '</td>';
-        html += '<td class="quiz-lb-score ' + scoreCls + '">' + s.score + '/' + s.total + '</td>';
-        html += '<td class="quiz-lb-time">' + s.time + '</td>';
-        html += '<td class="quiz-lb-date">' + s.date + '</td>';
-        html += '</tr>';
-      }
-      html += '</tbody></table>';
-      if (scores.length > 20) html += '<p style="color:var(--text-muted);text-align:center;font-size:.75rem;margin-top:.5rem">Showing top 20 of ' + scores.length + ' wizards</p>';
-      body.innerHTML = html;
+      h+='</tbody></table>';
+      body.innerHTML=h;
     })
-    .catch(function(err) {
-      console.error('Leaderboard load error:', err);
-      body.innerHTML = '<p class="quiz-lb-empty">Could not load leaderboard. Try refreshing.</p>';
-    });
+    .catch(function(){body.innerHTML='<p class="quiz-lb-empty">Could not load scores.</p>';});
   }
 };
-
-// Load leaderboard when quiz tab is shown
-(function() {
-  var origSwitch = window._quizTabWired;
-  if (!origSwitch) {
-    document.addEventListener('click', function(e) {
-      var btn = e.target.closest('[data-tab="quiz"]');
-      if (btn) setTimeout(function() { Quiz.loadLeaderboard(); }, 100);
-    });
-    window._quizTabWired = true;
-  }
-})();
-
 
 </script>
 

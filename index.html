@@ -15151,6 +15151,48 @@ body.light-theme input,body.light-theme select{background:rgba(255,253,246,.8);c
   .quiz-header{flex-direction:column;align-items:stretch}
 }
 
+
+/* ── Quiz Name Prompt ── */
+.quiz-name-prompt{text-align:center;padding:2rem 1rem;animation:prophetUnfold .4s ease-out}
+.quiz-name-card{max-width:400px;margin:0 auto;background:rgba(139,109,56,.04);border:1px solid rgba(139,109,56,.15);border-radius:12px;padding:2rem 1.5rem}
+.quiz-name-icon{font-size:2rem;color:#d4a017;margin-bottom:.8rem}
+.quiz-name-title{font-family:'Cinzel',serif;color:#d4a017;font-size:1.1rem;letter-spacing:1px;margin-bottom:.5rem}
+.quiz-name-desc{color:var(--text-muted);font-size:.85rem;margin-bottom:1.2rem}
+.quiz-name-input-wrap{display:flex;gap:8px;margin-bottom:.8rem}
+.quiz-name-input{flex:1;padding:10px 14px;border-radius:8px;border:1px solid rgba(139,109,56,.2);background:rgba(10,8,4,.5);color:var(--text-primary);font-size:.95rem;font-family:inherit;outline:none;transition:border-color .2s}
+.quiz-name-input:focus{border-color:#d4a017}
+.quiz-name-input::placeholder{color:rgba(160,128,48,.4)}
+.quiz-name-submit{padding:10px 16px;border:none;border-radius:8px;cursor:pointer;background:linear-gradient(135deg,#d4a017,#f0c040);color:#1a1408;font-size:1rem;transition:all .2s}
+.quiz-name-submit:hover{transform:scale(1.05);box-shadow:0 0 15px rgba(212,160,23,.3)}
+.quiz-name-skip{background:none;border:none;color:var(--text-muted);font-size:.8rem;cursor:pointer;padding:4px 8px;transition:color .2s}
+.quiz-name-skip:hover{color:#d4a017}
+
+/* ── Quiz Leaderboard ── */
+.quiz-leaderboard{margin-top:2rem;border-top:1px solid rgba(139,109,56,.1);padding-top:1.5rem}
+.quiz-lb-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem}
+.quiz-lb-header h3{font-family:'Cinzel',serif;color:#d4a017;font-size:1rem;letter-spacing:1px;display:flex;align-items:center;gap:8px}
+.quiz-lb-header h3 i{font-size:.9rem}
+.quiz-lb-refresh{background:none;border:1px solid rgba(139,109,56,.15);color:#a08030;width:30px;height:30px;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s;font-size:.75rem}
+.quiz-lb-refresh:hover{border-color:#d4a017;color:#d4a017;transform:rotate(180deg)}
+
+.quiz-lb-table{width:100%;border-collapse:collapse;font-size:.85rem}
+.quiz-lb-table th{text-align:left;padding:8px 10px;color:#a08030;font-family:'Cinzel',serif;font-size:.75rem;letter-spacing:1px;border-bottom:1px solid rgba(139,109,56,.15);text-transform:uppercase}
+.quiz-lb-table td{padding:8px 10px;border-bottom:1px solid rgba(139,109,56,.06);color:var(--text-secondary)}
+.quiz-lb-table tr:hover td{background:rgba(139,109,56,.04)}
+.quiz-lb-rank{font-family:'Orbitron',monospace;font-weight:700;font-size:.8rem;width:36px}
+.quiz-lb-rank.gold{color:#d4a017}
+.quiz-lb-rank.silver{color:#a8a8a8}
+.quiz-lb-rank.bronze{color:#cd7f32}
+.quiz-lb-name{font-weight:600;color:var(--text-primary)}
+.quiz-lb-score{font-family:'Orbitron',monospace;font-weight:700}
+.quiz-lb-score.perfect{color:#4ecdc4}
+.quiz-lb-score.great{color:#d4a017}
+.quiz-lb-score.good{color:#f39c12}
+.quiz-lb-time{font-family:'Orbitron',monospace;font-size:.8rem;color:var(--text-muted)}
+.quiz-lb-date{font-size:.75rem;color:var(--text-muted)}
+.quiz-lb-medal{font-size:1rem;margin-right:2px}
+.quiz-lb-empty{text-align:center;padding:1.5rem;color:var(--text-muted);font-style:italic}
+
 /* ── Responsive newspaper ── */
 @media (max-width:768px){
   #gallery.section{padding:1.5rem 1rem;border-radius:10px}
@@ -16941,6 +16983,30 @@ body.light-theme input,body.light-theme select{background:rgba(255,253,246,.8);c
         </div>
         <div class="quiz-result-grade" id="quizResultGrade"></div>
         <button class="quiz-start-btn" onclick="Quiz.restart()" style="margin-top:1.5rem"><i class="fas fa-redo"></i> Try Again</button>
+      </div>
+      <!-- Name Input (shown after good score) -->
+      <div id="quizNamePrompt" class="quiz-name-prompt" style="display:none">
+        <div class="quiz-name-card">
+          <div class="quiz-name-icon"><i class="fas fa-feather-pointed"></i></div>
+          <h3 class="quiz-name-title">Inscribe Your Name, Wizard!</h3>
+          <p class="quiz-name-desc">Your score will be etched into the enchanted leaderboard.</p>
+          <div class="quiz-name-input-wrap">
+            <input type="text" id="quizNameInput" class="quiz-name-input" placeholder="Enter your name..." maxlength="30" onkeydown="if(event.key==='Enter')Quiz.submitScore()">
+            <button class="quiz-name-submit" onclick="Quiz.submitScore()"><i class="fas fa-paper-plane"></i></button>
+          </div>
+          <button class="quiz-name-skip" onclick="Quiz.skipName()">Skip &rarr;</button>
+        </div>
+      </div>
+
+      <!-- Leaderboard -->
+      <div id="quizLeaderboard" class="quiz-leaderboard">
+        <div class="quiz-lb-header">
+          <h3><i class="fas fa-ranking-star"></i> Enchanted Leaderboard</h3>
+          <button class="quiz-lb-refresh" onclick="Quiz.loadLeaderboard()" title="Refresh"><i class="fas fa-sync-alt"></i></button>
+        </div>
+        <div id="quizLbBody" class="quiz-lb-body">
+          <p style="color:var(--text-muted);text-align:center;padding:1rem">Loading scores...</p>
+        </div>
       </div>
     </div>
   </div>
@@ -29296,6 +29362,7 @@ var Quiz = {
 
   restart: function() {
     document.getElementById('quizResult').style.display = 'none';
+    document.getElementById('quizNamePrompt').style.display = 'none';
     document.getElementById('quizStart').style.display = 'block';
   },
 
@@ -29398,8 +29465,108 @@ var Quiz = {
       title.textContent = 'More Practice Needed!';
       grade.textContent = 'T \u2014 Troll';
     }
+    // Show name prompt after a short delay
+    var self = this;
+    setTimeout(function() {
+      document.getElementById('quizNamePrompt').style.display = 'block';
+      var inp = document.getElementById('quizNameInput');
+      if (inp) { inp.value = ''; inp.focus(); }
+    }, 800);
+  },
+
+  _getTimeStr: function() {
+    var m = Math.floor(this._seconds/60); var s = this._seconds%60;
+    return (m<10?'0':'')+m+':'+(s<10?'0':'')+s;
+  },
+
+  submitScore: function() {
+    var inp = document.getElementById('quizNameInput');
+    var name = (inp ? inp.value : '').trim();
+    if (!name) { inp.focus(); return; }
+    var btn = document.querySelector('.quiz-name-submit');
+    if (btn) { btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>'; }
+
+    var payload = {
+      action: 'submitQuizScore',
+      name: name,
+      score: this._score,
+      total: this._questions.length,
+      time: this._getTimeStr()
+    };
+
+    var self = this;
+    fetch(GAS_API_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain' },
+      body: JSON.stringify(payload)
+    })
+    .then(function(r) { return r.json(); })
+    .then(function(d) {
+      document.getElementById('quizNamePrompt').style.display = 'none';
+      self.loadLeaderboard();
+    })
+    .catch(function(err) {
+      console.error('Quiz score submit error:', err);
+      document.getElementById('quizNamePrompt').style.display = 'none';
+      self.loadLeaderboard();
+    });
+  },
+
+  skipName: function() {
+    document.getElementById('quizNamePrompt').style.display = 'none';
+  },
+
+  loadLeaderboard: function() {
+    var body = document.getElementById('quizLbBody');
+    if (!body) return;
+    body.innerHTML = '<p style="color:var(--text-muted);text-align:center;padding:1rem"><i class="fas fa-spinner fa-spin"></i> Loading leaderboard...</p>';
+
+    fetch(GAS_API_URL + '?action=getQuizScores')
+    .then(function(r) { return r.json(); })
+    .then(function(scores) {
+      if (!scores || scores.length === 0) {
+        body.innerHTML = '<p class="quiz-lb-empty">No scores yet. Be the first wizard to attempt the O.W.L.!</p>';
+        return;
+      }
+      var medals = ['\u{1F947}','\u{1F948}','\u{1F949}'];
+      var html = '<table class="quiz-lb-table"><thead><tr><th>#</th><th>Wizard</th><th>Score</th><th>Time</th><th>Date</th></tr></thead><tbody>';
+      var shown = Math.min(scores.length, 20);
+      for (var i = 0; i < shown; i++) {
+        var s = scores[i];
+        var rankCls = i===0?'gold':i===1?'silver':i===2?'bronze':'';
+        var medal = i < 3 ? '<span class="quiz-lb-medal">' + medals[i] + '</span>' : '';
+        var scoreCls = s.score === s.total ? 'perfect' : s.score >= 8 ? 'great' : s.score >= 6 ? 'good' : '';
+        html += '<tr>';
+        html += '<td class="quiz-lb-rank ' + rankCls + '">' + medal + (i+1) + '</td>';
+        html += '<td class="quiz-lb-name">' + s.name + '</td>';
+        html += '<td class="quiz-lb-score ' + scoreCls + '">' + s.score + '/' + s.total + '</td>';
+        html += '<td class="quiz-lb-time">' + s.time + '</td>';
+        html += '<td class="quiz-lb-date">' + s.date + '</td>';
+        html += '</tr>';
+      }
+      html += '</tbody></table>';
+      if (scores.length > 20) html += '<p style="color:var(--text-muted);text-align:center;font-size:.75rem;margin-top:.5rem">Showing top 20 of ' + scores.length + ' wizards</p>';
+      body.innerHTML = html;
+    })
+    .catch(function(err) {
+      console.error('Leaderboard load error:', err);
+      body.innerHTML = '<p class="quiz-lb-empty">Could not load leaderboard. Try refreshing.</p>';
+    });
   }
 };
+
+// Load leaderboard when quiz tab is shown
+(function() {
+  var origSwitch = window._quizTabWired;
+  if (!origSwitch) {
+    document.addEventListener('click', function(e) {
+      var btn = e.target.closest('[data-tab="quiz"]');
+      if (btn) setTimeout(function() { Quiz.loadLeaderboard(); }, 100);
+    });
+    window._quizTabWired = true;
+  }
+})();
+
 
 </script>
 

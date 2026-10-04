@@ -28730,15 +28730,47 @@ var Bracket = {
   },
   _render: function(g) {
     var m=g.matches;
-    // Rounds: QF=1-4, SF=5-6, 3rd=7, Final=8
-    var rounds=[
-      {label:'Quarter Finals',nums:[1,2,3,4]},
-      {label:'Semi Finals',nums:[5,6]},
-      {label:'3rd Place & Final',nums:[7,8]}
-    ];
+    var allNums=Object.keys(m).map(Number).sort(function(a,b){return a-b;});
+    if(!allNums.length){
+      document.getElementById('bracketTree').innerHTML='<div style="padding:20px;color:#888;text-align:center">No matches found for this game.</div>';
+      return;
+    }
+
+    // Build rounds dynamically from actual match numbers
+    // Standard bracket: 1-4=QF, 5-6=SF, 7=3rd, 8=Final
+    // But adapt if matches don't fit — group all existing numbers into rounds
+    var rounds=[];
+    var maxNum=Math.max.apply(null,allNums);
+
+    if(maxNum<=8){
+      // Standard 8-match bracket — only show rounds that have at least 1 match
+      var qf=[],sf=[],third=[],fin=[];
+      allNums.forEach(function(n){
+        if(n<=4) qf.push(n);
+        else if(n<=6) sf.push(n);
+        else if(n===7) third.push(n);
+        else if(n===8) fin.push(n);
+      });
+      if(qf.length) rounds.push({label:'Quarter Finals',nums:qf});
+      if(sf.length) rounds.push({label:'Semi Finals',nums:sf});
+      // Combine 3rd+Final if both exist
+      var lastRound=third.concat(fin);
+      if(lastRound.length) rounds.push({label:third.length&&fin.length?'3rd Place & Final':fin.length?'Final':'3rd Place',nums:lastRound});
+    } else {
+      // More than 8 matches — auto-group into rounds of decreasing size
+      // Round of 16 (1-8), QF (9-12), SF (13-14), 3rd+Final (15-16)
+      // Or just show all in groups of 4
+      var chunk=4;
+      for(var i=0;i<allNums.length;i+=chunk){
+        var slice=allNums.slice(i,i+chunk);
+        var rLabel='Round '+(Math.floor(i/chunk)+1);
+        if(i===0&&allNums.length>8) rLabel='Round of '+(chunk*2>allNums.length?allNums.length:chunk*2);
+        rounds.push({label:rLabel,nums:slice});
+      }
+    }
+
     var tree=document.getElementById('bracketTree');
     var html='';
-    var self=this;
     rounds.forEach(function(round,ri){
       html+='<div class="bk-round">';
       html+='<div class="bk-round-lbl">'+round.label+'</div>';
@@ -28766,7 +28798,6 @@ var Bracket = {
         html+='</div></div>';
       });
       html+='</div></div>';
-      // Connector lines between rounds
       if(ri<rounds.length-1){
         var linesCount=Math.ceil(round.nums.length/2);
         html+='<div class="bk-conn">';

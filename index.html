@@ -15846,6 +15846,44 @@ window.addEventListener('unhandledrejection', function(e) {
 @keyframes spotPulse{0%{opacity:.5}100%{opacity:1}}
 .curtain-done{display:none!important}
 
+/* ── Narrator Controls (fixed bottom-right) ── */
+.narrator-controls{
+  position:fixed;bottom:20px;right:20px;z-index:99990;
+  display:flex;align-items:center;gap:8px;
+  animation:narratorFadeIn 1s ease-out 5s both;
+}
+@keyframes narratorFadeIn{0%{opacity:0;transform:translateY(10px)}100%{opacity:1;transform:translateY(0)}}
+.narrator-btn{
+  width:42px;height:42px;border-radius:50%;border:1px solid rgba(212,160,23,.35);
+  background:linear-gradient(135deg,rgba(20,12,4,.9),rgba(35,22,8,.9));
+  color:#d4a017;font-size:.9rem;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  box-shadow:0 4px 20px rgba(0,0,0,.4),0 0 15px rgba(212,160,23,.08);
+  backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);
+  transition:all .25s;
+}
+.narrator-btn:hover{border-color:#d4a017;box-shadow:0 4px 25px rgba(0,0,0,.5),0 0 20px rgba(212,160,23,.15);transform:scale(1.08)}
+.narrator-speaking{
+  background:rgba(20,12,4,.85);border:1px solid rgba(212,160,23,.3);
+  border-radius:20px;padding:6px 12px;
+  backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);
+}
+.narrator-wave{display:flex;align-items:center;gap:3px;height:20px}
+.narrator-wave span{
+  width:3px;border-radius:2px;background:#d4a017;
+  animation:narratorWave 1s ease-in-out infinite;
+}
+.narrator-wave span:nth-child(1){height:8px;animation-delay:0s}
+.narrator-wave span:nth-child(2){height:14px;animation-delay:.15s}
+.narrator-wave span:nth-child(3){height:10px;animation-delay:.3s}
+.narrator-wave span:nth-child(4){height:16px;animation-delay:.45s}
+@keyframes narratorWave{0%,100%{transform:scaleY(.4)}50%{transform:scaleY(1)}}
+@media(max-width:600px){
+  .narrator-controls{bottom:12px;right:12px;gap:6px}
+  .narrator-btn{width:36px;height:36px;font-size:.8rem}
+}
+
+
 /* ── Dumbledore Narration Panel ── */
 #dumbledoreOverlay{position:fixed;top:0;left:0;width:100%;height:100%;z-index:99998;display:flex;align-items:flex-end;justify-content:center;padding:24px;transition:opacity .5s}
 .dumb-backdrop{position:absolute;top:0;left:0;width:100%;height:100%;background:rgba(5,3,1,.5);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px)}
@@ -30132,102 +30170,149 @@ document.addEventListener('click', function(e) {
 setTimeout(function() {
   var c = document.getElementById('curtainOverlay');
   if (c) c.classList.add('curtain-done');
-  // Start Dumbledore welcome narration after curtain opens
-  setTimeout(function() { dumbledoreNarration(); }, 400);
+  // Narration handled by TabNarrator after init
 }, 4800);
 
-function dumbledoreNarration() {
-  var lines = [
-    "Welcome... dear witches and wizards... to the grand halls of OPTIMA!",
-    "I am delighted to see so many eager faces, ready for the tournament.",
-    "Allow me to guide you through these enchanted chambers.",
-    "\u2728 The Great Hall \u2014 your gateway. Here you shall find the tournament at a glance\u2026 upcoming duels, recent victories, and the reigning house leader.",
-    "\u{1f6e1} Houses \u2014 behold the four noble houses and their brave members, standing united.",
-    "\u2694\ufe0f Match Centre \u2014 every battle revealed. Live scores, completed duels, and encounters yet to come.",
-    "\u{1f3c6} House Cup \u2014 the grand standings. Points, rankings, and the glory of each house.",
-    "\u{1f3ae} Tournament Arena \u2014 every game awaits. From Chess to Cricket, Carrom to PUBG.",
-    "\u{1f9d9} Wizard Registry \u2014 profiles of every competitor. Search any wizard, discover their feats.",
-    "\u{1f52e} The Pensieve \u2014 a treasure trove of memories. Photographs and videos from every magical moment.",
-    "Now then... let the tournament... BEGIN!"
-  ];
 
-  // Create overlay
-  var overlay = document.createElement('div');
-  overlay.id = 'dumbledoreOverlay';
-  overlay.innerHTML =
-    '<div class="dumb-backdrop"></div>' +
-    '<div class="dumb-panel">' +
-      '<div class="dumb-portrait"><img src="assets/characters/dumbledore.svg" alt="Dumbledore"><div class="dumb-glow"></div></div>' +
-      '<div class="dumb-speech-box">' +
-        '<div class="dumb-speaker">Professor Dumbledore</div>' +
-        '<div class="dumb-line" id="dumbLine"></div>' +
-        '<div class="dumb-dots" id="dumbDots"><span>.</span><span>.</span><span>.</span></div>' +
-      '</div>' +
-      '<div class="dumb-controls">' +
-        '<button class="dumb-next" id="dumbNext" onclick="dumbNext()"><i class="fas fa-chevron-right"></i> Next</button>' +
-        '<button class="dumb-skip-all" onclick="dumbSkipAll()"><i class="fas fa-forward"></i> Skip All</button>' +
-      '</div>' +
-      '<div class="dumb-progress"><div class="dumb-progress-fill" id="dumbProgress"></div></div>' +
-    '</div>';
-  document.body.appendChild(overlay);
+</script>
+<script>
+// ═══ Tab Narration System + Background Music ═══
+var TabNarrator = {
+  audioMap: {
+    'dashboard': 'assets/audio/great-hall.mp3',
+    'houses': 'assets/audio/houses.mp3',
+    'matchCentre': 'assets/audio/match-centre.mp3',
+    'rankings': 'assets/audio/house-cup.mp3',
+    'games': 'assets/audio/tournament-arena.mp3',
+    'playerProfiles': 'assets/audio/wizard-registry.mp3',
+    'gallery': 'assets/audio/pensieve.mp3'
+  },
+  _narration: null,
+  _bgMusic: null,
+  _muted: false,
+  _bgVolume: 0.15,
+  _bgDuckVolume: 0.04,
+  _played: {},  // track which tabs have auto-played
 
-  var currentLine = 0;
-  var typing = false;
-  var typeTimer = null;
+  init: function() {
+    var self = this;
+    // Create background music (loop)
+    this._bgMusic = new Audio('assets/audio/bg-music.mp3');
+    this._bgMusic.loop = true;
+    this._bgMusic.volume = this._bgVolume;
 
-  function showLine(idx) {
-    if (idx >= lines.length) { dumbSkipAll(); return; }
-    currentLine = idx;
-    var el = document.getElementById('dumbLine');
-    var dots = document.getElementById('dumbDots');
-    var prog = document.getElementById('dumbProgress');
-    if (!el) return;
-    el.textContent = '';
-    if (dots) dots.style.display = 'flex';
-    typing = true;
+    // Create narration audio
+    this._narration = new Audio();
+    this._narration.volume = 1.0;
 
-    // Typewriter effect
-    var text = lines[idx];
-    var charIdx = 0;
-    if (dots) setTimeout(function(){ dots.style.display = 'none'; }, 400);
+    // When narration starts, duck bg music
+    this._narration.addEventListener('play', function() {
+      if (self._bgMusic) self._bgMusic.volume = self._bgDuckVolume;
+      self._updateSpeakerIcon(true);
+    });
 
-    typeTimer = setInterval(function() {
-      if (charIdx < text.length) {
-        el.textContent += text.charAt(charIdx);
-        charIdx++;
-      } else {
-        clearInterval(typeTimer);
-        typing = false;
+    // When narration ends, restore bg music
+    this._narration.addEventListener('ended', function() {
+      if (self._bgMusic && !self._muted) self._bgMusic.volume = self._bgVolume;
+      self._updateSpeakerIcon(false);
+    });
+    this._narration.addEventListener('pause', function() {
+      if (self._bgMusic && !self._muted) self._bgMusic.volume = self._bgVolume;
+      self._updateSpeakerIcon(false);
+    });
+
+    // Add speaker button to nav area
+    this._addSpeakerUI();
+
+    // Start bg music on first user interaction (browser autoplay policy)
+    var startBg = function() {
+      if (self._bgMusic.paused && !self._muted) {
+        self._bgMusic.play().catch(function(){});
       }
-    }, 35);
+      document.removeEventListener('click', startBg);
+      document.removeEventListener('touchstart', startBg);
+    };
+    document.addEventListener('click', startBg);
+    document.addEventListener('touchstart', startBg);
+  },
 
-    if (prog) prog.style.width = ((idx + 1) / lines.length * 100) + '%';
+  playForTab: function(tab, force) {
+    if (this._muted) return;
+    var src = this.audioMap[tab];
+    if (!src) return;
+
+    // Auto-play only once per tab per session (unless forced by replay button)
+    if (!force && this._played[tab]) return;
+    this._played[tab] = true;
+
+    // Stop any current narration
+    if (this._narration && !this._narration.paused) {
+      this._narration.pause();
+      this._narration.currentTime = 0;
+    }
+
+    this._narration.src = src;
+    this._narration.play().catch(function(e) { console.warn('Narration play blocked:', e); });
+
+    // Start bg music if not playing
+    if (this._bgMusic && this._bgMusic.paused && !this._muted) {
+      this._bgMusic.play().catch(function(){});
+    }
+  },
+
+  replay: function() {
+    var tab = (typeof App !== 'undefined' && App.currentTab) ? App.currentTab : 'dashboard';
+    this.playForTab(tab, true);
+  },
+
+  toggleMute: function() {
+    this._muted = !this._muted;
+    var btn = document.getElementById('narratorMuteBtn');
+    if (this._muted) {
+      if (this._narration && !this._narration.paused) { this._narration.pause(); this._narration.currentTime = 0; }
+      if (this._bgMusic) { this._bgMusic.pause(); }
+      if (btn) btn.innerHTML = '<i class="fas fa-volume-xmark"></i>';
+      if (btn) btn.title = 'Unmute Narrator';
+    } else {
+      if (this._bgMusic) { this._bgMusic.play().catch(function(){}); }
+      if (btn) btn.innerHTML = '<i class="fas fa-volume-high"></i>';
+      if (btn) btn.title = 'Mute Narrator';
+    }
+  },
+
+  _updateSpeakerIcon: function(speaking) {
+    var indicator = document.getElementById('narratorSpeaking');
+    if (indicator) indicator.style.display = speaking ? 'block' : 'none';
+  },
+
+  _addSpeakerUI: function() {
+    var container = document.createElement('div');
+    container.className = 'narrator-controls';
+    container.innerHTML =
+      '<div class="narrator-speaking" id="narratorSpeaking" style="display:none"><div class="narrator-wave"><span></span><span></span><span></span><span></span></div></div>' +
+      '<button class="narrator-btn" id="narratorReplayBtn" onclick="TabNarrator.replay()" title="Replay tab narration"><i class="fas fa-rotate-right"></i></button>' +
+      '<button class="narrator-btn" id="narratorMuteBtn" onclick="TabNarrator.toggleMute()" title="Mute Narrator"><i class="fas fa-volume-high"></i></button>';
+    document.body.appendChild(container);
   }
+};
 
-  window.dumbNext = function() {
-    if (typing) {
-      // Fast-forward current line
-      clearInterval(typeTimer);
-      var el = document.getElementById('dumbLine');
-      if (el) el.textContent = lines[currentLine];
-      typing = false;
-      return;
-    }
-    showLine(currentLine + 1);
+// Hook into tab switching
+(function() {
+  var origSwitch = App.switchTab;
+  if (!origSwitch) return;
+  App.switchTab = function(tab) {
+    origSwitch.call(this, tab);
+    TabNarrator.playForTab(tab);
   };
+})();
 
-  window.dumbSkipAll = function() {
-    clearInterval(typeTimer);
-    var ov = document.getElementById('dumbledoreOverlay');
-    if (ov) {
-      ov.style.opacity = '0';
-      setTimeout(function() { if (ov.parentNode) ov.remove(); }, 500);
-    }
-  };
+// Initialize after page load
+TabNarrator.init();
 
-  // Start first line
-  setTimeout(function() { showLine(0); }, 300);
-}
+// Play Great Hall narration after curtain opens (first visit)
+setTimeout(function() {
+  TabNarrator.playForTab('dashboard');
+}, 5500);
 </script>
 </body>
 

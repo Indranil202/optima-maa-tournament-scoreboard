@@ -15171,6 +15171,9 @@ body.light-theme input,body.light-theme select{background:rgba(255,253,246,.8);c
 }
 .quiz-modal-close:hover{color:#d4a017;background:rgba(139,109,56,.1)}
 .quiz-start-screen{text-align:center}
+
+.quiz-login-wrap{max-width:280px;margin:0 auto}
+
 .quiz-jackpot-icon{font-size:3rem;color:#d4a017;margin-bottom:.5rem;animation:jackpotSpin 3s ease-in-out infinite}
 @keyframes jackpotSpin{0%,100%{transform:rotate(0)}25%{transform:rotate(15deg)}75%{transform:rotate(-15deg)}}
 .quiz-jackpot-title{font-family:'Cinzel Decorative','Cinzel',serif;font-size:1.4rem;color:#d4a017;letter-spacing:3px;margin-bottom:.3rem;text-shadow:0 0 20px rgba(212,160,23,.15)}
@@ -17036,7 +17039,20 @@ body.light-theme input,body.light-theme select{background:rgba(255,253,246,.8);c
 <div class="quiz-modal-overlay" id="quizModal" style="display:none" onclick="if(event.target===this)Quiz.closeModal()">
   <div class="quiz-modal">
     <button class="quiz-modal-close" onclick="Quiz.closeModal()"><i class="fas fa-xmark"></i></button>
-    <div id="quizStart" class="quiz-start-screen">
+    <!-- Login Gate -->
+    <div id="quizLogin" class="quiz-start-screen">
+      <div class="quiz-jackpot-icon"><i class="fas fa-lock"></i></div>
+      <h2 class="quiz-jackpot-title" style="font-size:1.2rem">RESTRICTED SECTION</h2>
+      <p class="quiz-jackpot-subtitle">Enter the passphrase to access the quiz</p>
+      <div class="quiz-login-wrap">
+        <input type="password" id="quizPassword" class="quiz-name-input" placeholder="Enter passphrase..." onkeydown="if(event.key==='Enter')Quiz.checkLogin()">
+        <button class="quiz-jackpot-go" onclick="Quiz.checkLogin()" style="margin-top:10px;font-size:.85rem;padding:10px 24px"><i class="fas fa-key"></i> ENTER</button>
+      </div>
+      <p id="quizLoginError" style="color:#e74c3c;font-size:.75rem;margin-top:8px;display:none"><i class="fas fa-times-circle"></i> Wrong passphrase!</p>
+    </div>
+
+    <!-- Start Screen (shown after login) -->
+    <div id="quizStart" class="quiz-start-screen" style="display:none">
       <div class="quiz-jackpot-icon"><i class="fas fa-dice"></i></div>
       <h2 class="quiz-jackpot-title">HOGWARTS HOUSE LORE</h2>
       <p class="quiz-jackpot-subtitle">Test your wizarding knowledge!</p>
@@ -17049,7 +17065,7 @@ body.light-theme input,body.light-theme select{background:rgba(255,253,246,.8);c
     <div id="quizPlay" class="quiz-play-screen" style="display:none">
       <div class="quiz-play-top">
         <span class="quiz-qnum" id="quizQNum">1 / 10</span>
-        <div class="quiz-timer"><i class="fas fa-stopwatch"></i> <span id="quizTime">00:00</span></div>
+        <div class="quiz-timer" style="visibility:hidden"><i class="fas fa-stopwatch"></i> <span id="quizTime">00:00</span></div>
       </div>
       <div class="quiz-progress-bar"><div class="quiz-progress-fill" id="quizProgressFill" style="width:10%"></div></div>
       <div class="quiz-jackpot-reel"><div class="quiz-question" id="quizQuestion"></div></div>
@@ -29439,12 +29455,32 @@ var Quiz = {
     this._questions = shuffled.slice(0, 10);
   },
 
+  _passphrase: 'optima2026',
+  _loggedIn: false,
+
   openModal: function() {
     document.getElementById('quizModal').style.display = 'flex';
-    document.getElementById('quizStart').style.display = 'block';
+    document.getElementById('quizLogin').style.display = this._loggedIn ? 'none' : 'block';
+    document.getElementById('quizStart').style.display = this._loggedIn ? 'block' : 'none';
     document.getElementById('quizPlay').style.display = 'none';
     document.getElementById('quizResult').style.display = 'none';
+    document.getElementById('quizLoginError').style.display = 'none';
+    var pw = document.getElementById('quizPassword');
+    if (pw && !this._loggedIn) { pw.value = ''; setTimeout(function(){ pw.focus(); }, 100); }
     document.body.style.overflow = 'hidden';
+  },
+
+  checkLogin: function() {
+    var pw = document.getElementById('quizPassword');
+    var val = (pw ? pw.value : '').trim().toLowerCase();
+    if (val === this._passphrase) {
+      this._loggedIn = true;
+      document.getElementById('quizLogin').style.display = 'none';
+      document.getElementById('quizStart').style.display = 'block';
+    } else {
+      document.getElementById('quizLoginError').style.display = 'block';
+      if (pw) { pw.value = ''; pw.focus(); }
+    }
   },
   closeModal: function() {
     if (this._timer) clearInterval(this._timer);
@@ -29473,6 +29509,7 @@ var Quiz = {
   },
   restart: function() {
     document.getElementById('quizResult').style.display = 'none';
+    document.getElementById('quizLogin').style.display = 'none';
     document.getElementById('quizStart').style.display = 'block';
   },
   _startTimer: function() {

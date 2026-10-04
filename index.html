@@ -15037,6 +15037,13 @@ body.light-theme input,body.light-theme select{background:rgba(255,253,246,.8);c
 .quiz-option.disabled{pointer-events:none;opacity:.6}
 .quiz-option.correct.disabled,.quiz-option.wrong.disabled{opacity:1}
 
+.quiz-pass-btn{
+  margin-top:10px;padding:6px 16px;border:1px solid rgba(139,109,56,.15);border-radius:6px;
+  background:rgba(139,109,56,.04);color:#a08030;cursor:pointer;font-size:.75rem;
+  font-family:'Cinzel',serif;transition:all .2s;
+}
+.quiz-pass-btn:hover{border-color:rgba(201,162,39,.3);color:#d4a017;background:rgba(139,109,56,.08)}
+.quiz-pass-btn:disabled{opacity:.3;cursor:not-allowed;pointer-events:none}
 .quiz-feedback{
   text-align:center;margin-top:1rem;font-size:.9rem;color:var(--text-muted);
   min-height:24px;transition:all .3s;
@@ -15206,6 +15213,13 @@ body.light-theme input,body.light-theme select{background:rgba(255,253,246,.8);c
 .quiz-option.wrong .opt-letter{background:#e74c3c!important;color:#fff!important;border-color:#e74c3c!important}
 .quiz-option.disabled{pointer-events:none;opacity:.5}
 .quiz-option.correct.disabled,.quiz-option.wrong.disabled{opacity:1}
+.quiz-pass-btn{
+  margin-top:10px;padding:6px 16px;border:1px solid rgba(139,109,56,.15);border-radius:6px;
+  background:rgba(139,109,56,.04);color:#a08030;cursor:pointer;font-size:.75rem;
+  font-family:'Cinzel',serif;transition:all .2s;
+}
+.quiz-pass-btn:hover{border-color:rgba(201,162,39,.3);color:#d4a017;background:rgba(139,109,56,.08)}
+.quiz-pass-btn:disabled{opacity:.3;cursor:not-allowed;pointer-events:none}
 .quiz-feedback{min-height:22px;margin-top:8px;font-size:.8rem;color:var(--text-muted)}
 .quiz-result-screen{text-align:center}
 .quiz-result-icon{font-size:2.5rem;margin-bottom:.5rem}
@@ -17071,6 +17085,7 @@ body.light-theme input,body.light-theme select{background:rgba(255,253,246,.8);c
       <div class="quiz-jackpot-reel"><div class="quiz-question" id="quizQuestion"></div></div>
       <div class="quiz-options" id="quizOptions"></div>
       <div class="quiz-feedback" id="quizFeedback"></div>
+      <button class="quiz-pass-btn" id="quizPassBtn" onclick="Quiz.passQuestion()"><i class="fas fa-forward"></i> Pass (<span id="quizPassLeft">2</span> left)</button>
     </div>
     <div id="quizResult" class="quiz-result-screen" style="display:none">
       <div class="quiz-result-icon" id="quizResultIcon"><i class="fas fa-trophy"></i></div>
@@ -29410,7 +29425,7 @@ var Gallery = {
 var Quiz = {
   _allQuestions: [],  // Full bank fetched from Google Sheet
   _questions: [],     // 10 shuffled questions for current round
-  _current: 0, _score: 0, _timer: null, _seconds: 0, _answered: false, _selectedHouse: '',
+  _current: 0, _score: 0, _timer: null, _seconds: 0, _answered: false, _selectedHouse: '', _skips: 0, _maxSkips: 2,
   _loaded: false,
 
   _shuffle: function(arr) {
@@ -29500,7 +29515,7 @@ var Quiz = {
         return;
       }
       self._pickRound();
-      self._current = 0; self._score = 0; self._seconds = 0; self._answered = false; self._selectedHouse = '';
+      self._current = 0; self._score = 0; self._seconds = 0; self._answered = false; self._selectedHouse = ''; self._skips = 0;
       document.getElementById('quizStart').style.display = 'none';
       document.getElementById('quizResult').style.display = 'none';
       document.getElementById('quizPlay').style.display = 'block';
@@ -29541,6 +29556,12 @@ var Quiz = {
       h += '<span>'+q.opts[i]+'</span></div>';
     }
     document.getElementById('quizOptions').innerHTML = h;
+    // Update pass button
+    var pbtn = document.getElementById('quizPassBtn');
+    var pleft = document.getElementById('quizPassLeft');
+    if (pleft) pleft.textContent = (this._maxSkips - this._skips);
+    if (pbtn) pbtn.disabled = (this._skips >= this._maxSkips);
+    if (pbtn) pbtn.style.display = (this._skips >= this._maxSkips) ? 'none' : '';
   },
   answer: function(idx) {
     if (this._answered) return;
@@ -29563,6 +29584,27 @@ var Quiz = {
       if (self._current < self._questions.length) self._showQuestion();
       else self._showResult();
     }, 1200);
+  },
+
+  passQuestion: function() {
+    if (this._answered || this._skips >= this._maxSkips) return;
+    this._skips++;
+    this._answered = true;
+    document.getElementById('quizFeedback').innerHTML = '<span style="color:#a08030"><i class="fas fa-forward"></i> Passed!</span>';
+    // Move this question to end of array so user plays it later
+    var skipped = this._questions.splice(this._current, 1)[0];
+    this._questions.push(skipped);
+    // Update pass button
+    var left = this._maxSkips - this._skips;
+    var pbtn = document.getElementById('quizPassBtn');
+    var pleft = document.getElementById('quizPassLeft');
+    if (pleft) pleft.textContent = left;
+    if (pbtn && left <= 0) pbtn.disabled = true;
+    var self = this;
+    setTimeout(function(){
+      if (self._current < self._questions.length) self._showQuestion();
+      else self._showResult();
+    }, 800);
   },
   _showResult: function() {
     clearInterval(this._timer);

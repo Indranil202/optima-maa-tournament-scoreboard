@@ -15846,42 +15846,59 @@ window.addEventListener('unhandledrejection', function(e) {
 @keyframes spotPulse{0%{opacity:.5}100%{opacity:1}}
 .curtain-done{display:none!important}
 
-/* ── Dumbledore Narration Indicator ── */
-#dumbledoreIndicator{
-  position:fixed;bottom:24px;left:50%;transform:translateX(-50%);z-index:99998;
-  display:flex;align-items:center;gap:14px;
-  background:linear-gradient(135deg,rgba(26,15,5,.95),rgba(42,26,8,.95));
-  border:1px solid rgba(212,160,23,.4);border-radius:16px;
-  padding:12px 20px;min-width:320px;max-width:90vw;
-  box-shadow:0 8px 40px rgba(0,0,0,.6),0 0 30px rgba(212,160,23,.1);
-  backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
-  animation:dumbSlideIn .5s ease-out;
-  transition:opacity .5s,transform .5s;
-}
-@keyframes dumbSlideIn{0%{opacity:0;transform:translateX(-50%) translateY(30px)}100%{opacity:1;transform:translateX(-50%) translateY(0)}}
-.dumb-avatar{
-  width:44px;height:44px;border-radius:50%;flex-shrink:0;
-  background:linear-gradient(135deg,#d4a017,#8b6914);
-  display:flex;align-items:center;justify-content:center;
-  font-size:1.2rem;color:#1a0f05;
-  box-shadow:0 0 15px rgba(212,160,23,.3);
-  animation:dumbAvatarPulse 2s ease-in-out infinite;
-}
-@keyframes dumbAvatarPulse{0%,100%{box-shadow:0 0 15px rgba(212,160,23,.3)}50%{box-shadow:0 0 25px rgba(212,160,23,.5)}}
-.dumb-text{display:flex;flex-direction:column;gap:3px;flex:1;min-width:0}
-.dumb-name{font-family:'Cinzel',serif;font-size:.75rem;color:#d4a017;letter-spacing:1px}
-.dumb-caption{font-size:.8rem;color:#c9a227;line-height:1.3;opacity:.9;
-  overflow:hidden;text-overflow:ellipsis;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical}
-.dumb-skip{
-  background:rgba(212,160,23,.1);border:1px solid rgba(212,160,23,.3);
-  color:#d4a017;padding:6px 12px;border-radius:8px;cursor:pointer;
-  font-size:.7rem;font-family:'Cinzel',serif;white-space:nowrap;
-  transition:all .2s;flex-shrink:0;
-}
-.dumb-skip:hover{background:rgba(212,160,23,.2);border-color:#d4a017}
+/* ── Dumbledore Narration Panel ── */
+#dumbledoreOverlay{position:fixed;top:0;left:0;width:100%;height:100%;z-index:99998;display:flex;align-items:flex-end;justify-content:center;padding:24px;transition:opacity .5s}
+.dumb-backdrop{position:absolute;top:0;left:0;width:100%;height:100%;background:rgba(5,3,1,.5);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px)}
+.dumb-panel{position:relative;z-index:2;display:flex;align-items:flex-start;gap:18px;
+  background:linear-gradient(135deg,rgba(20,12,4,.97),rgba(35,22,8,.97));
+  border:2px solid rgba(212,160,23,.35);border-radius:20px;
+  padding:20px 24px;max-width:700px;width:100%;
+  box-shadow:0 12px 60px rgba(0,0,0,.7),0 0 40px rgba(212,160,23,.08),inset 0 1px 0 rgba(212,160,23,.1);
+  animation:dumbPanelIn .6s ease-out}
+@keyframes dumbPanelIn{0%{opacity:0;transform:translateY(40px)}100%{opacity:1;transform:translateY(0)}}
+
+.dumb-portrait{position:relative;flex-shrink:0;width:80px;height:80px}
+.dumb-portrait img{width:80px;height:80px;border-radius:50%;border:2px solid rgba(212,160,23,.4);
+  box-shadow:0 0 20px rgba(212,160,23,.2)}
+.dumb-glow{position:absolute;top:-4px;left:-4px;width:88px;height:88px;border-radius:50%;
+  border:2px solid transparent;
+  background:conic-gradient(from 0deg,transparent,rgba(212,160,23,.4),transparent,rgba(212,160,23,.3),transparent) border-box;
+  -webkit-mask:linear-gradient(#fff 0 0) padding-box,linear-gradient(#fff 0 0);
+  -webkit-mask-composite:xor;mask-composite:exclude;
+  animation:dumbGlowSpin 4s linear infinite}
+@keyframes dumbGlowSpin{to{transform:rotate(360deg)}}
+
+.dumb-speech-box{flex:1;min-width:0}
+.dumb-speaker{font-family:'Cinzel Decorative','Cinzel',serif;font-size:.8rem;color:#d4a017;letter-spacing:2px;margin-bottom:6px;
+  text-shadow:0 0 10px rgba(212,160,23,.3)}
+.dumb-line{font-size:.9rem;color:#e8dcc8;line-height:1.5;min-height:3em;font-family:'Cinzel',serif;letter-spacing:.3px}
+.dumb-dots{display:flex;gap:4px;margin-top:4px}
+.dumb-dots span{width:6px;height:6px;border-radius:50%;background:#d4a017;animation:dotBounce 1.2s ease-in-out infinite}
+.dumb-dots span:nth-child(2){animation-delay:.2s}
+.dumb-dots span:nth-child(3){animation-delay:.4s}
+@keyframes dotBounce{0%,80%,100%{transform:translateY(0);opacity:.3}40%{transform:translateY(-6px);opacity:1}}
+
+.dumb-controls{display:flex;gap:8px;margin-top:12px;flex-shrink:0;flex-direction:column;align-self:flex-end}
+.dumb-next{background:linear-gradient(135deg,#d4a017,#b8860b);color:#1a0f05;border:none;padding:8px 18px;border-radius:10px;
+  cursor:pointer;font-family:'Cinzel',serif;font-size:.8rem;font-weight:700;
+  box-shadow:0 4px 15px rgba(212,160,23,.3);transition:all .2s;white-space:nowrap}
+.dumb-next:hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(212,160,23,.4)}
+.dumb-skip-all{background:none;border:1px solid rgba(212,160,23,.25);color:#a08030;padding:5px 12px;border-radius:8px;
+  cursor:pointer;font-size:.7rem;font-family:'Cinzel',serif;transition:all .2s;white-space:nowrap}
+.dumb-skip-all:hover{border-color:#d4a017;color:#d4a017}
+
+.dumb-progress{position:absolute;bottom:0;left:0;width:100%;height:3px;background:rgba(212,160,23,.1);border-radius:0 0 20px 20px;overflow:hidden}
+.dumb-progress-fill{height:100%;background:linear-gradient(90deg,#d4a017,#ffd700);transition:width .5s ease;width:0}
+
 @media(max-width:600px){
-  #dumbledoreIndicator{min-width:0;padding:10px 14px;bottom:12px;gap:10px;border-radius:12px}
-  .dumb-avatar{width:36px;height:36px;font-size:1rem}
+  #dumbledoreOverlay{padding:12px}
+  .dumb-panel{padding:14px;gap:12px;flex-wrap:wrap;border-radius:14px}
+  .dumb-portrait{width:56px;height:56px}
+  .dumb-portrait img{width:56px;height:56px}
+  .dumb-glow{width:64px;height:64px}
+  .dumb-line{font-size:.8rem;min-height:2.5em}
+  .dumb-controls{flex-direction:row;width:100%;justify-content:flex-end}
+}
   .dumb-caption{font-size:.72rem;-webkit-line-clamp:2}
 }
 </style>
@@ -30115,110 +30132,101 @@ document.addEventListener('click', function(e) {
 setTimeout(function() {
   var c = document.getElementById('curtainOverlay');
   if (c) c.classList.add('curtain-done');
-  // Start Dumbledore welcome speech after curtain opens
-  setTimeout(function() { dumbledoreSpeech(); }, 600);
+  // Start Dumbledore welcome narration after curtain opens
+  setTimeout(function() { dumbledoreNarration(); }, 400);
 }, 4800);
 
-function dumbledoreSpeech() {
-  if (!('speechSynthesis' in window)) return;
-
+function dumbledoreNarration() {
   var lines = [
-    {text: "Welcome, dear witches and wizards, to the grand halls of OPTIMA!", pause: 800},
-    {text: "I am delighted to see so many eager faces ready for the tournament.", pause: 600},
-    {text: "Allow me to guide you through these enchanted chambers.", pause: 800},
-    {text: "The Great Hall, is your gateway. Here you shall find the tournament at a glance, upcoming duels, recent victories, and the reigning house leader.", pause: 900},
-    {text: "In Houses, behold the four noble houses and their brave members, standing united.", pause: 700},
-    {text: "The Match Centre, reveals every battle. Live scores, completed duels, and the schedule of encounters yet to come.", pause: 800},
-    {text: "The House Cup, tracks the grand standings. Points, rankings, and the glory of each house displayed for all to see.", pause: 800},
-    {text: "Step into the Tournament Arena, to explore every game, from Chess to Cricket, Carrom to PUBG, and beyond.", pause: 700},
-    {text: "The Wizard Registry, holds the profiles of every competitor. Search for any wizard and discover their achievements.", pause: 800},
-    {text: "And finally, the Pensieve, a treasure trove of memories, photographs and videos from every magical moment.", pause: 700},
-    {text: "Now then. Let the tournament, begin!", pause: 0}
+    "Welcome... dear witches and wizards... to the grand halls of OPTIMA!",
+    "I am delighted to see so many eager faces, ready for the tournament.",
+    "Allow me to guide you through these enchanted chambers.",
+    "\u2728 The Great Hall \u2014 your gateway. Here you shall find the tournament at a glance\u2026 upcoming duels, recent victories, and the reigning house leader.",
+    "\u{1f6e1} Houses \u2014 behold the four noble houses and their brave members, standing united.",
+    "\u2694\ufe0f Match Centre \u2014 every battle revealed. Live scores, completed duels, and encounters yet to come.",
+    "\u{1f3c6} House Cup \u2014 the grand standings. Points, rankings, and the glory of each house.",
+    "\u{1f3ae} Tournament Arena \u2014 every game awaits. From Chess to Cricket, Carrom to PUBG.",
+    "\u{1f9d9} Wizard Registry \u2014 profiles of every competitor. Search any wizard, discover their feats.",
+    "\u{1f52e} The Pensieve \u2014 a treasure trove of memories. Photographs and videos from every magical moment.",
+    "Now then... let the tournament... BEGIN!"
   ];
 
-  // Show a floating Dumbledore narration indicator
-  var indicator = document.createElement('div');
-  indicator.id = 'dumbledoreIndicator';
-  indicator.innerHTML = '<div class="dumb-avatar"><i class="fas fa-hat-wizard"></i></div>' +
-    '<div class="dumb-text"><span class="dumb-name">Professor Dumbledore</span>' +
-    '<span class="dumb-caption" id="dumbCaption">Speaking...</span></div>' +
-    '<button class="dumb-skip" onclick="skipDumbledore()" title="Skip"><i class="fas fa-forward"></i> Skip</button>';
-  document.body.appendChild(indicator);
+  // Create overlay
+  var overlay = document.createElement('div');
+  overlay.id = 'dumbledoreOverlay';
+  overlay.innerHTML =
+    '<div class="dumb-backdrop"></div>' +
+    '<div class="dumb-panel">' +
+      '<div class="dumb-portrait"><img src="assets/characters/dumbledore.svg" alt="Dumbledore"><div class="dumb-glow"></div></div>' +
+      '<div class="dumb-speech-box">' +
+        '<div class="dumb-speaker">Professor Dumbledore</div>' +
+        '<div class="dumb-line" id="dumbLine"></div>' +
+        '<div class="dumb-dots" id="dumbDots"><span>.</span><span>.</span><span>.</span></div>' +
+      '</div>' +
+      '<div class="dumb-controls">' +
+        '<button class="dumb-next" id="dumbNext" onclick="dumbNext()"><i class="fas fa-chevron-right"></i> Next</button>' +
+        '<button class="dumb-skip-all" onclick="dumbSkipAll()"><i class="fas fa-forward"></i> Skip All</button>' +
+      '</div>' +
+      '<div class="dumb-progress"><div class="dumb-progress-fill" id="dumbProgress"></div></div>' +
+    '</div>';
+  document.body.appendChild(overlay);
 
-  var synth = window.speechSynthesis;
-  var voiceReady = false;
   var currentLine = 0;
-  var stopped = false;
+  var typing = false;
+  var typeTimer = null;
 
-  // Pick the best male voice
-  function getBestVoice() {
-    var voices = synth.getVoices();
-    var preferred = ['Google UK English Male', 'Microsoft David', 'Daniel', 'Google UK English Female',
-      'Microsoft Mark', 'Microsoft George', 'Alex', 'Rishi', 'Moira'];
-    for (var p = 0; p < preferred.length; p++) {
-      for (var v = 0; v < voices.length; v++) {
-        if (voices[v].name.indexOf(preferred[p]) > -1) return voices[v];
+  function showLine(idx) {
+    if (idx >= lines.length) { dumbSkipAll(); return; }
+    currentLine = idx;
+    var el = document.getElementById('dumbLine');
+    var dots = document.getElementById('dumbDots');
+    var prog = document.getElementById('dumbProgress');
+    if (!el) return;
+    el.textContent = '';
+    if (dots) dots.style.display = 'flex';
+    typing = true;
+
+    // Typewriter effect
+    var text = lines[idx];
+    var charIdx = 0;
+    if (dots) setTimeout(function(){ dots.style.display = 'none'; }, 400);
+
+    typeTimer = setInterval(function() {
+      if (charIdx < text.length) {
+        el.textContent += text.charAt(charIdx);
+        charIdx++;
+      } else {
+        clearInterval(typeTimer);
+        typing = false;
       }
-    }
-    // Fallback: any English voice
-    for (var v = 0; v < voices.length; v++) {
-      if (voices[v].lang && voices[v].lang.indexOf('en') === 0) return voices[v];
-    }
-    return voices[0] || null;
+    }, 35);
+
+    if (prog) prog.style.width = ((idx + 1) / lines.length * 100) + '%';
   }
 
-  function speakLine() {
-    if (stopped || currentLine >= lines.length) {
-      finishSpeech();
+  window.dumbNext = function() {
+    if (typing) {
+      // Fast-forward current line
+      clearInterval(typeTimer);
+      var el = document.getElementById('dumbLine');
+      if (el) el.textContent = lines[currentLine];
+      typing = false;
       return;
     }
-    var line = lines[currentLine];
-    var caption = document.getElementById('dumbCaption');
-    if (caption) caption.textContent = line.text;
-
-    var utter = new SpeechSynthesisUtterance(line.text);
-    var voice = getBestVoice();
-    if (voice) utter.voice = voice;
-    utter.rate = 0.85;
-    utter.pitch = 0.8;
-    utter.volume = 1;
-
-    utter.onend = function() {
-      currentLine++;
-      if (!stopped) setTimeout(speakLine, line.pause || 400);
-    };
-    utter.onerror = function() {
-      currentLine++;
-      if (!stopped) setTimeout(speakLine, 300);
-    };
-    synth.speak(utter);
-  }
-
-  function finishSpeech() {
-    var el = document.getElementById('dumbledoreIndicator');
-    if (el) {
-      el.style.opacity = '0';
-      el.style.transform = 'translateY(20px)';
-      setTimeout(function() { if (el.parentNode) el.remove(); }, 600);
-    }
-  }
-
-  window.skipDumbledore = function() {
-    stopped = true;
-    synth.cancel();
-    finishSpeech();
+    showLine(currentLine + 1);
   };
 
-  // Voices may load async
-  if (synth.getVoices().length > 0) {
-    speakLine();
-  } else {
-    synth.onvoiceschanged = function() {
-      if (!voiceReady) { voiceReady = true; speakLine(); }
-    };
-    // Fallback if onvoiceschanged never fires
-    setTimeout(function() { if (!voiceReady) { voiceReady = true; speakLine(); } }, 1000);
-  }
+  window.dumbSkipAll = function() {
+    clearInterval(typeTimer);
+    var ov = document.getElementById('dumbledoreOverlay');
+    if (ov) {
+      ov.style.opacity = '0';
+      setTimeout(function() { if (ov.parentNode) ov.remove(); }, 500);
+    }
+  };
+
+  // Start first line
+  setTimeout(function() { showLine(0); }, 300);
 }
 </script>
 </body>

@@ -29608,10 +29608,10 @@ var Quiz = {
     clearInterval(this._timer);
     document.getElementById('quizPlay').style.display = 'none';
     document.getElementById('quizResult').style.display = 'block';
-    var total = this._questions.length + this._skips, answered = this._questions.length, correct = this._score, wrong = answered-correct;
+    var total = 10, answered = this._questions.length, correct = this._score, wrong = answered - correct;
     var pct = Math.round(correct/total*100);
     document.getElementById('quizScoreNum').textContent = correct;
-    document.querySelector('.quiz-score-den').textContent = '/ ' + answered;
+    document.querySelector('.quiz-score-den').textContent = '/ 10';
     document.getElementById('quizCorrectCount').textContent = correct;
     document.getElementById('quizWrongCount').textContent = wrong;
     document.getElementById('quizFinalTime').textContent = this._ts();

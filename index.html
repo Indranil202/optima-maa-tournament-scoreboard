@@ -28423,7 +28423,13 @@ var OwlPost = {
 var H2H = {
   open: function() {
     var o=document.getElementById('h2hOverlay'); if(o) o.classList.add('open');
-    if (typeof VoiceGuide !== 'undefined') VoiceGuide.play('hat-h2h-compare', true);
+    if (typeof VoiceGuide !== 'undefined') {
+      if (VoiceGuide._audio && !VoiceGuide._audio.paused) {
+        VoiceGuide._audio.pause(); VoiceGuide._audio.currentTime = 0;
+        VoiceGuide._currentClip = null; VoiceGuide._currentPriority = 0;
+      }
+      VoiceGuide.play('hat-h2h-compare', true);
+    }
   },
   close: function() {
     var o=document.getElementById('h2hOverlay'); if(o) o.classList.remove('open');
@@ -28924,7 +28930,13 @@ var Gallery = {
     this._idx = idx;
     this._activeThumb = thumbEl || null;
     this._createOverlay();
-    if (typeof VoiceGuide !== 'undefined') VoiceGuide.play('hag-gallery-open');
+    if (typeof VoiceGuide !== 'undefined') {
+      if (VoiceGuide._audio && !VoiceGuide._audio.paused) {
+        VoiceGuide._audio.pause(); VoiceGuide._audio.currentTime = 0;
+        VoiceGuide._currentClip = null; VoiceGuide._currentPriority = 0;
+      }
+      VoiceGuide.play('hag-gallery-open', true);
+    }
     document.addEventListener('keydown', Gallery._keyHandler);
     document.body.style.overflow = 'hidden';
   },
@@ -29649,8 +29661,20 @@ var VoiceGuide = {
       'assets/audio/voices/hagrid/quiz-good-score-4.mp3',
       'assets/audio/voices/hagrid/quiz-good-score-5.mp3'
     ],
-    'hag-gallery-open':    'assets/audio/voices/hagrid/gallery-open.mp3',
-    'hag-gallery-browse':  'assets/audio/voices/hagrid/gallery-browse.mp3',
+    'hag-gallery-open': [
+      'assets/audio/voices/hagrid/gallery-open-1.mp3',
+      'assets/audio/voices/hagrid/gallery-open-2.mp3',
+      'assets/audio/voices/hagrid/gallery-open-3.mp3',
+      'assets/audio/voices/hagrid/gallery-open-4.mp3',
+      'assets/audio/voices/hagrid/gallery-open-5.mp3'
+    ],
+    'hag-gallery-browse': [
+      'assets/audio/voices/hagrid/gallery-browse-1.mp3',
+      'assets/audio/voices/hagrid/gallery-browse-2.mp3',
+      'assets/audio/voices/hagrid/gallery-browse-3.mp3',
+      'assets/audio/voices/hagrid/gallery-browse-4.mp3',
+      'assets/audio/voices/hagrid/gallery-browse-5.mp3'
+    ],
 
     // Snape — Errors & low scores
     'snp-data-error':      'assets/audio/voices/snape/data-error.mp3',
@@ -29685,14 +29709,15 @@ var VoiceGuide = {
   },
 
   // ── Priority: higher = interrupts lower. Same priority = queue ──
-  // Dumbledore narrations are low — any user action interrupts them
+  // Dumbledore is top — plays once per session, must complete
+  // Quiz modal / H2H open force-stop him via explicit code
   priority: {
-    'tab':  10,   // Dumbledore tab narrations — ambient, interruptible
-    'dob':  20,   // Dobby tips — gentle, doesn't interrupt others
-    'hag':  40,   // Hagrid quiz/gallery — user action, interrupts Dumbledore
-    'hat':  40,   // Sorting Hat — user action, interrupts Dumbledore
-    'mcg':  50,   // McGonagall actions — high priority
-    'snp':  50    // Snape errors — high priority (urgent)
+    'dob':  10,   // Dobby tips — gentlest, never interrupts
+    'hag':  30,   // Hagrid quiz/gallery
+    'hat':  30,   // Sorting Hat houses/H2H
+    'mcg':  40,   // McGonagall actions
+    'snp':  40,   // Snape errors
+    'tab':  50    // Dumbledore tab narrations — plays once, must complete
   },
 
   _audio: null,

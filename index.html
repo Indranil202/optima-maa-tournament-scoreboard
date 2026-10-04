@@ -15745,11 +15745,26 @@ body.light-theme input,body.light-theme select{background:rgba(255,253,246,.8);c
 
 
 
+<script>
+window._mdbg = [];
+window.onerror = function(msg, src, line, col, err) {
+  window._mdbg.push('ERR: ' + msg + ' (line ' + line + ')');
+  var el = document.getElementById('mobileDebug');
+  if (el) { el.style.display = 'block'; el.innerHTML = '<b>JS Errors:</b><br>' + window._mdbg.join('<br>'); }
+  return false;
+};
+window.addEventListener('unhandledrejection', function(e) {
+  window._mdbg.push('PROMISE: ' + (e.reason || e));
+  var el = document.getElementById('mobileDebug');
+  if (el) { el.style.display = 'block'; el.innerHTML = '<b>JS Errors:</b><br>' + window._mdbg.join('<br>'); }
+});
+</script>
 </head>
 
 
 
 <body>
+<div id="mobileDebug" style="display:none;position:fixed;bottom:0;left:0;right:0;z-index:99999;background:#1a0a0a;color:#ff6b6b;font-size:11px;padding:8px 12px;max-height:30vh;overflow:auto;border-top:2px solid #e74c3c;font-family:monospace"></div>
 
 
 
@@ -17460,7 +17475,7 @@ function fetchFromGAS(action, onSuccess, onFailure) {
 
 
 
-        console.warn('GAS returned HTML for [' + action + '], trying JSONP fallback');
+        window._mdbg.push('GAS [' + action + ']: got HTML, trying JSONP'); console.warn('GAS returned HTML for [' + action + '], trying JSONP fallback');
 
 
 
@@ -17480,7 +17495,7 @@ function fetchFromGAS(action, onSuccess, onFailure) {
 
 
 
-      console.error('Fetch failed [' + action + '], trying JSONP fallback:', err);
+      window._mdbg.push('GAS [' + action + ']: fetch failed (' + err + '), trying JSONP'); console.error('Fetch failed [' + action + '], trying JSONP fallback:', err);
 
 
 
@@ -17536,7 +17551,7 @@ function fetchViaScript(action, onSuccess, onFailure) {
 
 
 
-    if (onFailure) onFailure('Timeout loading ' + action);
+    window._mdbg.push('JSONP [' + action + ']: TIMEOUT'); if (onFailure) onFailure('Timeout loading ' + action);
 
 
 
@@ -17556,7 +17571,7 @@ function fetchViaScript(action, onSuccess, onFailure) {
 
 
 
-    if (onSuccess) onSuccess(typeof data === 'string' ? data : JSON.stringify(data));
+    window._mdbg.push('JSONP [' + action + ']: success'); if (onSuccess) onSuccess(typeof data === 'string' ? data : JSON.stringify(data));
 
 
 
@@ -17616,7 +17631,7 @@ function fetchViaScript(action, onSuccess, onFailure) {
 
 
 
-    if (onFailure) onFailure('Script load failed for ' + action);
+    window._mdbg.push('JSONP [' + action + ']: script load FAILED'); if (onFailure) onFailure('Script load failed for ' + action);
 
 
 
@@ -29245,9 +29260,10 @@ var Gallery = {
 
   load: function() {
     var self = this;
-    fetch('assets/Gallery/gallery.json')
+    (function(){ window._mdbg.push('Gallery: fetching json...'); return fetch('assets/Gallery/gallery.json'); })()
       .then(function(r) { return r.json(); })
       .then(function(data) {
+        window._mdbg.push('Gallery: got data, games=' + ((data.games||data.tracks||[]).length));
         self._data = (data.tracks || data.games || data || []);
         // Normalize: support both {tracks:[]} and root array
         if (!Array.isArray(self._data)) {
@@ -29498,7 +29514,7 @@ var Quiz = {
     try {
       var url = GAS_API_URL + '?action=getQuizQuestions&t=' + Date.now();
       fetch(url).then(function(r){ return r.text(); }).then(function(t){
-        try { var d = JSON.parse(t); finish(d); } catch(e){ console.warn('Quiz fetch parse fail, trying script tag'); tryScript(); }
+        try { var d = JSON.parse(t); window._mdbg.push('Quiz: got ' + d.length + ' questions via fetch'); finish(d); } catch(e){ window._mdbg.push('Quiz: fetch parse fail, trying JSONP'); tryScript(); }
       }).catch(function(){ console.warn('Quiz fetch fail, trying script tag'); tryScript(); });
     } catch(e) { tryScript(); }
     // Method 2: inject script tag (bypasses CORS entirely)
@@ -29506,7 +29522,7 @@ var Quiz = {
       var s = document.createElement('script');
       s.src = GAS_API_URL + '?action=getQuizQuestions&callback=_quizQCb&t=' + Date.now();
       window._quizQCb = function(d) { delete window._quizQCb; finish(typeof d==='string'?JSON.parse(d):d); };
-      s.onerror = function() { console.error('Quiz script tag also failed'); finish([]); };
+      s.onerror = function() { window._mdbg.push('Quiz: JSONP script tag also failed'); finish([]); };
       setTimeout(function(){ if(!done) finish([]); }, 12000);
       document.head.appendChild(s);
     }

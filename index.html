@@ -29520,6 +29520,7 @@ var Quiz = {
   _pickRound: function() {
     var shuffled = this._shuffle(this._allQuestions);
     this._questions = shuffled.slice(0, 10);
+    this._reserve = shuffled.slice(10);
   },
 
   _passphrase: 'optima2026',
@@ -29666,8 +29667,11 @@ var Quiz = {
     this._skips++;
     this._answered = true;
     document.getElementById('quizFeedback').innerHTML = '<span style="color:#a08030"><i class="fas fa-forward"></i> Passed!</span>';
-    // Remove skipped question — does not come back
+    // Replace passed question with one from reserve pool
     this._questions.splice(this._current, 1);
+    if (this._reserve && this._reserve.length > 0) {
+      this._questions.push(this._reserve.shift());
+    }
     var left = this._maxSkips - this._skips;
     var pbtn = document.getElementById('quizPassBtn');
     var pleft = document.getElementById('quizPassLeft');

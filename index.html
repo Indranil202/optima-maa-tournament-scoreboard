@@ -17079,7 +17079,7 @@ body.light-theme input,body.light-theme select{background:rgba(255,253,246,.8);c
     <div id="quizPlay" class="quiz-play-screen" style="display:none">
       <div class="quiz-play-top">
         <span class="quiz-qnum" id="quizQNum">1 / 10</span>
-        <div class="quiz-timer" style="visibility:hidden"><i class="fas fa-stopwatch"></i> <span id="quizTime">00:00</span></div>
+        <div class="quiz-timer"><i class="fas fa-stopwatch"></i> <span id="quizTime">00:00</span></div>
       </div>
       <div class="quiz-progress-bar"><div class="quiz-progress-fill" id="quizProgressFill" style="width:10%"></div></div>
       <div class="quiz-jackpot-reel"><div class="quiz-question" id="quizQuestion"></div></div>
@@ -29591,10 +29591,8 @@ var Quiz = {
     this._skips++;
     this._answered = true;
     document.getElementById('quizFeedback').innerHTML = '<span style="color:#a08030"><i class="fas fa-forward"></i> Passed!</span>';
-    // Move this question to end of array so user plays it later
-    var skipped = this._questions.splice(this._current, 1)[0];
-    this._questions.push(skipped);
-    // Update pass button
+    // Remove skipped question — does not come back
+    this._questions.splice(this._current, 1);
     var left = this._maxSkips - this._skips;
     var pbtn = document.getElementById('quizPassBtn');
     var pleft = document.getElementById('quizPassLeft');
@@ -29610,9 +29608,10 @@ var Quiz = {
     clearInterval(this._timer);
     document.getElementById('quizPlay').style.display = 'none';
     document.getElementById('quizResult').style.display = 'block';
-    var total = this._questions.length, correct = this._score, wrong = total-correct;
+    var total = this._questions.length + this._skips, answered = this._questions.length, correct = this._score, wrong = answered-correct;
     var pct = Math.round(correct/total*100);
     document.getElementById('quizScoreNum').textContent = correct;
+    document.querySelector('.quiz-score-den').textContent = '/ ' + answered;
     document.getElementById('quizCorrectCount').textContent = correct;
     document.getElementById('quizWrongCount').textContent = wrong;
     document.getElementById('quizFinalTime').textContent = this._ts();

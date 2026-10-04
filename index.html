@@ -29577,8 +29577,13 @@ var TabNarrator = {
       this._narration.currentTime = 0;
     }
 
-    this._narration.src = src;
-    this._narration.play().catch(function(e) { console.warn('Narration play blocked:', e); });
+    // 1 second pause before new tab voice starts
+    var self = this;
+    if (this._playTimer) clearTimeout(this._playTimer);
+    this._playTimer = setTimeout(function() {
+      self._narration.src = src;
+      self._narration.play().catch(function(e) { console.warn('Narration play blocked:', e); });
+    }, 1000);
 
     // Start bg music if not playing
     if (this._bgMusic && this._bgMusic.paused && !this._muted) {

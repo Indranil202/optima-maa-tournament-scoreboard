@@ -28570,6 +28570,7 @@ document.querySelectorAll('.nav-btn').forEach(function(btn) {
 
 
 
+    if (!e.target || !e.target.closest) return;
     var card = e.target.closest('.stat-card, .house-card, .game-card2, .rank-house-card, .ls-match-card');
 
 
@@ -28674,19 +28675,7 @@ window.addEventListener('resize', function() {
 
 
 
-// Disable 3D tilt on touch devices
-
-
-
-if ('ontouchstart' in window) {
-
-
-
-  document.removeEventListener('mousemove', arguments.callee);
-
-
-
-}
+// Disable 3D tilt on touch devices — no-op (handled via CSS/event checks)
 
 
 

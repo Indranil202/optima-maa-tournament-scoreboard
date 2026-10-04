@@ -28695,7 +28695,7 @@ App.showTab = function(tab) {
 
   playSFX('assets/audio/whoosh.mp3', 0.5);
 
-
+  if (typeof TabNarrator !== 'undefined') TabNarrator.playForTab(tab);
 
 };
 
@@ -30296,23 +30296,24 @@ var TabNarrator = {
   }
 };
 
-// Hook into tab switching
-(function() {
-  var origSwitch = App.switchTab;
-  if (!origSwitch) return;
-  App.switchTab = function(tab) {
-    origSwitch.call(this, tab);
-    TabNarrator.playForTab(tab);
-  };
-})();
+// Tab narration hooked via existing App.showTab patch
 
 // Initialize after page load
 TabNarrator.init();
 
-// Play Great Hall narration after curtain opens (first visit)
-setTimeout(function() {
+// Play Great Hall narration on first user interaction (browser autoplay policy)
+var _firstClick = function() {
+  // Start bg music
+  if (TabNarrator._bgMusic && TabNarrator._bgMusic.paused && !TabNarrator._muted) {
+    TabNarrator._bgMusic.play().catch(function(){});
+  }
+  // Play Great Hall narration
   TabNarrator.playForTab('dashboard');
-}, 5500);
+  document.removeEventListener('click', _firstClick);
+  document.removeEventListener('touchstart', _firstClick);
+};
+document.addEventListener('click', _firstClick);
+document.addEventListener('touchstart', _firstClick);
 </script>
 </body>
 

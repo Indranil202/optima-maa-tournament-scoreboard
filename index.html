@@ -29442,15 +29442,15 @@ var Quiz = {
   _fetchQuestions: function(cb) {
     if (this._allQuestions.length > 0) { cb(); return; }
     var self = this;
-    fetch(GAS_API_URL + '?action=getQuizQuestions')
-    .then(function(r) { return r.json(); })
-    .then(function(data) {
-      if (data && data.length) self._allQuestions = data;
+    fetchFromGAS('getQuizQuestions', function(text) {
+      try {
+        var data = typeof text === 'string' ? JSON.parse(text) : text;
+        if (data && data.length) self._allQuestions = data;
+      } catch(e) { console.error('Quiz parse error:', e); }
       self._loaded = true;
       cb();
-    })
-    .catch(function(err) {
-      console.error('Quiz questions fetch error:', err);
+    }, function() {
+      console.error('Quiz questions fetch failed');
       cb();
     });
   },
@@ -29625,9 +29625,8 @@ var Quiz = {
     if (!body) return;
     body.innerHTML = '<p style="color:var(--text-muted);text-align:center;padding:.5rem;font-size:.8rem"><i class="fas fa-spinner fa-spin"></i> Loading...</p>';
     var HL = {'Gryffindor':'assets/House%20logo/Gryffindor.png','Slytherin':'assets/House%20logo/Slytherin.png','Ravenclaw':'assets/House%20logo/Ravenclaw.png','Hufflepuff':'assets/House%20logo/Hufflepuff.png'};
-    fetch(GAS_API_URL+'?action=getQuizScores')
-    .then(function(r){return r.json();})
-    .then(function(scores){
+    fetchFromGAS('getQuizScores', function(text){
+      var scores; try { scores = typeof text==='string'?JSON.parse(text):text; } catch(e){ scores=[]; }
       if (!scores||!scores.length){body.innerHTML='<p class="quiz-lb-empty">No scores yet. Be the first!</p>';return;}
       var medals=['\u{1F947}','\u{1F948}','\u{1F949}'];
       var h='<table class="quiz-lb-table"><thead><tr><th>#</th><th>Wizard</th><th>Score</th><th>Time</th></tr></thead><tbody>';
@@ -29646,7 +29645,7 @@ var Quiz = {
       h+='</tbody></table>';
       body.innerHTML=h;
     })
-    .catch(function(){body.innerHTML='<p class="quiz-lb-empty">Could not load scores.</p>';});
+    }, function(){body.innerHTML='<p class="quiz-lb-empty">Could not load scores.</p>';});
   }
 };
 

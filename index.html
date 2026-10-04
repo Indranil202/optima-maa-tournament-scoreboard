@@ -15252,7 +15252,6 @@ body.light-theme input,body.light-theme select{background:rgba(255,253,246,.8);c
 .quiz-rule{display:flex;align-items:flex-start;gap:10px;padding:8px 12px;margin-bottom:6px;background:rgba(212,160,23,.05);border-radius:8px;border-left:3px solid rgba(212,160,23,.3);font-size:.85rem;color:var(--text-secondary)}
 .quiz-rule strong{color:#d4a017}
 .quiz-rules-ready{font-size:.9rem;color:#d4a017;font-style:italic;margin-top:10px;opacity:.8}
-.quiz-option.selected-ans{border-color:#d4a017;background:rgba(212,160,23,.15);color:#ffd700}
 .quiz-rules-start-btn{margin-top:18px;font-size:1.1rem !important;padding:14px 40px !important;animation:float 2s ease-in-out infinite}
 .quiz-countdown-screen{display:flex;align-items:center;justify-content:center;min-height:300px}
 .quiz-countdown-num{font-family:'Cinzel Decorative','Cinzel',serif;font-size:6rem;color:#d4a017;text-shadow:0 0 30px rgba(212,160,23,.6),0 0 60px rgba(212,160,23,.3);animation:countPulse 1s ease-in-out infinite}
@@ -29475,6 +29474,18 @@ var Quiz = {
   _current: 0, _score: 0, _timer: null, _seconds: 0, _answered: false, _selectedHouse: '', _skips: 0, _maxSkips: 2, _answers: [],
   _loaded: false,
 
+  _decodeAns: function(q) {
+    // Decode: _k is base64 of "id:encoded", where encoded = (ans + id*3 + 7) % 4
+    // So ans = (encoded - id*3 - 7) % 4, normalized to 0-3
+    try {
+      var decoded = atob(q._k);
+      var parts = decoded.split(':');
+      var id = parseInt(parts[0]);
+      var encoded = parseInt(parts[1]);
+      var ans = ((encoded - id * 3 - 7) % 4 + 400) % 4;
+      return ans;
+    } catch(e) { return -1; }
+  },
   _shuffle: function(arr) {
     var a = arr.slice();
     for (var i = a.length - 1; i > 0; i--) {
@@ -29636,17 +29647,24 @@ var Quiz = {
     if (this._answered) return;
     this._answered = true;
     var q = this._questions[this._current];
-    this._answers.push({ id: q.id, selected: idx });
+    var correctIdx = this._decodeAns(q);
     var opts = document.querySelectorAll('#quizOptions .quiz-option');
+    var fb = document.getElementById('quizFeedback');
     opts.forEach(function(o){ o.classList.add('disabled'); });
-    opts[idx].classList.remove('disabled'); opts[idx].classList.add('selected-ans');
-    document.getElementById('quizFeedback').innerHTML = '<span style="color:#a08030"><i class="fas fa-hourglass-half"></i> Locked in!</span>';
+    if (idx === correctIdx) {
+      this._score++;
+      opts[idx].classList.remove('disabled'); opts[idx].classList.add('correct');
+      fb.innerHTML = '<span style="color:#4ecdc4"><i class="fas fa-check-circle"></i> Correct!</span>';
+    } else {
+      opts[idx].classList.remove('disabled'); opts[idx].classList.add('wrong');
+      fb.innerHTML = '<span style="color:#e74c3c"><i class="fas fa-times-circle"></i> Wrong!</span>';
+    }
     var self = this;
     setTimeout(function(){
       self._current++;
       if (self._current < self._questions.length) self._showQuestion();
-      else self._validateAndShowResult();
-    }, 800);
+      else self._showResult();
+    }, 1200);
   },
 
   passQuestion: function() {
@@ -29664,10 +29682,10 @@ var Quiz = {
     var self = this;
     setTimeout(function(){
       if (self._current < self._questions.length) self._showQuestion();
-      else self._validateAndShowResult();
+      else self._showResult();
     }, 800);
   },
-  _validateAndShowResult: function() {
+  _validateAndShowResult_UNUSED: function() {
     var self = this;
     clearInterval(this._timer);
     var play = document.getElementById('quizPlay');

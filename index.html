@@ -15777,8 +15777,8 @@ window.addEventListener('unhandledrejection', function(e) {
 /* ── Curtain panels ── */
 .curtain-left,.curtain-right{position:absolute;top:0;width:52%;height:105%;z-index:100003;
   transform-origin:top left;overflow:hidden}
-.curtain-left{left:0;animation:curtain3DLeft 2s cubic-bezier(.4,0,.2,1) 2.5s forwards}
-.curtain-right{right:0;left:auto;transform-origin:top right;animation:curtain3DRight 2s cubic-bezier(.4,0,.2,1) 2.5s forwards}
+.curtain-left{left:0;animation:none}
+.curtain-right{right:0;left:auto;transform-origin:top right;animation:none}
 
 /* ── Fabric folds (vertical stripes with 3D depth) ── */
 .curtain-fold{position:absolute;top:0;height:100%;
@@ -15810,8 +15810,7 @@ window.addEventListener('unhandledrejection', function(e) {
   background:radial-gradient(ellipse,rgba(255,255,255,.03) 0%,transparent 60%)}
 
 /* ── Center content ── */
-.curtain-center{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);z-index:100004;text-align:center;
-  animation:curtainCenterFade .8s ease-out 2.2s forwards;opacity:1}
+.curtain-center{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);z-index:100004;text-align:center;opacity:1}
 .curtain-crest{margin-bottom:12px}
 .curtain-crest img{width:90px;height:90px;object-fit:contain;
   filter:drop-shadow(0 0 25px rgba(212,160,23,.6)) drop-shadow(0 0 50px rgba(212,160,23,.3));
@@ -15844,6 +15843,16 @@ window.addEventListener('unhandledrejection', function(e) {
 }
 @keyframes taglineFade{0%{opacity:0;transform:translateY(8px)}100%{opacity:.6;transform:translateY(0)}}
 @keyframes spotPulse{0%{opacity:.5}100%{opacity:1}}
+.curtain-enter-btn{
+  margin-top:24px;display:inline-flex;align-items:center;gap:10px;
+  padding:12px 32px;border:2px solid rgba(212,160,23,.5);border-radius:30px;
+  color:#d4a017;font-family:'Cinzel',serif;font-size:.9rem;letter-spacing:3px;
+  background:rgba(212,160,23,.08);cursor:pointer;
+  animation:enterPulse 2s ease-in-out infinite;
+  transition:all .3s;
+}
+.curtain-enter-btn:hover{background:rgba(212,160,23,.15);border-color:#ffd700;transform:scale(1.05)}
+@keyframes enterPulse{0%,100%{box-shadow:0 0 15px rgba(212,160,23,.2)}50%{box-shadow:0 0 30px rgba(212,160,23,.4),0 0 60px rgba(212,160,23,.15)}}
 .curtain-done{display:none!important}
 
 /* ── Narrator Controls (fixed bottom-right) ── */
@@ -15973,6 +15982,7 @@ window.addEventListener('unhandledrejection', function(e) {
     <div class="curtain-divider">&#10022; &#10023; &#10022;</div>
     <div class="curtain-subtitle">The Hogwarts Tournament</div>
     <div class="curtain-tagline">Let the magic begin</div>
+    <div class="curtain-enter-btn"><i class="fas fa-door-open"></i> Tap to Enter</div>
   </div>
 </div>
 <div id="mobileDebug" style="display:none;position:fixed;bottom:0;left:0;right:0;z-index:99999;background:#1a0a0a;color:#ff6b6b;font-size:11px;padding:8px 12px;max-height:30vh;overflow:auto;border-top:2px solid #e74c3c;font-family:monospace"></div>
@@ -29491,12 +29501,34 @@ document.addEventListener('click', function(e) {
 </div>
 
 <script>
-// Remove curtain overlay after animation
-setTimeout(function() {
-  var c = document.getElementById('curtainOverlay');
-  if (c) c.classList.add('curtain-done');
-  // Narration handled by TabNarrator after init
-}, 4800);
+// Curtain opens on user tap (unlocks audio per browser policy)
+function openCurtain() {
+  var overlay = document.getElementById('curtainOverlay');
+  if (!overlay || overlay.classList.contains('curtain-opening')) return;
+  overlay.classList.add('curtain-opening');
+  // Trigger curtain open animations
+  var left = overlay.querySelector('.curtain-left');
+  var right = overlay.querySelector('.curtain-right');
+  var center = overlay.querySelector('.curtain-center');
+  if (left) left.style.animation = 'curtain3DLeft 2s cubic-bezier(.4,0,.2,1) forwards';
+  if (right) right.style.animation = 'curtain3DRight 2s cubic-bezier(.4,0,.2,1) forwards';
+  if (center) center.style.animation = 'curtainCenterFade .5s ease-out forwards';
+  // Remove overlay after animation
+  setTimeout(function() { if (overlay) overlay.classList.add('curtain-done'); }, 2200);
+  // Start audio — this click unlocks browser autoplay
+  if (typeof TabNarrator !== 'undefined') {
+    if (TabNarrator._bgMusic && TabNarrator._bgMusic.paused && !TabNarrator._muted) {
+      TabNarrator._bgMusic.play().catch(function(){});
+    }
+    setTimeout(function() { TabNarrator.playForTab('dashboard', true); }, 1500);
+  }
+}
+var curtainEl = document.getElementById('curtainOverlay');
+if (curtainEl) {
+  curtainEl.style.cursor = 'pointer';
+  curtainEl.addEventListener('click', openCurtain);
+  curtainEl.addEventListener('touchstart', openCurtain);
+}
 
 
 </script>
@@ -29632,19 +29664,7 @@ var TabNarrator = {
 // Initialize after page load
 TabNarrator.init();
 
-// Play Great Hall narration on first user interaction (browser autoplay policy)
-var _firstClick = function() {
-  // Start bg music
-  if (TabNarrator._bgMusic && TabNarrator._bgMusic.paused && !TabNarrator._muted) {
-    TabNarrator._bgMusic.play().catch(function(){});
-  }
-  // Play Great Hall narration
-  TabNarrator.playForTab('dashboard');
-  document.removeEventListener('click', _firstClick);
-  document.removeEventListener('touchstart', _firstClick);
-};
-document.addEventListener('click', _firstClick);
-document.addEventListener('touchstart', _firstClick);
+// Great Hall narration triggered by curtain click
 </script>
 </body>
 

@@ -28423,7 +28423,7 @@ var OwlPost = {
 var H2H = {
   open: function() {
     var o=document.getElementById('h2hOverlay'); if(o) o.classList.add('open');
-    if (typeof VoiceGuide !== 'undefined') VoiceGuide.play('hat-h2h-compare');
+    if (typeof VoiceGuide !== 'undefined') VoiceGuide.play('hat-h2h-compare', true);
   },
   close: function() {
     var o=document.getElementById('h2hOverlay'); if(o) o.classList.remove('open');
@@ -28486,7 +28486,7 @@ var H2H = {
         html+=cell(pos1.g+pos1.s+pos1.b,pos2.g+pos2.s+pos2.b,'Total Podiums');
         html+='</div>';
         var res=document.getElementById('h2hResult');
-        if (typeof VoiceGuide !== 'undefined') VoiceGuide.play('hat-bracket-view');
+        if (typeof VoiceGuide !== 'undefined') VoiceGuide.play('hat-bracket-view', true);
         if(res){res.innerHTML=html;res.classList.add('show');}
       });
     });
@@ -29098,6 +29098,11 @@ var Quiz = {
   _loggedIn: false,
 
   openModal: function() {
+    // Stop any ambient narration when quiz opens
+    if (typeof VoiceGuide !== 'undefined' && VoiceGuide._audio && !VoiceGuide._audio.paused) {
+      VoiceGuide._audio.pause(); VoiceGuide._audio.currentTime = 0;
+      VoiceGuide._currentClip = null; VoiceGuide._currentPriority = 0;
+    }
     document.getElementById('quizModal').style.display = 'flex';
     document.getElementById('quizLogin').style.display = this._loggedIn ? 'none' : 'block';
     document.getElementById('quizStart').style.display = this._loggedIn ? 'block' : 'none';
@@ -29227,11 +29232,11 @@ var Quiz = {
       this._score++;
       opts[idx].classList.remove('disabled'); opts[idx].classList.add('correct');
       fb.innerHTML = '<span style="color:#4ecdc4"><i class="fas fa-check-circle"></i> Correct!</span>';
-      if (typeof VoiceGuide !== 'undefined') VoiceGuide.play('hag-quiz-correct');
+      if (typeof VoiceGuide !== 'undefined') VoiceGuide.play('hag-quiz-correct', true);
     } else {
       opts[idx].classList.remove('disabled'); opts[idx].classList.add('wrong');
       fb.innerHTML = '<span style="color:#e74c3c"><i class="fas fa-times-circle"></i> Wrong!</span>';
-      if (typeof VoiceGuide !== 'undefined') VoiceGuide.play('hag-quiz-wrong');
+      if (typeof VoiceGuide !== 'undefined') VoiceGuide.play('hag-quiz-wrong', true);
     }
     var self = this;
     setTimeout(function(){
@@ -29319,8 +29324,8 @@ var Quiz = {
     }
     // Voice: Hagrid for good score, Snape for bad
     if (typeof VoiceGuide !== 'undefined') {
-      if (pct >= 70) VoiceGuide.play('hag-quiz-good');
-      else if (pct < 40) VoiceGuide.play('snp-quiz-low');
+      if (pct >= 70) VoiceGuide.play('hag-quiz-good', true);
+      else if (pct < 40) VoiceGuide.play('snp-quiz-low', true);
     }
   },
 
@@ -29680,13 +29685,14 @@ var VoiceGuide = {
   },
 
   // ── Priority: higher = interrupts lower. Same priority = queue ──
+  // Dumbledore narrations are low — any user action interrupts them
   priority: {
-    'tab':  50,   // Dumbledore tab narrations — high, interrupts all
-    'mcg':  40,   // McGonagall actions
-    'hat':  35,   // Sorting Hat
-    'hag':  30,   // Hagrid quiz/gallery
-    'snp':  45,   // Snape errors — high priority (urgent)
-    'dob':  20    // Dobby tips — lowest, never interrupts
+    'tab':  10,   // Dumbledore tab narrations — ambient, interruptible
+    'dob':  20,   // Dobby tips — gentle, doesn't interrupt others
+    'hag':  40,   // Hagrid quiz/gallery — user action, interrupts Dumbledore
+    'hat':  40,   // Sorting Hat — user action, interrupts Dumbledore
+    'mcg':  50,   // McGonagall actions — high priority
+    'snp':  50    // Snape errors — high priority (urgent)
   },
 
   _audio: null,

@@ -16319,7 +16319,7 @@ window.addEventListener('unhandledrejection', function(e) {
 
 
 
-<!-- Sound handled by TabNarrator -->
+<!-- Sound handled by VoiceGuide -->
 
 
 
@@ -17893,6 +17893,7 @@ function saveCache(cacheKey, tsKey, data) {
 
 
 function forceRefreshAll() {
+  if (typeof VoiceGuide !== 'undefined') VoiceGuide.play('mcg-leaderboard-refresh');
 
 
 
@@ -18789,7 +18790,11 @@ var App = {
 
 
     this.currentTab = tab;
-    if (typeof TabNarrator !== 'undefined') TabNarrator.playForTab(tab);
+    if (typeof VoiceGuide !== 'undefined') {
+      // McGonagall short click sound (only if tab already played Dumbledore — i.e. revisit)
+      if (VoiceGuide._playedTabs && VoiceGuide._playedTabs[tab]) VoiceGuide.play('mcg-nav-click');
+      VoiceGuide.playForTab(tab);
+    }
 
 
 
@@ -19524,6 +19529,12 @@ var App = {
 
 
       var topHouseName = topHouse ? (topHouse.name||'TBD') : 'TBD';
+      if (typeof VoiceGuide !== 'undefined' && topHouseName !== 'TBD') {
+        if (VoiceGuide._prevLeader && VoiceGuide._prevLeader !== topHouseName) {
+          VoiceGuide.play('hat-lead-change');
+        }
+        VoiceGuide._prevLeader = topHouseName;
+      }
 
 
 
@@ -20313,6 +20324,7 @@ var App = {
 
 
             document.getElementById('liveScoresContent').innerHTML = '<p style="color:var(--neon-red);padding:1rem">Failed to load scores: ' + err + '</p>';
+            if (typeof VoiceGuide !== 'undefined') VoiceGuide.play('snp-network-timeout');
 
 
 
@@ -20333,6 +20345,7 @@ var App = {
 
 
             document.getElementById('liveScoresContent').innerHTML = '<p style="color:var(--neon-red);padding:1rem">Failed to load: ' + err + '</p>';
+            if (typeof VoiceGuide !== 'undefined') VoiceGuide.play('snp-network-timeout');
 
 
 
@@ -20381,6 +20394,7 @@ var App = {
 
 
         document.getElementById('liveScoresContent').innerHTML = '<p style="color:var(--text-muted);padding:2rem;text-align:center">No live scores data yet</p>';
+        if (typeof VoiceGuide !== 'undefined') VoiceGuide.play('snp-empty-state');
 
 
 
@@ -28409,6 +28423,7 @@ var OwlPost = {
 var H2H = {
   open: function() {
     var o=document.getElementById('h2hOverlay'); if(o) o.classList.add('open');
+    if (typeof VoiceGuide !== 'undefined') VoiceGuide.play('hat-h2h-compare');
   },
   close: function() {
     var o=document.getElementById('h2hOverlay'); if(o) o.classList.remove('open');
@@ -28471,6 +28486,7 @@ var H2H = {
         html+=cell(pos1.g+pos1.s+pos1.b,pos2.g+pos2.s+pos2.b,'Total Podiums');
         html+='</div>';
         var res=document.getElementById('h2hResult');
+        if (typeof VoiceGuide !== 'undefined') VoiceGuide.play('hat-bracket-view');
         if(res){res.innerHTML=html;res.classList.add('show');}
       });
     });
@@ -28908,6 +28924,7 @@ var Gallery = {
     this._idx = idx;
     this._activeThumb = thumbEl || null;
     this._createOverlay();
+    if (typeof VoiceGuide !== 'undefined') VoiceGuide.play('hag-gallery-open');
     document.addEventListener('keydown', Gallery._keyHandler);
     document.body.style.overflow = 'hidden';
   },
@@ -28931,6 +28948,13 @@ var Gallery = {
   next: function() {
     this._idx = (this._idx + 1) % this._flat.length;
     this._updateOverlayMedia();
+    if (typeof VoiceGuide !== 'undefined') {
+      var now = Date.now();
+      if (now - VoiceGuide._galleryBrowseThrottle > 8000) {
+        VoiceGuide._galleryBrowseThrottle = now;
+        VoiceGuide.play('hag-gallery-browse');
+      }
+    }
   },
 
   _createOverlay: function() {
@@ -29096,6 +29120,7 @@ var Quiz = {
       document.getElementById('quizStart').style.display = 'block';
     } else {
       document.getElementById('quizLoginError').style.display = 'block';
+      if (typeof VoiceGuide !== 'undefined') VoiceGuide.play('snp-wrong-pass');
       if (pw) { pw.value = ''; pw.focus(); }
     }
   },
@@ -29123,12 +29148,14 @@ var Quiz = {
       document.getElementById('quizStart').style.display = 'none';
       document.getElementById('quizResult').style.display = 'none';
       document.getElementById('quizRules').style.display = 'block';
+      if (typeof VoiceGuide !== 'undefined') VoiceGuide.play('mcg-quiz-rules');
     });
   },
   beginCountdown: function() {
     var self = this;
     document.getElementById('quizRules').style.display = 'none';
     document.getElementById('quizCountdown').style.display = 'flex';
+    if (typeof VoiceGuide !== 'undefined') VoiceGuide.play('hag-quiz-start');
     var count = 5;
     var cdEl = document.getElementById('quizCountdownNum');
     cdEl.textContent = count;
@@ -29144,7 +29171,10 @@ var Quiz = {
       }
     }, 1000);
   },
+  _attempts: 0,
   restart: function() {
+    this._attempts++;
+    if (this._attempts >= 2 && typeof VoiceGuide !== 'undefined') VoiceGuide.play('mcg-fair-play');
     document.getElementById('quizResult').style.display = 'none';
     document.getElementById('quizLogin').style.display = 'none';
     document.getElementById('quizStart').style.display = 'block';
@@ -29197,9 +29227,11 @@ var Quiz = {
       this._score++;
       opts[idx].classList.remove('disabled'); opts[idx].classList.add('correct');
       fb.innerHTML = '<span style="color:#4ecdc4"><i class="fas fa-check-circle"></i> Correct!</span>';
+      if (typeof VoiceGuide !== 'undefined') VoiceGuide.play('hag-quiz-correct');
     } else {
       opts[idx].classList.remove('disabled'); opts[idx].classList.add('wrong');
       fb.innerHTML = '<span style="color:#e74c3c"><i class="fas fa-times-circle"></i> Wrong!</span>';
+      if (typeof VoiceGuide !== 'undefined') VoiceGuide.play('hag-quiz-wrong');
     }
     var self = this;
     setTimeout(function(){
@@ -29284,6 +29316,11 @@ var Quiz = {
       circle.style.borderColor='#e74c3c'; circle.querySelector('.quiz-score-num').style.color='#e74c3c';
       icon.innerHTML='<i class="fas fa-skull" style="color:#e74c3c"></i>';
       title.textContent='More Practice Needed!'; grade.textContent='T \u2014 Troll';
+    }
+    // Voice: Hagrid for good score, Snape for bad
+    if (typeof VoiceGuide !== 'undefined') {
+      if (pct >= 70) VoiceGuide.play('hag-quiz-good');
+      else if (pct < 40) VoiceGuide.play('snp-quiz-low');
     }
   },
 
@@ -29382,6 +29419,7 @@ var Quiz = {
     }, 500);
   },
   pickHouse: function(el) {
+    if (typeof VoiceGuide !== 'undefined') VoiceGuide.play('hat-house-selection');
     document.querySelectorAll('.quiz-house-opt').forEach(function(o){o.classList.remove('selected');});
     el.classList.add('selected');
     this._selectedHouse = el.getAttribute('data-house') || '';
@@ -29396,14 +29434,16 @@ var Quiz = {
       total:this._questions.length, time:this._ts(), house:house };
     var self = this;
     fetch(GAS_API_URL, { method:'POST', headers:{'Content-Type':'text/plain'}, body:JSON.stringify(payload) })
-    .then(function(r){return r.json();})
+    .then(function(r){ return r.json();})
     .then(function(){
+      if (typeof VoiceGuide !== 'undefined') VoiceGuide.play('mcg-score-submitted');
       if (btn) { btn.disabled=false; btn.innerHTML='<i class="fas fa-check"></i> Saved!'; }
       document.getElementById('quizNameSection').style.display='none';
       self.loadLeaderboard();
     })
     .catch(function(err){
       console.error('Quiz submit error:',err);
+      if (typeof VoiceGuide !== 'undefined') VoiceGuide.play('snp-data-error');
       if (btn) { btn.disabled=false; btn.innerHTML='<i class="fas fa-paper-plane"></i> Submit'; }
     });
   },
@@ -29517,11 +29557,11 @@ function openCurtain() {
   // Remove overlay after animation
   setTimeout(function() { if (overlay) overlay.classList.add('curtain-done'); }, 2200);
   // Start audio — this click unlocks browser autoplay
-  if (typeof TabNarrator !== 'undefined') {
-    if (TabNarrator._bgMusic && TabNarrator._bgMusic.paused && !TabNarrator._muted) {
-      TabNarrator._bgMusic.play().catch(function(){});
+  if (typeof VoiceGuide !== 'undefined') {
+    if (VoiceGuide._bgMusic && VoiceGuide._bgMusic.paused && !VoiceGuide._muted) {
+      VoiceGuide._bgMusic.play().catch(function(){});
     }
-    setTimeout(function() { TabNarrator.playForTab('dashboard', true); }, 1500);
+    setTimeout(function() { VoiceGuide.playForTab('dashboard', true); }, 1500);
   }
 }
 var curtainEl = document.getElementById('curtainOverlay');
@@ -29534,54 +29574,115 @@ if (curtainEl) {
 
 </script>
 <script>
-// ═══ Tab Narration System + Background Music ═══
-var TabNarrator = {
-  audioMap: {
-    'dashboard': 'assets/audio/great-hall.mp3',
-    'houses': 'assets/audio/houses.mp3',
-    'matchCentre': 'assets/audio/match-centre.mp3',
-    'rankings': 'assets/audio/house-cup.mp3',
-    'games': 'assets/audio/tournament-arena.mp3',
-    'playerProfiles': 'assets/audio/wizard-registry.mp3',
-    'gallery': 'assets/audio/pensieve.mp3'
+// ═══ VoiceGuide — Multi-Character Voice System ═══
+var VoiceGuide = {
+
+  // ── Character voice clip registry ──
+  clips: {
+    // Dumbledore — Tab narrations
+    'tab-dashboard':       'assets/audio/voices/dumbledore/great-hall.mp3',
+    'tab-houses':          'assets/audio/voices/dumbledore/houses.mp3',
+    'tab-matchCentre':     'assets/audio/voices/dumbledore/match-centre.mp3',
+    'tab-rankings':        'assets/audio/voices/dumbledore/house-cup.mp3',
+    'tab-games':           'assets/audio/voices/dumbledore/tournament-arena.mp3',
+    'tab-playerProfiles':  'assets/audio/voices/dumbledore/wizard-registry.mp3',
+    'tab-gallery':         'assets/audio/voices/dumbledore/pensieve.mp3',
+
+    // McGonagall — Buttons & actions
+    'mcg-nav-click':         'assets/audio/voices/mcgonagall/nav-click.mp3',
+    'mcg-quiz-rules':        'assets/audio/voices/mcgonagall/quiz-rules.mp3',
+    'mcg-score-submitted':   'assets/audio/voices/mcgonagall/score-submitted.mp3',
+    'mcg-search-filter':     'assets/audio/voices/mcgonagall/search-filter.mp3',
+    'mcg-leaderboard-refresh':'assets/audio/voices/mcgonagall/leaderboard-refresh.mp3',
+    'mcg-fair-play':         'assets/audio/voices/mcgonagall/fair-play-warning.mp3',
+
+    // Hagrid — Quiz & gallery
+    'hag-quiz-start':      'assets/audio/voices/hagrid/quiz-start.mp3',
+    'hag-quiz-correct':    'assets/audio/voices/hagrid/quiz-correct.mp3',
+    'hag-quiz-wrong':      'assets/audio/voices/hagrid/quiz-wrong.mp3',
+    'hag-quiz-good':       'assets/audio/voices/hagrid/quiz-good-score.mp3',
+    'hag-gallery-open':    'assets/audio/voices/hagrid/gallery-open.mp3',
+    'hag-gallery-browse':  'assets/audio/voices/hagrid/gallery-browse.mp3',
+
+    // Snape — Errors & low scores
+    'snp-data-error':      'assets/audio/voices/snape/data-error.mp3',
+    'snp-empty-state':     'assets/audio/voices/snape/empty-state.mp3',
+    'snp-quiz-low':        'assets/audio/voices/snape/quiz-low-score.mp3',
+    'snp-network-timeout': 'assets/audio/voices/snape/network-timeout.mp3',
+    'snp-wrong-pass':      'assets/audio/voices/snape/wrong-passphrase.mp3',
+
+    // Dobby — Tips & helpers
+    'dob-first-visit':    'assets/audio/voices/dobby/first-visit.mp3',
+    'dob-idle-reminder':  'assets/audio/voices/dobby/idle-reminder.mp3',
+    'dob-scroll-hint':    'assets/audio/voices/dobby/scroll-hint.mp3',
+    'dob-mobile-tip':     'assets/audio/voices/dobby/mobile-tip.mp3',
+    'dob-dashboard-nums': 'assets/audio/voices/dobby/dashboard-numbers.mp3',
+
+    // Sorting Hat — Houses & H2H
+    'hat-house-card':      'assets/audio/voices/sorting-hat/house-card.mp3',
+    'hat-h2h-compare':     'assets/audio/voices/sorting-hat/h2h-compare.mp3',
+    'hat-lead-change':     'assets/audio/voices/sorting-hat/lead-change.mp3',
+    'hat-house-selection': 'assets/audio/voices/sorting-hat/house-selection.mp3',
+    'hat-bracket-view':    'assets/audio/voices/sorting-hat/bracket-view.mp3'
   },
-  _narration: null,
+
+  // ── Priority: higher = interrupts lower. Same priority = queue ──
+  priority: {
+    'tab':  50,   // Dumbledore tab narrations — high, interrupts all
+    'mcg':  40,   // McGonagall actions
+    'hat':  35,   // Sorting Hat
+    'hag':  30,   // Hagrid quiz/gallery
+    'snp':  45,   // Snape errors — high priority (urgent)
+    'dob':  20    // Dobby tips — lowest, never interrupts
+  },
+
+  _audio: null,
   _bgMusic: null,
   _muted: false,
   _bgVolume: 0.10,
   _bgDuckVolume: 0.02,
+  _currentClip: null,
+  _currentPriority: 0,
+  _queue: [],
+  _lastTab: null,
+  _idleTimer: null,
+  _idleFired: false,
+  _scrollHintFired: false,
+  _firstVisitDone: false,
+  _galleryBrowseThrottle: 0,
 
   init: function() {
     var self = this;
-    // Create background music (loop)
+
+    // Create audio elements
+    this._audio = new Audio();
+    this._audio.volume = 1.0;
+
     this._bgMusic = new Audio('assets/audio/bg-music.mp3');
     this._bgMusic.loop = true;
     this._bgMusic.volume = this._bgVolume;
 
-    // Create narration audio
-    this._narration = new Audio();
-    this._narration.volume = 1.0; // Max priority
-
-    // When narration starts, duck bg music
-    this._narration.addEventListener('play', function() {
+    // Duck bg when voice plays, restore when ends
+    this._audio.addEventListener('play', function() {
       self._fadeBgTo(self._bgDuckVolume, 500);
       self._updateSpeakerIcon(true);
     });
-
-    // When narration ends, smoothly restore bg music
-    this._narration.addEventListener('ended', function() {
+    this._audio.addEventListener('ended', function() {
+      self._currentClip = null;
+      self._currentPriority = 0;
       if (!self._muted) self._fadeBgTo(self._bgVolume, 2000);
       self._updateSpeakerIcon(false);
+      self._playNext();
     });
-    this._narration.addEventListener('pause', function() {
+    this._audio.addEventListener('pause', function() {
       if (!self._muted) self._fadeBgTo(self._bgVolume, 1500);
       self._updateSpeakerIcon(false);
     });
 
-    // Add speaker button to nav area
+    // Speaker UI
     this._addSpeakerUI();
 
-    // Start bg music on first user interaction (browser autoplay policy)
+    // Start bg music on first interaction
     var startBg = function() {
       if (self._bgMusic.paused && !self._muted) {
         self._bgMusic.play().catch(function(){});
@@ -29591,32 +29692,65 @@ var TabNarrator = {
     };
     document.addEventListener('click', startBg);
     document.addEventListener('touchstart', startBg);
+
+    // Idle timer — Dobby reminder after 60s of no clicks
+    this._resetIdle();
+    document.addEventListener('click', function() { self._resetIdle(); });
+    document.addEventListener('touchstart', function() { self._resetIdle(); });
+
+    // Scroll hint — Dobby suggests scrolling on long pages (once)
+    window.addEventListener('scroll', function() {
+      if (self._scrollHintFired) return;
+      var scrollable = document.documentElement.scrollHeight - window.innerHeight;
+      if (scrollable > 600 && window.scrollY < 50) {
+        // User hasn't scrolled but page is long — wait 15s then hint
+        // (This is handled by the scroll listener + timeout, fires once)
+      }
+    });
+
+    // Mobile orientation tip
+    if (window.innerWidth < 768 && window.innerHeight > window.innerWidth) {
+      setTimeout(function() {
+        if (!self._muted && window.innerWidth < 768) self.play('dob-mobile-tip');
+      }, 30000); // 30s after load on portrait mobile
+    }
   },
 
-  _currentNarrationTab: null,
+  // ── Get priority group from clip key ──
+  _getPriority: function(key) {
+    var prefix = key.split('-')[0];
+    if (key.indexOf('tab-') === 0) return this.priority['tab'];
+    return this.priority[prefix] || 10;
+  },
 
-  playForTab: function(tab, force) {
+  // ── Main play method ──
+  play: function(key, force) {
     if (this._muted) return;
-    var src = this.audioMap[tab];
+    var src = this.clips[key];
     if (!src) return;
 
-    // Don't replay if already on this tab (unless forced by replay button)
-    if (!force && this._currentNarrationTab === tab) return;
-    this._currentNarrationTab = tab;
+    var pri = this._getPriority(key);
 
-    // Stop any current narration
-    if (this._narration && !this._narration.paused) {
-      this._narration.pause();
-      this._narration.currentTime = 0;
+    // If something is playing...
+    if (this._currentClip && !this._audio.paused) {
+      if (force || pri > this._currentPriority) {
+        // Higher priority — interrupt current
+        this._audio.pause();
+        this._audio.currentTime = 0;
+      } else if (pri === this._currentPriority) {
+        // Same priority — queue it
+        this._queue.push({ key: key, src: src, pri: pri });
+        return;
+      } else {
+        // Lower priority — skip (don't interrupt)
+        return;
+      }
     }
 
-    // 1 second pause before new tab voice starts
-    var self = this;
-    if (this._playTimer) clearTimeout(this._playTimer);
-    this._playTimer = setTimeout(function() {
-      self._narration.src = src;
-      self._narration.play().catch(function(e) { console.warn('Narration play blocked:', e); });
-    }, 1000);
+    this._currentClip = key;
+    this._currentPriority = pri;
+    this._audio.src = src;
+    this._audio.play().catch(function(e) { console.warn('VoiceGuide play blocked:', e); });
 
     // Start bg music if not playing
     if (this._bgMusic && this._bgMusic.paused && !this._muted) {
@@ -29624,31 +29758,100 @@ var TabNarrator = {
     }
   },
 
+  // ── Play next from queue ──
+  _playNext: function() {
+    if (this._queue.length === 0) return;
+    var next = this._queue.shift();
+    this._currentClip = next.key;
+    this._currentPriority = next.pri;
+    this._audio.src = next.src;
+    this._audio.play().catch(function(){});
+  },
+
+  // ── Tab narration (Dumbledore) — called from App.showTab ──
+  _playedTabs: {},
+
+  playForTab: function(tab, force) {
+    if (this._muted) return;
+    var key = 'tab-' + tab;
+    if (!this.clips[key]) return;
+
+    // Dumbledore plays each tab only ONCE per session (unless forced by Replay btn)
+    if (!force && this._playedTabs[tab]) return;
+    this._playedTabs[tab] = true;
+    this._lastTab = tab;
+
+    // Clear queue — new tab = fresh start
+    this._queue = [];
+
+    // Stop any current voice
+    if (this._audio && !this._audio.paused) {
+      this._audio.pause();
+      this._audio.currentTime = 0;
+    }
+
+    // 1s delay before Dumbledore speaks
+    var self = this;
+    if (this._tabTimer) clearTimeout(this._tabTimer);
+    this._tabTimer = setTimeout(function() {
+      self.play(key, true);
+
+      // First visit: play Dobby tip 2s after Dumbledore finishes Great Hall
+      if (!self._firstVisitDone && tab === 'dashboard') {
+        self._firstVisitDone = true;
+        self._queue.push({
+          key: 'dob-first-visit',
+          src: self.clips['dob-first-visit'],
+          pri: self._getPriority('dob-first-visit')
+        });
+      }
+    }, 1000);
+  },
+
+  // ── Replay current tab narration ──
   replay: function() {
     var tab = (typeof App !== 'undefined' && App.currentTab) ? App.currentTab : 'dashboard';
     this.playForTab(tab, true);
   },
 
+  // ── Mute toggle ──
   toggleMute: function() {
     this._muted = !this._muted;
     var btn = document.getElementById('narratorMuteBtn');
     if (this._muted) {
-      if (this._narration && !this._narration.paused) { this._narration.pause(); this._narration.currentTime = 0; }
+      if (this._audio && !this._audio.paused) { this._audio.pause(); this._audio.currentTime = 0; }
       if (this._bgMusic) { this._bgMusic.pause(); }
+      this._queue = [];
       if (btn) btn.innerHTML = '<i class="fas fa-volume-xmark"></i>';
-      if (btn) btn.title = 'Unmute Narrator';
+      if (btn) btn.title = 'Unmute Voice Guide';
     } else {
       if (this._bgMusic) { this._bgMusic.play().catch(function(){}); }
       if (btn) btn.innerHTML = '<i class="fas fa-volume-high"></i>';
-      if (btn) btn.title = 'Mute Narrator';
+      if (btn) btn.title = 'Mute Voice Guide';
     }
   },
 
-  _updateSpeakerIcon: function(speaking) {
-    var indicator = document.getElementById('narratorSpeaking');
-    if (indicator) indicator.style.display = speaking ? 'block' : 'none';
+  // ── Idle timer (Dobby reminder) ──
+  _resetIdle: function() {
+    var self = this;
+    if (this._idleTimer) clearTimeout(this._idleTimer);
+    this._idleFired = false;
+    this._idleTimer = setTimeout(function() {
+      if (!self._idleFired && !self._muted) {
+        self._idleFired = true;
+        self.play('dob-idle-reminder');
+      }
+    }, 60000);
   },
 
+  // ── Scroll hint (Dobby) — call once when user is at top of long page ──
+  triggerScrollHint: function() {
+    if (this._scrollHintFired || this._muted) return;
+    this._scrollHintFired = true;
+    this.play('dob-scroll-hint');
+  },
+
+  // ── BG music fade ──
   _fadeBgTo: function(targetVol, duration) {
     if (!this._bgMusic) return;
     if (this._bgFadeTimer) clearInterval(this._bgFadeTimer);
@@ -29669,23 +29872,81 @@ var TabNarrator = {
     }.bind(this), 50);
   },
 
+  _updateSpeakerIcon: function(speaking) {
+    var indicator = document.getElementById('narratorSpeaking');
+    if (indicator) indicator.style.display = speaking ? 'block' : 'none';
+  },
+
   _addSpeakerUI: function() {
     var container = document.createElement('div');
     container.className = 'narrator-controls';
     container.innerHTML =
       '<div class="narrator-speaking" id="narratorSpeaking" style="display:none"><div class="narrator-wave"><span></span><span></span><span></span><span></span></div></div>' +
-      '<button class="narrator-btn" id="narratorReplayBtn" onclick="TabNarrator.replay()" title="Replay tab narration"><i class="fas fa-rotate-right"></i></button>' +
-      '<button class="narrator-btn" id="narratorMuteBtn" onclick="TabNarrator.toggleMute()" title="Mute Narrator"><i class="fas fa-volume-high"></i></button>';
+      '<button class="narrator-btn" id="narratorReplayBtn" onclick="VoiceGuide.replay()" title="Replay narration"><i class="fas fa-rotate-right"></i></button>' +
+      '<button class="narrator-btn" id="narratorMuteBtn" onclick="VoiceGuide.toggleMute()" title="Mute Voice Guide"><i class="fas fa-volume-high"></i></button>';
     document.body.appendChild(container);
   }
 };
 
-// Tab narration hooked via existing App.showTab patch
+VoiceGuide.init();
 
-// Initialize after page load
-TabNarrator.init();
+// ── Post-init hooks: delegated event listeners ──
+(function() {
+  // House card click — Sorting Hat voice (throttled to once per 10s)
+  var _hcLast = 0;
+  document.addEventListener('click', function(e) {
+    var card = e.target.closest ? e.target.closest('.wc-flip-wrap') : null;
+    if (card && typeof VoiceGuide !== 'undefined') {
+      var now = Date.now();
+      if (now - _hcLast > 10000) {
+        _hcLast = now;
+        VoiceGuide.play('hat-house-card');
+      }
+    }
+  });
 
-// Great Hall narration triggered by curtain click
+  // Search input — McGonagall voice (fires once when user starts typing)
+  var _searchVoiced = false;
+  var si = document.getElementById('searchInput');
+  if (si) {
+    si.addEventListener('input', function() {
+      if (!_searchVoiced && si.value.length > 2 && typeof VoiceGuide !== 'undefined') {
+        _searchVoiced = true;
+        VoiceGuide.play('mcg-search-filter');
+        // Reset after 30s so it can fire again
+        setTimeout(function() { _searchVoiced = false; }, 30000);
+      }
+    });
+  }
+
+  // Scroll hint — Dobby (15s after page load if page is scrollable and user hasn't scrolled)
+  setTimeout(function() {
+    if (typeof VoiceGuide !== 'undefined') {
+      var scrollable = document.documentElement.scrollHeight - window.innerHeight;
+      if (scrollable > 600 && window.scrollY < 100) {
+        VoiceGuide.triggerScrollHint();
+      }
+    }
+  }, 15000);
+
+  // Dashboard numbers — Dobby (fires 3s after Great Hall loads, once per session)
+  var _dashNumsDone = false;
+  var origShowTab = App.showTab;
+  var _wrapShowTab = function(tab) {
+    origShowTab.call(App, tab);
+    if (!_dashNumsDone && tab === 'dashboard' && typeof VoiceGuide !== 'undefined') {
+      // Wait for Dumbledore to finish (~20s) then Dobby explains numbers
+      // Actually, queue it — it will play after Dumbledore's tab narration ends
+      setTimeout(function() {
+        if (!_dashNumsDone) {
+          _dashNumsDone = true;
+          VoiceGuide.play('dob-dashboard-nums');
+        }
+      }, 22000);
+    }
+  };
+  // Don't re-wrap — VoiceGuide.playForTab is already called in the existing showTab
+})();
 </script>
 </body>
 

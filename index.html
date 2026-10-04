@@ -29442,18 +29442,29 @@ var Quiz = {
   _fetchQuestions: function(cb) {
     if (this._allQuestions.length > 0) { cb(); return; }
     var self = this;
-    callBackend('getQuizQuestions', function(text) {
-      try {
-        var data = typeof text === 'string' ? JSON.parse(text) : text;
-        if (data && data.length) self._allQuestions = data;
-      } catch(e) { console.error('Quiz parse error:', e); }
+    var done = false;
+    function finish(data) {
+      if (done) return; done = true;
+      if (data && data.length) self._allQuestions = data;
       self._loaded = true;
       cb();
-    }, function() {
-      console.error('Quiz questions load failed');
-      self._loaded = true;
-      cb();
-    });
+    }
+    // Method 1: direct fetch (handles GAS redirect on most browsers)
+    try {
+      var url = GAS_API_URL + '?action=getQuizQuestions&t=' + Date.now();
+      fetch(url).then(function(r){ return r.text(); }).then(function(t){
+        try { var d = JSON.parse(t); finish(d); } catch(e){ console.warn('Quiz fetch parse fail, trying script tag'); tryScript(); }
+      }).catch(function(){ console.warn('Quiz fetch fail, trying script tag'); tryScript(); });
+    } catch(e) { tryScript(); }
+    // Method 2: inject script tag (bypasses CORS entirely)
+    function tryScript() {
+      var s = document.createElement('script');
+      s.src = GAS_API_URL + '?action=getQuizQuestions&callback=_quizQCb&t=' + Date.now();
+      window._quizQCb = function(d) { delete window._quizQCb; finish(typeof d==='string'?JSON.parse(d):d); };
+      s.onerror = function() { console.error('Quiz script tag also failed'); finish([]); };
+      setTimeout(function(){ if(!done) finish([]); }, 12000);
+      document.head.appendChild(s);
+    }
   },
 
   _pickRound: function() {

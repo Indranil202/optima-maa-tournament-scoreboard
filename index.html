@@ -18789,6 +18789,7 @@ var App = {
 
 
     this.currentTab = tab;
+    if (typeof TabNarrator !== 'undefined') TabNarrator.playForTab(tab);
 
 
 
@@ -29563,17 +29564,17 @@ var TabNarrator = {
 
     // When narration starts, duck bg music
     this._narration.addEventListener('play', function() {
-      if (self._bgMusic) self._bgMusic.volume = self._bgDuckVolume;
+      self._fadeBgTo(self._bgDuckVolume, 500);
       self._updateSpeakerIcon(true);
     });
 
-    // When narration ends, restore bg music
+    // When narration ends, smoothly restore bg music
     this._narration.addEventListener('ended', function() {
-      if (self._bgMusic && !self._muted) self._bgMusic.volume = self._bgVolume;
+      if (!self._muted) self._fadeBgTo(self._bgVolume, 2000);
       self._updateSpeakerIcon(false);
     });
     this._narration.addEventListener('pause', function() {
-      if (self._bgMusic && !self._muted) self._bgMusic.volume = self._bgVolume;
+      if (!self._muted) self._fadeBgTo(self._bgVolume, 1500);
       self._updateSpeakerIcon(false);
     });
 
@@ -29646,6 +29647,26 @@ var TabNarrator = {
   _updateSpeakerIcon: function(speaking) {
     var indicator = document.getElementById('narratorSpeaking');
     if (indicator) indicator.style.display = speaking ? 'block' : 'none';
+  },
+
+  _fadeBgTo: function(targetVol, duration) {
+    if (!this._bgMusic) return;
+    if (this._bgFadeTimer) clearInterval(this._bgFadeTimer);
+    var current = this._bgMusic.volume;
+    var diff = targetVol - current;
+    var steps = Math.max(1, Math.round(duration / 50));
+    var stepSize = diff / steps;
+    var step = 0;
+    var audio = this._bgMusic;
+    this._bgFadeTimer = setInterval(function() {
+      step++;
+      if (step >= steps) {
+        audio.volume = Math.max(0, Math.min(1, targetVol));
+        clearInterval(this._bgFadeTimer);
+        return;
+      }
+      audio.volume = Math.max(0, Math.min(1, current + stepSize * step));
+    }.bind(this), 50);
   },
 
   _addSpeakerUI: function() {

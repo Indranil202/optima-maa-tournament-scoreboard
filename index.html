@@ -18843,7 +18843,7 @@ var App = {
 
 
 
-        self.loadLiveScores();
+        try { self.loadLiveScores(); } catch(e) { console.error(e); }
 
 
 
@@ -18891,10 +18891,10 @@ var App = {
     });
     // These tabs don't need game maps — fire immediately in parallel
     self.loadLiveScores();
-    self.loadRankings();
-    self.loadPlayerProfiles();
-    self.loadHouses();
-    if (typeof Gallery !== 'undefined') Gallery.load();
+    try { self.loadRankings(); } catch(e) { console.error(e); }
+    try { self.loadPlayerProfiles(); } catch(e) { console.error(e); }
+    try { self.loadHouses(); } catch(e) { console.error(e); }
+    try { if (typeof Gallery !== 'undefined') Gallery.load(); } catch(e) { console.error('Gallery load error:', e); }
 
 
 
@@ -29271,7 +29271,7 @@ var Gallery = {
         if (gEl) gEl.textContent = gamesWithMedia;
       })
       .catch(function(err) {
-        console.warn('Gallery load failed:', err);
+        console.error('Gallery load failed:', err);
         document.getElementById('galleryContent').innerHTML =
           '<p style="color:var(--text-muted);padding:2rem;text-align:center"><i class="fas fa-wand-sparkles" style="font-size:2rem;display:block;margin-bottom:.5rem;opacity:.4"></i>No memories yet. Add photos to assets/Gallery/ folders.</p>';
       });

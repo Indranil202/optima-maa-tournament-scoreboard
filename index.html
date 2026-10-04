@@ -15845,6 +15845,45 @@ window.addEventListener('unhandledrejection', function(e) {
 @keyframes taglineFade{0%{opacity:0;transform:translateY(8px)}100%{opacity:.6;transform:translateY(0)}}
 @keyframes spotPulse{0%{opacity:.5}100%{opacity:1}}
 .curtain-done{display:none!important}
+
+/* ── Dumbledore Narration Indicator ── */
+#dumbledoreIndicator{
+  position:fixed;bottom:24px;left:50%;transform:translateX(-50%);z-index:99998;
+  display:flex;align-items:center;gap:14px;
+  background:linear-gradient(135deg,rgba(26,15,5,.95),rgba(42,26,8,.95));
+  border:1px solid rgba(212,160,23,.4);border-radius:16px;
+  padding:12px 20px;min-width:320px;max-width:90vw;
+  box-shadow:0 8px 40px rgba(0,0,0,.6),0 0 30px rgba(212,160,23,.1);
+  backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
+  animation:dumbSlideIn .5s ease-out;
+  transition:opacity .5s,transform .5s;
+}
+@keyframes dumbSlideIn{0%{opacity:0;transform:translateX(-50%) translateY(30px)}100%{opacity:1;transform:translateX(-50%) translateY(0)}}
+.dumb-avatar{
+  width:44px;height:44px;border-radius:50%;flex-shrink:0;
+  background:linear-gradient(135deg,#d4a017,#8b6914);
+  display:flex;align-items:center;justify-content:center;
+  font-size:1.2rem;color:#1a0f05;
+  box-shadow:0 0 15px rgba(212,160,23,.3);
+  animation:dumbAvatarPulse 2s ease-in-out infinite;
+}
+@keyframes dumbAvatarPulse{0%,100%{box-shadow:0 0 15px rgba(212,160,23,.3)}50%{box-shadow:0 0 25px rgba(212,160,23,.5)}}
+.dumb-text{display:flex;flex-direction:column;gap:3px;flex:1;min-width:0}
+.dumb-name{font-family:'Cinzel',serif;font-size:.75rem;color:#d4a017;letter-spacing:1px}
+.dumb-caption{font-size:.8rem;color:#c9a227;line-height:1.3;opacity:.9;
+  overflow:hidden;text-overflow:ellipsis;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical}
+.dumb-skip{
+  background:rgba(212,160,23,.1);border:1px solid rgba(212,160,23,.3);
+  color:#d4a017;padding:6px 12px;border-radius:8px;cursor:pointer;
+  font-size:.7rem;font-family:'Cinzel',serif;white-space:nowrap;
+  transition:all .2s;flex-shrink:0;
+}
+.dumb-skip:hover{background:rgba(212,160,23,.2);border-color:#d4a017}
+@media(max-width:600px){
+  #dumbledoreIndicator{min-width:0;padding:10px 14px;bottom:12px;gap:10px;border-radius:12px}
+  .dumb-avatar{width:36px;height:36px;font-size:1rem}
+  .dumb-caption{font-size:.72rem;-webkit-line-clamp:2}
+}
 </style>
 </head>
 
@@ -30072,11 +30111,115 @@ document.addEventListener('click', function(e) {
 </div>
 
 <script>
-// Remove curtain overlay after animation completes (2.5s delay + 2s animation = 4.5s)
+// Remove curtain overlay after animation
 setTimeout(function() {
   var c = document.getElementById('curtainOverlay');
   if (c) c.classList.add('curtain-done');
+  // Start Dumbledore welcome speech after curtain opens
+  setTimeout(function() { dumbledoreSpeech(); }, 600);
 }, 4800);
+
+function dumbledoreSpeech() {
+  if (!('speechSynthesis' in window)) return;
+
+  var lines = [
+    {text: "Welcome, dear witches and wizards, to the grand halls of OPTIMA!", pause: 800},
+    {text: "I am delighted to see so many eager faces ready for the tournament.", pause: 600},
+    {text: "Allow me to guide you through these enchanted chambers.", pause: 800},
+    {text: "The Great Hall, is your gateway. Here you shall find the tournament at a glance, upcoming duels, recent victories, and the reigning house leader.", pause: 900},
+    {text: "In Houses, behold the four noble houses and their brave members, standing united.", pause: 700},
+    {text: "The Match Centre, reveals every battle. Live scores, completed duels, and the schedule of encounters yet to come.", pause: 800},
+    {text: "The House Cup, tracks the grand standings. Points, rankings, and the glory of each house displayed for all to see.", pause: 800},
+    {text: "Step into the Tournament Arena, to explore every game, from Chess to Cricket, Carrom to PUBG, and beyond.", pause: 700},
+    {text: "The Wizard Registry, holds the profiles of every competitor. Search for any wizard and discover their achievements.", pause: 800},
+    {text: "And finally, the Pensieve, a treasure trove of memories, photographs and videos from every magical moment.", pause: 700},
+    {text: "Now then. Let the tournament, begin!", pause: 0}
+  ];
+
+  // Show a floating Dumbledore narration indicator
+  var indicator = document.createElement('div');
+  indicator.id = 'dumbledoreIndicator';
+  indicator.innerHTML = '<div class="dumb-avatar"><i class="fas fa-hat-wizard"></i></div>' +
+    '<div class="dumb-text"><span class="dumb-name">Professor Dumbledore</span>' +
+    '<span class="dumb-caption" id="dumbCaption">Speaking...</span></div>' +
+    '<button class="dumb-skip" onclick="skipDumbledore()" title="Skip"><i class="fas fa-forward"></i> Skip</button>';
+  document.body.appendChild(indicator);
+
+  var synth = window.speechSynthesis;
+  var voiceReady = false;
+  var currentLine = 0;
+  var stopped = false;
+
+  // Pick the best male voice
+  function getBestVoice() {
+    var voices = synth.getVoices();
+    var preferred = ['Google UK English Male', 'Microsoft David', 'Daniel', 'Google UK English Female',
+      'Microsoft Mark', 'Microsoft George', 'Alex', 'Rishi', 'Moira'];
+    for (var p = 0; p < preferred.length; p++) {
+      for (var v = 0; v < voices.length; v++) {
+        if (voices[v].name.indexOf(preferred[p]) > -1) return voices[v];
+      }
+    }
+    // Fallback: any English voice
+    for (var v = 0; v < voices.length; v++) {
+      if (voices[v].lang && voices[v].lang.indexOf('en') === 0) return voices[v];
+    }
+    return voices[0] || null;
+  }
+
+  function speakLine() {
+    if (stopped || currentLine >= lines.length) {
+      finishSpeech();
+      return;
+    }
+    var line = lines[currentLine];
+    var caption = document.getElementById('dumbCaption');
+    if (caption) caption.textContent = line.text;
+
+    var utter = new SpeechSynthesisUtterance(line.text);
+    var voice = getBestVoice();
+    if (voice) utter.voice = voice;
+    utter.rate = 0.85;
+    utter.pitch = 0.8;
+    utter.volume = 1;
+
+    utter.onend = function() {
+      currentLine++;
+      if (!stopped) setTimeout(speakLine, line.pause || 400);
+    };
+    utter.onerror = function() {
+      currentLine++;
+      if (!stopped) setTimeout(speakLine, 300);
+    };
+    synth.speak(utter);
+  }
+
+  function finishSpeech() {
+    var el = document.getElementById('dumbledoreIndicator');
+    if (el) {
+      el.style.opacity = '0';
+      el.style.transform = 'translateY(20px)';
+      setTimeout(function() { if (el.parentNode) el.remove(); }, 600);
+    }
+  }
+
+  window.skipDumbledore = function() {
+    stopped = true;
+    synth.cancel();
+    finishSpeech();
+  };
+
+  // Voices may load async
+  if (synth.getVoices().length > 0) {
+    speakLine();
+  } else {
+    synth.onvoiceschanged = function() {
+      if (!voiceReady) { voiceReady = true; speakLine(); }
+    };
+    // Fallback if onvoiceschanged never fires
+    setTimeout(function() { if (!voiceReady) { voiceReady = true; speakLine(); } }, 1000);
+  }
+}
 </script>
 </body>
 

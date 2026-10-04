@@ -15759,11 +15759,69 @@ window.addEventListener('unhandledrejection', function(e) {
   if (el) { el.style.display = 'block'; el.innerHTML = '<b>JS Errors:</b><br>' + window._mdbg.join('<br>'); }
 });
 </script>
+<style>
+.curtain-overlay{position:fixed;top:0;left:0;width:100%;height:100%;z-index:100000;pointer-events:none}
+.curtain-left,.curtain-right{position:absolute;top:0;width:50%;height:100%;z-index:100001}
+.curtain-left{left:0;background:linear-gradient(135deg,#1a0f05 0%,#2a1a08 40%,#1a0f05 100%);border-right:2px solid rgba(212,160,23,.3);animation:curtainOpenLeft 1.8s ease-in-out 2.2s forwards}
+.curtain-right{right:0;background:linear-gradient(225deg,#1a0f05 0%,#2a1a08 40%,#1a0f05 100%);border-left:2px solid rgba(212,160,23,.3);animation:curtainOpenRight 1.8s ease-in-out 2.2s forwards}
+
+/* Velvet curtain texture */
+.curtain-left::before,.curtain-right::before{content:'';position:absolute;top:0;left:0;width:100%;height:100%;background:repeating-linear-gradient(90deg,transparent,transparent 30px,rgba(139,109,56,.03) 30px,rgba(139,109,56,.03) 32px);pointer-events:none}
+.curtain-left::after,.curtain-right::after{content:'';position:absolute;top:0;width:40px;height:100%;background:linear-gradient(90deg,rgba(0,0,0,.3),transparent);pointer-events:none}
+.curtain-left::after{right:0}
+.curtain-right::after{left:0;background:linear-gradient(270deg,rgba(0,0,0,.3),transparent)}
+
+/* Gold trim on curtain edges */
+.curtain-left{box-shadow:inset -3px 0 20px rgba(212,160,23,.1)}
+.curtain-right{box-shadow:inset 3px 0 20px rgba(212,160,23,.1)}
+
+.curtain-center{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);z-index:100002;text-align:center;animation:curtainCenterFade 0.6s ease-out 1.8s forwards;opacity:1}
+
+.curtain-crest{margin-bottom:16px}
+.curtain-crest img{width:80px;height:80px;object-fit:contain;filter:drop-shadow(0 0 20px rgba(212,160,23,.5));animation:curtainCrestFloat 2s ease-in-out infinite}
+
+.curtain-title{font-family:'Cinzel Decorative','Cinzel',serif;font-size:2.8rem;color:#d4a017;text-shadow:0 0 30px rgba(212,160,23,.4),0 0 60px rgba(212,160,23,.2),0 2px 4px rgba(0,0,0,.8);letter-spacing:8px;animation:curtainTitleGlow 2s ease-in-out infinite alternate}
+
+.curtain-subtitle{font-family:'Cinzel',serif;font-size:.95rem;color:#a08030;letter-spacing:6px;text-transform:uppercase;margin-top:8px;opacity:.8;text-shadow:0 0 10px rgba(139,109,56,.3)}
+
+.curtain-sparkles{margin-top:20px;display:flex;gap:16px;justify-content:center}
+.curtain-spark{color:#d4a017;font-size:1rem;animation:sparkTwinkle 1.5s ease-in-out infinite;text-shadow:0 0 8px rgba(212,160,23,.6)}
+.curtain-spark:nth-child(2){animation-delay:.3s}
+.curtain-spark:nth-child(3){animation-delay:.6s}
+.curtain-spark:nth-child(4){animation-delay:.9s}
+.curtain-spark:nth-child(5){animation-delay:1.2s}
+
+@keyframes curtainOpenLeft{0%{transform:translateX(0)}100%{transform:translateX(-100%)}}
+@keyframes curtainOpenRight{0%{transform:translateX(0)}100%{transform:translateX(100%)}}
+@keyframes curtainCenterFade{0%{opacity:1;transform:translate(-50%,-50%) scale(1)}100%{opacity:0;transform:translate(-50%,-50%) scale(1.2);pointer-events:none}}
+@keyframes curtainCrestFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+@keyframes curtainTitleGlow{0%{text-shadow:0 0 20px rgba(212,160,23,.3),0 0 40px rgba(212,160,23,.1),0 2px 4px rgba(0,0,0,.8)}100%{text-shadow:0 0 40px rgba(212,160,23,.6),0 0 80px rgba(212,160,23,.3),0 2px 4px rgba(0,0,0,.8)}}
+@keyframes sparkTwinkle{0%,100%{opacity:.3;transform:scale(.8)}50%{opacity:1;transform:scale(1.2)}}
+
+/* After curtain opens, remove overlay entirely */
+.curtain-done{display:none!important}
+</style>
 </head>
 
 
 
 <body>
+<div id="curtainOverlay" class="curtain-overlay">
+  <div class="curtain-left"></div>
+  <div class="curtain-right"></div>
+  <div class="curtain-center">
+    <div class="curtain-crest"><img src="assets/logos/optima-logo.png" alt="" onerror="this.innerHTML='⚡';this.style.fontSize='3rem'"></div>
+    <div class="curtain-title">OPTIMA</div>
+    <div class="curtain-subtitle">The Hogwarts Tournament</div>
+    <div class="curtain-sparkles">
+      <span class="curtain-spark">✦</span>
+      <span class="curtain-spark">✧</span>
+      <span class="curtain-spark">✦</span>
+      <span class="curtain-spark">✧</span>
+      <span class="curtain-spark">✦</span>
+    </div>
+  </div>
+</div>
 <div id="mobileDebug" style="display:none;position:fixed;bottom:0;left:0;right:0;z-index:99999;background:#1a0a0a;color:#ff6b6b;font-size:11px;padding:8px 12px;max-height:30vh;overflow:auto;border-top:2px solid #e74c3c;font-family:monospace"></div>
 
 
@@ -29954,6 +30012,13 @@ document.addEventListener('click', function(e) {
   <button style="background:none;border:1px solid rgba(255,255,255,.1);color:#f1c40f;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:.6rem;font-family:monospace" onclick="try{sessionStorage.clear();location.reload();}catch(e){location.reload();}">⟳ Clear Cache & Reload</button>
 </div>
 
+<script>
+// Remove curtain overlay after animation completes (2.2s delay + 1.8s animation = 4s)
+setTimeout(function() {
+  var c = document.getElementById('curtainOverlay');
+  if (c) c.classList.add('curtain-done');
+}, 4200);
+</script>
 </body>
 
 

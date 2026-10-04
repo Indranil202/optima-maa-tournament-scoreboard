@@ -15245,9 +15245,19 @@ body.light-theme input,body.light-theme select{background:rgba(255,253,246,.8);c
 .quiz-house-opt.selected span{color:#d4a017;font-weight:700}
 .quiz-name-skip{background:none;border:none;color:var(--text-muted);font-size:.75rem;cursor:pointer;margin-top:6px;transition:color .2s}
 .quiz-name-skip:hover{color:#d4a017}
+.quiz-rules-screen{text-align:center;padding:30px 20px;animation:fadeIn .5s}
+.quiz-rules-icon{font-size:3rem;color:#d4a017;margin-bottom:10px;animation:float 2s ease-in-out infinite}
+.quiz-rules-title{font-family:'Cinzel Decorative','Cinzel',serif;font-size:1.3rem;color:#d4a017;margin-bottom:20px;text-shadow:0 0 10px rgba(212,160,23,.3)}
+.quiz-rules-list{text-align:left;max-width:420px;margin:0 auto 20px}
+.quiz-rule{display:flex;align-items:flex-start;gap:10px;padding:8px 12px;margin-bottom:6px;background:rgba(212,160,23,.05);border-radius:8px;border-left:3px solid rgba(212,160,23,.3);font-size:.85rem;color:var(--text-secondary)}
+.quiz-rule strong{color:#d4a017}
+.quiz-rules-ready{font-size:.9rem;color:#d4a017;font-style:italic;margin-top:10px;opacity:.8}
+.quiz-countdown-screen{display:flex;align-items:center;justify-content:center;min-height:300px}
+.quiz-countdown-num{font-family:'Cinzel Decorative','Cinzel',serif;font-size:6rem;color:#d4a017;text-shadow:0 0 30px rgba(212,160,23,.6),0 0 60px rgba(212,160,23,.3);animation:countPulse 1s ease-in-out infinite}
+@keyframes countPulse{0%,100%{transform:scale(1);opacity:1}50%{transform:scale(1.3);opacity:.7}}
 .quiz-disclaimer{font-size:.7rem;color:var(--text-muted);margin-top:1rem;padding:6px 10px;border:1px dashed rgba(139,109,56,.15);border-radius:6px;background:rgba(139,109,56,.02)}
 .quiz-disclaimer i{color:#f39c12;margin-right:4px}
-.quiz-disclaimer strong{color:#e74c3c}
+.quiz-disclaimer strong{color:#4ecdc4}
 .quiz-retry-btn{display:inline-flex;align-items:center;gap:8px;margin-top:.8rem;padding:8px 20px;border:1px solid rgba(139,109,56,.2);border-radius:6px;background:rgba(139,109,56,.05);color:#a08030;cursor:pointer;font-size:.8rem;font-family:'Cinzel',serif;transition:all .2s}
 .quiz-retry-btn:hover{border-color:#d4a017;color:#d4a017;background:rgba(139,109,56,.1)}
 .quiz-lb-table{width:100%;border-collapse:collapse;font-size:.8rem}
@@ -17076,6 +17086,22 @@ body.light-theme input,body.light-theme select{background:rgba(255,253,246,.8);c
       </div>
       <button class="quiz-jackpot-go" onclick="Quiz.start()"><i class="fas fa-wand-sparkles"></i> SPIN THE QUESTION BANK</button>
     </div>
+    <div id="quizRules" class="quiz-rules-screen" style="display:none">
+      <div class="quiz-rules-icon"><i class="fas fa-scroll"></i></div>
+      <h2 class="quiz-rules-title">📜 RULES OF ENGAGEMENT</h2>
+      <div class="quiz-rules-list">
+        <div class="quiz-rule"><i class="fas fa-question-circle" style="color:#d4a017"></i> <span>You will face <strong>10 questions</strong> from the Hogwarts archives.</span></div>
+        <div class="quiz-rule"><i class="fas fa-forward" style="color:#3498db"></i> <span>You get <strong>2 free passes</strong> — skip questions without penalty.</span></div>
+        <div class="quiz-rule"><i class="fas fa-stopwatch" style="color:#e67e22"></i> <span>A <strong>timer</strong> tracks your speed — faster is better!</span></div>
+        <div class="quiz-rule"><i class="fas fa-check-circle" style="color:#4ecdc4"></i> <span>Each correct answer earns <strong>1 point</strong>. No negatives.</span></div>
+        <div class="quiz-rule"><i class="fas fa-trophy" style="color:#f39c12"></i> <span>Your score + time determines your <strong>O.W.L. grade</strong>.</span></div>
+        <div class="quiz-rule"><i class="fas fa-hat-wizard" style="color:#9b59b6"></i> <span>Pick your <strong>House</strong> at the end to claim your place on the leaderboard!</span></div>
+      </div>
+      <p class="quiz-rules-ready">Get ready, wizard...</p>
+    </div>
+    <div id="quizCountdown" class="quiz-countdown-screen" style="display:none">
+      <div class="quiz-countdown-num" id="quizCountdownNum">5</div>
+    </div>
     <div id="quizPlay" class="quiz-play-screen" style="display:none">
       <div class="quiz-play-top">
         <span class="quiz-qnum" id="quizQNum">1 / 10</span>
@@ -17112,7 +17138,7 @@ body.light-theme input,body.light-theme select{background:rgba(255,253,246,.8);c
         <button class="quiz-jackpot-go" onclick="Quiz.submitScore()" style="margin-top:12px;font-size:.85rem;padding:10px 24px"><i class="fas fa-paper-plane"></i> Submit Score</button>
         <button class="quiz-name-skip" onclick="Quiz.closeModal()">Skip</button>
       </div>
-      <p class="quiz-disclaimer"><i class="fas fa-info-circle"></i> These scores will <strong>NOT</strong> be added in the Hogwarts Tournament.</p>
+      <p class="quiz-disclaimer"><i class="fas fa-info-circle"></i> These scores will be added in the Hogwarts Tournament.</p>
       <button class="quiz-retry-btn" onclick="Quiz.restart()"><i class="fas fa-redo"></i> Try Again</button>
     </div>
   </div>
@@ -29479,6 +29505,8 @@ var Quiz = {
     document.getElementById('quizStart').style.display = this._loggedIn ? 'block' : 'none';
     document.getElementById('quizPlay').style.display = 'none';
     document.getElementById('quizResult').style.display = 'none';
+    document.getElementById('quizRules').style.display = 'none';
+    document.getElementById('quizCountdown').style.display = 'none';
     document.getElementById('quizLoginError').style.display = 'none';
     var pw = document.getElementById('quizPassword');
     if (pw && !this._loggedIn) { pw.value = ''; setTimeout(function(){ pw.focus(); }, 100); }
@@ -29499,13 +29527,15 @@ var Quiz = {
   },
   closeModal: function() {
     if (this._timer) clearInterval(this._timer);
+    this._loggedIn = false;
     document.getElementById('quizModal').style.display = 'none';
+    document.getElementById('quizRules').style.display = 'none';
+    document.getElementById('quizCountdown').style.display = 'none';
     document.body.style.overflow = '';
   },
   start: function() {
     var self = this;
     var startEl = document.getElementById('quizStart');
-    // Show loading state on button
     var btn = startEl ? startEl.querySelector('.quiz-jackpot-go') : null;
     if (btn) { btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Loading questions...'; }
     this._fetchQuestions(function() {
@@ -29518,8 +29548,25 @@ var Quiz = {
       self._current = 0; self._score = 0; self._seconds = 0; self._answered = false; self._selectedHouse = ''; self._skips = 0;
       document.getElementById('quizStart').style.display = 'none';
       document.getElementById('quizResult').style.display = 'none';
-      document.getElementById('quizPlay').style.display = 'block';
-      self._startTimer(); self._showQuestion();
+      document.getElementById('quizRules').style.display = 'block';
+      setTimeout(function() {
+        document.getElementById('quizRules').style.display = 'none';
+        document.getElementById('quizCountdown').style.display = 'flex';
+        var count = 5;
+        var cdEl = document.getElementById('quizCountdownNum');
+        cdEl.textContent = count;
+        var cdTimer = setInterval(function() {
+          count--;
+          if (count <= 0) {
+            clearInterval(cdTimer);
+            document.getElementById('quizCountdown').style.display = 'none';
+            document.getElementById('quizPlay').style.display = 'block';
+            self._startTimer(); self._showQuestion();
+          } else {
+            cdEl.textContent = count;
+          }
+        }, 1000);
+      }, 4000);
     });
   },
   restart: function() {

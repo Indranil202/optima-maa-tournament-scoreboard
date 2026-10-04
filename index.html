@@ -28930,13 +28930,7 @@ var Gallery = {
     this._idx = idx;
     this._activeThumb = thumbEl || null;
     this._createOverlay();
-    if (typeof VoiceGuide !== 'undefined') {
-      if (VoiceGuide._audio && !VoiceGuide._audio.paused) {
-        VoiceGuide._audio.pause(); VoiceGuide._audio.currentTime = 0;
-        VoiceGuide._currentClip = null; VoiceGuide._currentPriority = 0;
-      }
-      VoiceGuide.play('hag-gallery-open', true);
-    }
+    if (typeof VoiceGuide !== 'undefined') VoiceGuide.play('hag-gallery-open');
     document.addEventListener('keydown', Gallery._keyHandler);
     document.body.style.overflow = 'hidden';
   },
@@ -29828,7 +29822,8 @@ var VoiceGuide = {
         this._queue.push({ key: key, src: src, pri: pri });
         return;
       } else {
-        // Lower priority — skip (don't interrupt)
+        // Lower priority — queue behind current (plays after it ends)
+        this._queue.push({ key: key, src: src, pri: pri });
         return;
       }
     }

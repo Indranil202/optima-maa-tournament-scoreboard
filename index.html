@@ -30192,7 +30192,6 @@ var TabNarrator = {
   _muted: false,
   _bgVolume: 0.15,
   _bgDuckVolume: 0.04,
-  _played: {},  // track which tabs have auto-played
 
   init: function() {
     var self = this;
@@ -30236,14 +30235,16 @@ var TabNarrator = {
     document.addEventListener('touchstart', startBg);
   },
 
+  _currentNarrationTab: null,
+
   playForTab: function(tab, force) {
     if (this._muted) return;
     var src = this.audioMap[tab];
     if (!src) return;
 
-    // Auto-play only once per tab per session (unless forced by replay button)
-    if (!force && this._played[tab]) return;
-    this._played[tab] = true;
+    // Don't replay if already on this tab (unless forced by replay button)
+    if (!force && this._currentNarrationTab === tab) return;
+    this._currentNarrationTab = tab;
 
     // Stop any current narration
     if (this._narration && !this._narration.paused) {

@@ -29352,76 +29352,63 @@ var Gallery = {
   },
 
   openLightbox: function(idx, thumbEl) {
-    // Close any existing inline viewer first
     this.closeLightbox();
     this._idx = idx;
     this._activeThumb = thumbEl || null;
-    this._insertInlineView();
+    this._createOverlay();
     document.addEventListener('keydown', Gallery._keyHandler);
+    document.body.style.overflow = 'hidden';
   },
 
   closeLightbox: function() {
-    var existing = document.querySelector('.gallery-inline-view');
+    var existing = document.querySelector('.gallery-overlay');
     if (existing) {
       var v = existing.querySelector('video'); if (v) v.pause();
       existing.remove();
     }
     this._activeThumb = null;
     document.removeEventListener('keydown', Gallery._keyHandler);
+    document.body.style.overflow = '';
   },
 
   prev: function() {
     this._idx = (this._idx - 1 + this._flat.length) % this._flat.length;
-    this._updateInlineMedia();
+    this._updateOverlayMedia();
   },
 
   next: function() {
     this._idx = (this._idx + 1) % this._flat.length;
-    this._updateInlineMedia();
+    this._updateOverlayMedia();
   },
 
-  _insertInlineView: function() {
-    var item = this._flat[this._idx];
-    if (!item) return;
-
-    // Find the thumb element for this index to place viewer after it
-    var thumb = this._activeThumb;
-    if (!thumb) return;
-    var grid = thumb.closest('.gallery-grid');
-    if (!grid) return;
-
-    // Create inline viewer element
-    var viewer = document.createElement('div');
-    viewer.className = 'gallery-inline-view';
-    viewer.innerHTML =
-      '<div class="gallery-inline-close" onclick="Gallery.closeLightbox()"><i class="fas fa-xmark"></i></div>' +
-      '<div class="gallery-inline-nav gallery-inline-prev" onclick="Gallery.prev()"><i class="fas fa-chevron-left"></i></div>' +
-      '<div id="galleryInlineMedia"></div>' +
-      '<div class="gallery-inline-nav gallery-inline-next" onclick="Gallery.next()"><i class="fas fa-chevron-right"></i></div>';
-
-    // Insert after the clicked thumb inside the grid
-    if (thumb.nextElementSibling) {
-      grid.insertBefore(viewer, thumb.nextElementSibling);
-    } else {
-      grid.appendChild(viewer);
-    }
-    this._updateInlineMedia();
-    // Smooth scroll to viewer
-    setTimeout(function() { viewer.scrollIntoView({ behavior:'smooth', block:'center' }); }, 50);
+  _createOverlay: function() {
+    var overlay = document.createElement('div');
+    overlay.className = 'gallery-overlay';
+    overlay.onclick = function(e) { if (e.target === overlay) Gallery.closeLightbox(); };
+    overlay.innerHTML =
+      '<div class="gallery-overlay-close" onclick="Gallery.closeLightbox()"><i class="fas fa-xmark"></i></div>' +
+      '<div class="gallery-overlay-nav gallery-overlay-prev" onclick="Gallery.prev()"><i class="fas fa-chevron-left"></i></div>' +
+      '<div class="gallery-overlay-media" id="galleryOverlayMedia"></div>' +
+      '<div class="gallery-overlay-nav gallery-overlay-next" onclick="Gallery.next()"><i class="fas fa-chevron-right"></i></div>' +
+      '<div class="gallery-overlay-counter" id="galleryOverlayCounter"></div>';
+    document.body.appendChild(overlay);
+    this._updateOverlayMedia();
   },
 
-  _updateInlineMedia: function() {
+  _updateOverlayMedia: function() {
     var item = this._flat[this._idx];
     if (!item) return;
-    var media = document.getElementById('galleryInlineMedia');
+    var media = document.getElementById('galleryOverlayMedia');
     if (!media) return;
     var oldV = media.querySelector('video'); if (oldV) oldV.pause();
     var path = 'assets/Gallery/' + item.folder + '/' + item.file;
     if (this._isVideo(item.file)) {
-      media.innerHTML = '<video src="' + path + '" controls autoplay style="max-height:75vh;border-radius:4px"></video>';
+      media.innerHTML = '<video src="' + path + '" controls autoplay style="max-height:85vh;max-width:90vw;border-radius:8px"></video>';
     } else {
-      media.innerHTML = '<img src="' + path + '" alt="' + item.file + '" style="max-height:75vh;border-radius:4px;object-fit:contain">';
+      media.innerHTML = '<img src="' + path + '" alt="' + item.file + '" style="max-height:85vh;max-width:90vw;border-radius:8px;object-fit:contain">';
     }
+    var counter = document.getElementById('galleryOverlayCounter');
+    if (counter) counter.textContent = (this._idx + 1) + ' / ' + this._flat.length;
   },
 
   _keyHandler: function(e) {

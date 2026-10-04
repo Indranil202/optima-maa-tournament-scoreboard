@@ -15121,19 +15121,34 @@ body.light-theme input,body.light-theme select{background:rgba(255,253,246,.8);c
 }
 @keyframes quizSparkle{0%,100%{left:-75%}50%{left:125%}}
 
-/* ── Scoreboard bar (below search) ── */
-.quiz-scoreboard-bar{margin:6px 0 0}
-.quiz-sb-toggle{
-  display:flex;align-items:center;gap:8px;width:100%;
-  padding:8px 18px;border:1px solid rgba(139,109,56,.1);border-top:none;
-  border-radius:0 0 10px 10px;background:rgba(139,109,56,.03);
-  cursor:pointer;font-size:.78rem;color:#a08030;font-family:'Cinzel',serif;
-  letter-spacing:.5px;transition:all .2s;
+/* ── Scoreboard Button (inline, beside quiz) ── */
+.quiz-sb-wrap{position:relative;flex-shrink:0}
+.quiz-sb-btn{
+  width:42px;height:42px;border-radius:var(--radius-sm);
+  background:var(--bg-glass);border:1px solid var(--border-glass);
+  color:#a08030;font-size:.9rem;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  transition:all .2s;
 }
-.quiz-sb-toggle:hover{background:rgba(139,109,56,.06);color:#d4a017}
-.quiz-sb-chevron{margin-left:auto;font-size:.6rem;transition:transform .3s}
-.quiz-sb-chevron.open{transform:rotate(180deg)}
-.quiz-sb-body{border:1px solid rgba(139,109,56,.1);border-top:none;border-radius:0 0 10px 10px;padding:8px 12px;max-height:300px;overflow-y:auto;background:rgba(10,8,4,.3)}
+.quiz-sb-btn:hover{border-color:rgba(212,160,23,.4);color:#d4a017;box-shadow:0 0 12px rgba(212,160,23,.1)}
+.quiz-sb-dropdown{
+  position:absolute;top:calc(100% + 6px);right:0;z-index:9999;
+  width:340px;max-height:400px;overflow-y:auto;
+  background:linear-gradient(160deg,#1a1408,#0d0b06);
+  border:1px solid rgba(139,109,56,.25);border-radius:10px;
+  box-shadow:0 8px 40px rgba(0,0,0,.5),0 0 20px rgba(212,160,23,.05);
+  animation:quizFadeIn .2s ease;
+}
+.quiz-sb-dropdown-header{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:10px 14px;border-bottom:1px solid rgba(139,109,56,.12);
+  font-family:'Cinzel',serif;font-size:.8rem;color:#d4a017;letter-spacing:.5px;
+}
+.quiz-sb-dropdown-header i{margin-right:6px;font-size:.75rem}
+.quiz-sb-dropdown-close{background:none;border:none;color:#a08030;cursor:pointer;font-size:.8rem;padding:4px;transition:color .2s}
+.quiz-sb-dropdown-close:hover{color:#d4a017}
+#quizLbBody{padding:6px 10px}
+
 .quiz-modal-overlay{
   position:fixed;inset:0;z-index:99999;
   background:rgba(5,3,1,.85);backdrop-filter:blur(4px);
@@ -16119,18 +16134,22 @@ body.light-theme input,body.light-theme select{background:rgba(255,253,246,.8);c
       <span class="quiz-hero-text">LORE QUIZ</span>
     </button>
 
+    <!-- Scoreboard Button (small, beside quiz) -->
+    <div class="quiz-sb-wrap" id="quizSbWrap">
+      <button class="quiz-sb-btn" onclick="Quiz.toggleScoreboard()" title="Quiz Scoreboard">
+        <i class="fas fa-ranking-star"></i>
+      </button>
+      <div class="quiz-sb-dropdown" id="quizSbBody" style="display:none">
+        <div class="quiz-sb-dropdown-header">
+          <span><i class="fas fa-ranking-star"></i> Quiz Scoreboard</span>
+          <button onclick="Quiz.toggleScoreboard()" class="quiz-sb-dropdown-close"><i class="fas fa-xmark"></i></button>
+        </div>
+        <div id="quizLbBody"><p style="color:var(--text-muted);text-align:center;padding:.8rem;font-size:.8rem">Click to load scores</p></div>
+      </div>
+    </div>
+
   </div>
 
-  <!-- Scoreboard (collapsible, below search bar) -->
-  <div class="quiz-scoreboard-bar" id="quizScoreboardBar">
-    <button class="quiz-sb-toggle" onclick="Quiz.toggleScoreboard()">
-      <i class="fas fa-ranking-star"></i> <span>Quiz Scoreboard</span>
-      <i class="fas fa-chevron-down quiz-sb-chevron" id="quizSbChevron"></i>
-    </button>
-    <div class="quiz-sb-body" id="quizSbBody" style="display:none">
-      <div id="quizLbBody"><p style="color:var(--text-muted);text-align:center;padding:1rem;font-size:.85rem">Click to load scores</p></div>
-    </div>
-  </div>
 
 
 
@@ -29573,11 +29592,9 @@ var Quiz = {
   },
   toggleScoreboard: function() {
     var body = document.getElementById('quizSbBody');
-    var chev = document.getElementById('quizSbChevron');
     if (!body) return;
     var isOpen = body.style.display !== 'none';
     body.style.display = isOpen ? 'none' : 'block';
-    if (chev) chev.classList.toggle('open', !isOpen);
     if (!isOpen) this.loadLeaderboard();
   },
   loadLeaderboard: function() {
@@ -29608,6 +29625,15 @@ var Quiz = {
   }
 };
 
+
+// Close quiz scoreboard dropdown when clicking outside
+document.addEventListener('click', function(e) {
+  var wrap = document.getElementById('quizSbWrap');
+  if (wrap && !wrap.contains(e.target)) {
+    var dd = document.getElementById('quizSbBody');
+    if (dd) dd.style.display = 'none';
+  }
+});
 </script>
 
 

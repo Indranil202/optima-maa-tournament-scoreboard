@@ -29589,7 +29589,13 @@ var VoiceGuide = {
     'tab-gallery':         'assets/audio/voices/dumbledore/pensieve.mp3',
 
     // McGonagall — Buttons & actions
-    'mcg-nav-click':         'assets/audio/voices/mcgonagall/nav-click.mp3',
+    'mcg-nav-click': [
+      'assets/audio/voices/mcgonagall/nav-click-1.mp3',
+      'assets/audio/voices/mcgonagall/nav-click-2.mp3',
+      'assets/audio/voices/mcgonagall/nav-click-3.mp3',
+      'assets/audio/voices/mcgonagall/nav-click-4.mp3',
+      'assets/audio/voices/mcgonagall/nav-click-5.mp3'
+    ],
     'mcg-quiz-rules':        'assets/audio/voices/mcgonagall/quiz-rules.mp3',
     'mcg-score-submitted':   'assets/audio/voices/mcgonagall/score-submitted.mp3',
     'mcg-search-filter':     'assets/audio/voices/mcgonagall/search-filter.mp3',
@@ -29728,6 +29734,8 @@ var VoiceGuide = {
     if (this._muted) return;
     var src = this.clips[key];
     if (!src) return;
+    // If clip is an array, pick random variant
+    if (Array.isArray(src)) src = src[Math.floor(Math.random() * src.length)];
 
     var pri = this._getPriority(key);
 

@@ -28366,6 +28366,7 @@ var OwlPost = {
     if(n){n.textContent=this._unread>9?'9+':this._unread; n.style.display=this._unread>0?'':'none';}
   },
   showHistory: function() {
+    if (typeof VoiceGuide !== 'undefined') VoiceGuide.play('dob-owl-post');
     var p=document.getElementById('notifPanel'); if(!p) return;
     if(p.style.display==='block'){p.style.display='none'; return;}
     this._unread=0; this._updateBell();
@@ -29490,6 +29491,7 @@ var Quiz = {
     });
   },
   toggleScoreboard: function() {
+    if (typeof VoiceGuide !== 'undefined') VoiceGuide.play('dob-quiz-scoreboard');
     var body = document.getElementById('quizSbBody');
     if (!body) return;
     var isOpen = body.style.display !== 'none';
@@ -29720,6 +29722,10 @@ var VoiceGuide = {
     'dob-scroll-hint':    'assets/audio/voices/dobby/scroll-hint.mp3',
     'dob-mobile-tip':     'assets/audio/voices/dobby/mobile-tip.mp3',
     'dob-dashboard-nums': 'assets/audio/voices/dobby/dashboard-numbers.mp3',
+
+    // Owl Post & Quiz Scoreboard
+    'dob-owl-post':           'assets/audio/voices/dobby/owl-post.mp3',
+    'dob-quiz-scoreboard':    'assets/audio/voices/dobby/quiz-scoreboard.mp3',
 
     // ── Section Explainers (click-to-explain) ──
 
@@ -30145,22 +30151,26 @@ VoiceGuide.init();
       }
     }
 
-    // Houses tab — flip card click (reuse existing hat-house-card or new flip-card)
+    // Flip card click — different voice depending on which tab
     var flipCard = e.target.closest ? e.target.closest('.wc-flip-wrap') : null;
     if (flipCard) {
-      // Check if on houses tab
-      var onHouses = document.getElementById('houses');
-      if (onHouses && onHouses.classList.contains('active')) {
+      var curTab = (App && App.currentTab) ? App.currentTab : '';
+      if (curTab === 'houses') {
         if (now - _secLast < 15000 && _secLastKey === 'hat-houses-flip-card') return;
         _secLast = now;
         _secLastKey = 'hat-houses-flip-card';
         VoiceGuide.play('hat-houses-flip-card');
+      } else if (curTab === 'playerProfiles') {
+        if (now - _secLast < 15000 && _secLastKey === 'dum-wr-player-card') return;
+        _secLast = now;
+        _secLastKey = 'dum-wr-player-card';
+        VoiceGuide.play('dum-wr-player-card');
       }
       return;
     }
 
     // House Cup — leaderboard table click
-    var rankTable = e.target.closest ? e.target.closest('#rankingsContent') : null;
+    var rankTable = e.target.closest ? e.target.closest('#rankLeaderboard') : null;
     if (rankTable) {
       if (now - _secLast < 15000 && _secLastKey === 'hat-hc-leaderboard') return;
       _secLast = now;
@@ -30179,18 +30189,7 @@ VoiceGuide.init();
       return;
     }
 
-    // Wizard Registry — player card click
-    var playerCard = e.target.closest ? e.target.closest('.player-card, .wc-flip-wrap') : null;
-    if (playerCard) {
-      var onWR = document.getElementById('playerProfiles');
-      if (onWR && onWR.classList.contains('active')) {
-        if (now - _secLast < 15000 && _secLastKey === 'dum-wr-player-card') return;
-        _secLast = now;
-        _secLastKey = 'dum-wr-player-card';
-        VoiceGuide.play('dum-wr-player-card');
-      }
-      return;
-    }
+
 
     // Wizard Registry — search focus
     var searchEl = e.target.closest ? e.target.closest('#searchInput') : null;
@@ -30216,7 +30215,7 @@ VoiceGuide.init();
     }
 
     // House Cup — tracker section
-    var tracker = e.target.closest ? e.target.closest('#ptcTracker, .ptc-grid') : null;
+    var tracker = e.target.closest ? e.target.closest('#rankUpdateTracker') : null;
     if (tracker) {
       if (now - _secLast < 15000 && _secLastKey === 'dob-hc-tracker') return;
       _secLast = now;

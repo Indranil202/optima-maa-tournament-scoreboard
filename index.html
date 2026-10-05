@@ -28783,7 +28783,7 @@ var Bracket = {
         }
         var done=match.status==='completed';
         var sc=match.score||'';
-        var parts=sc.split(/[-\s]/).map(function(x){return parseInt(x)||0;});
+        var parts=sc.split(/[-\s]+/).filter(function(x){return x!=='';}).map(function(x){return parseInt(x)||0;});
         var s1=parts[0]||0, s2=parts[1]||0;
         var t1w=done&&s1>s2, t2w=done&&s2>s1;
         html+='<div class="bk-match" data-mid="'+match.mid+'">';

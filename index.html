@@ -29721,6 +29721,46 @@ var VoiceGuide = {
     'dob-mobile-tip':     'assets/audio/voices/dobby/mobile-tip.mp3',
     'dob-dashboard-nums': 'assets/audio/voices/dobby/dashboard-numbers.mp3',
 
+    // ── Section Explainers (click-to-explain) ──
+
+    // Great Hall sections
+    'dob-gh-total-scheduled': 'assets/audio/voices/dobby/gh-total-scheduled.mp3',
+    'dob-gh-completion':      'assets/audio/voices/dobby/gh-completion.mp3',
+    'dob-gh-wizards':         'assets/audio/voices/dobby/gh-wizards.mp3',
+    'dob-gh-cup-leader':      'assets/audio/voices/dobby/gh-cup-leader.mp3',
+    'hat-gh-house-race':      'assets/audio/voices/sorting-hat/gh-house-race.mp3',
+    'hat-gh-leading-house':   'assets/audio/voices/sorting-hat/gh-leading-house.mp3',
+    'mcg-gh-recent-results':  'assets/audio/voices/mcgonagall/gh-recent-results.mp3',
+    'mcg-gh-progress':        'assets/audio/voices/mcgonagall/gh-progress.mp3',
+    'dum-gh-top-wizards':     'assets/audio/voices/dumbledore/gh-top-wizards.mp3',
+    'hag-gh-upcoming':        'assets/audio/voices/hagrid/gh-upcoming.mp3',
+
+    // Houses tab sections
+    'hat-houses-flip-card':   'assets/audio/voices/sorting-hat/houses-flip-card.mp3',
+    'mcg-houses-stats':       'assets/audio/voices/mcgonagall/houses-stats.mp3',
+    'hat-houses-h2h':         'assets/audio/voices/sorting-hat/houses-h2h.mp3',
+
+    // Match Centre sections
+    'mcg-mc-kpi':             'assets/audio/voices/mcgonagall/mc-kpi.mp3',
+    'dob-mc-filters':         'assets/audio/voices/dobby/mc-filters.mp3',
+    'mcg-mc-match-table':     'assets/audio/voices/mcgonagall/mc-match-table.mp3',
+
+    // House Cup sections
+    'hat-hc-leaderboard':     'assets/audio/voices/sorting-hat/hc-leaderboard.mp3',
+    'mcg-hc-breakdown':       'assets/audio/voices/mcgonagall/hc-breakdown.mp3',
+    'dob-hc-tracker':         'assets/audio/voices/dobby/hc-tracker.mp3',
+
+    // Tournament Arena sections
+    'hag-ta-game-cards':      'assets/audio/voices/hagrid/ta-game-cards.mp3',
+    'mcg-ta-bracket':         'assets/audio/voices/mcgonagall/ta-bracket.mp3',
+
+    // Wizard Registry sections
+    'dob-wr-search':          'assets/audio/voices/dobby/wr-search.mp3',
+    'dum-wr-player-card':     'assets/audio/voices/dumbledore/wr-player-card.mp3',
+
+    // Pensieve sections
+    'dob-ps-filters':         'assets/audio/voices/dobby/ps-filters.mp3',
+
     // Sorting Hat — Houses & H2H
     'hat-house-card':      'assets/audio/voices/sorting-hat/house-card.mp3',
     'hat-h2h-compare':     'assets/audio/voices/sorting-hat/h2h-compare.mp3',
@@ -29742,6 +29782,7 @@ var VoiceGuide = {
     'hat':  30,   // Sorting Hat houses/H2H
     'mcg':  40,   // McGonagall actions
     'snp':  40,   // Snape errors
+    'dum':  35,   // Dumbledore section explainers — mid priority
     'tab':  50    // Dumbledore tab narrations — plays once, must complete
   },
 
@@ -30057,6 +30098,162 @@ VoiceGuide.init();
       }, 22000);
     }
   };
+  // ── Section click-to-explain listeners ──
+  var _sectionMap = {
+    // Great Hall — KPI cards (stat-card class inside #dashStats)
+    '#dashStats .stat-card.live':      'dob-gh-total-scheduled',
+    '#dashStats .stat-card.completed': 'dob-gh-completion',
+    '#dashStats .stat-card.players':   'dob-gh-wizards',
+    '#dashStats .stat-card.scheduled': 'dob-gh-cup-leader',
+
+    // Great Hall — sections
+    '#dashHouseBars':       'hat-gh-house-race',
+    '#dashLeadingHouse':    'hat-gh-leading-house',
+    '#dashRecent':          'mcg-gh-recent-results',
+    '#dashTopPlayers':      'dum-gh-top-wizards',
+    '#dashUpcoming':        'hag-gh-upcoming',
+    '#dashProgress':        'mcg-gh-progress',
+
+    // Match Centre sections
+    '#matchStats':          'mcg-mc-kpi',
+    '#lsGameFilter':        'dob-mc-filters',
+    '#lsStatusFilter':      'dob-mc-filters',
+
+    // House Cup sections
+    '.rank-legend':         'mcg-hc-breakdown',
+
+    // Tournament Arena
+    '.bracket-trigger-btn': 'mcg-ta-bracket'
+  };
+
+  // Delegated click handler for all mapped sections
+  var _secLast = 0;
+  var _secLastKey = '';
+  document.addEventListener('click', function(e) {
+    if (typeof VoiceGuide === 'undefined' || VoiceGuide._muted) return;
+    var now = Date.now();
+    // Throttle: same section can't re-trigger within 15s
+    for (var sel in _sectionMap) {
+      var el = e.target.closest ? e.target.closest(sel) : null;
+      if (el) {
+        var key = _sectionMap[sel];
+        if (key === _secLastKey && now - _secLast < 15000) return;
+        _secLast = now;
+        _secLastKey = key;
+        VoiceGuide.play(key);
+        return;
+      }
+    }
+
+    // Houses tab — flip card click (reuse existing hat-house-card or new flip-card)
+    var flipCard = e.target.closest ? e.target.closest('.wc-flip-wrap') : null;
+    if (flipCard) {
+      // Check if on houses tab
+      var onHouses = document.getElementById('houses');
+      if (onHouses && onHouses.classList.contains('active')) {
+        if (now - _secLast < 15000 && _secLastKey === 'hat-houses-flip-card') return;
+        _secLast = now;
+        _secLastKey = 'hat-houses-flip-card';
+        VoiceGuide.play('hat-houses-flip-card');
+      }
+      return;
+    }
+
+    // House Cup — leaderboard table click
+    var rankTable = e.target.closest ? e.target.closest('#rankingsContent') : null;
+    if (rankTable) {
+      if (now - _secLast < 15000 && _secLastKey === 'hat-hc-leaderboard') return;
+      _secLast = now;
+      _secLastKey = 'hat-hc-leaderboard';
+      VoiceGuide.play('hat-hc-leaderboard');
+      return;
+    }
+
+    // Tournament Arena — game card click
+    var gameCard = e.target.closest ? e.target.closest('.game-card2, .event-card2') : null;
+    if (gameCard) {
+      if (now - _secLast < 15000 && _secLastKey === 'hag-ta-game-cards') return;
+      _secLast = now;
+      _secLastKey = 'hag-ta-game-cards';
+      VoiceGuide.play('hag-ta-game-cards');
+      return;
+    }
+
+    // Wizard Registry — player card click
+    var playerCard = e.target.closest ? e.target.closest('.player-card, .wc-flip-wrap') : null;
+    if (playerCard) {
+      var onWR = document.getElementById('playerProfiles');
+      if (onWR && onWR.classList.contains('active')) {
+        if (now - _secLast < 15000 && _secLastKey === 'dum-wr-player-card') return;
+        _secLast = now;
+        _secLastKey = 'dum-wr-player-card';
+        VoiceGuide.play('dum-wr-player-card');
+      }
+      return;
+    }
+
+    // Wizard Registry — search focus
+    var searchEl = e.target.closest ? e.target.closest('#searchInput') : null;
+    if (searchEl) {
+      var onWR2 = document.getElementById('playerProfiles');
+      if (onWR2 && onWR2.classList.contains('active')) {
+        if (now - _secLast < 15000 && _secLastKey === 'dob-wr-search') return;
+        _secLast = now;
+        _secLastKey = 'dob-wr-search';
+        VoiceGuide.play('dob-wr-search');
+      }
+      return;
+    }
+
+    // Pensieve — filter pills
+    var galPill = e.target.closest ? e.target.closest('.gallery-pill, .gallery-filter-pills') : null;
+    if (galPill) {
+      if (now - _secLast < 15000 && _secLastKey === 'dob-ps-filters') return;
+      _secLast = now;
+      _secLastKey = 'dob-ps-filters';
+      VoiceGuide.play('dob-ps-filters');
+      return;
+    }
+
+    // House Cup — tracker section
+    var tracker = e.target.closest ? e.target.closest('#ptcTracker, .ptc-grid') : null;
+    if (tracker) {
+      if (now - _secLast < 15000 && _secLastKey === 'dob-hc-tracker') return;
+      _secLast = now;
+      _secLastKey = 'dob-hc-tracker';
+      VoiceGuide.play('dob-hc-tracker');
+      return;
+    }
+
+    // Houses tab — stats section
+    var houseStats = e.target.closest ? e.target.closest('.house-stats, .hc-members-grid') : null;
+    if (houseStats) {
+      if (now - _secLast < 15000 && _secLastKey === 'mcg-houses-stats') return;
+      _secLast = now;
+      _secLastKey = 'mcg-houses-stats';
+      VoiceGuide.play('mcg-houses-stats');
+      return;
+    }
+
+    // Match Centre — match table rows
+    var matchRow = e.target.closest ? e.target.closest('.gt-panel, .gt-table') : null;
+    if (matchRow) {
+      if (now - _secLast < 15000 && _secLastKey === 'mcg-mc-match-table') return;
+      _secLast = now;
+      _secLastKey = 'mcg-mc-match-table';
+      VoiceGuide.play('mcg-mc-match-table');
+      return;
+    }
+  });
+
+  // H2H button — Sorting Hat houses-h2h voice
+  var h2hBtn = document.querySelector('.h2h-trigger-btn');
+  if (h2hBtn) {
+    h2hBtn.addEventListener('click', function() {
+      if (typeof VoiceGuide !== 'undefined') VoiceGuide.play('hat-houses-h2h');
+    });
+  }
+
   // Don't re-wrap — VoiceGuide.playForTab is already called in the existing showTab
 })();
 </script>

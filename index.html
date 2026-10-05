@@ -17764,7 +17764,7 @@ function fetchViaScript(action, onSuccess, onFailure) {
 
 
 
-  }, 15000);
+  }, 30000);
 
 
 
@@ -19095,19 +19095,46 @@ var App = {
 
   loadAll: function() {
 
-
-
     var self = this;
 
+    // ── Strategy: single getAllData call → pre-seed cache → run loaders ──
+    // GAS throttles concurrent requests; one bulk call avoids timeouts
+    var bulkMap = {
+      'getGamesData': 'games', 'getLiveScores': 'liveScores',
+      'getRankings': 'rankings', 'getPlayerProfiles': 'players',
+      'getHousesData': 'houses', 'getHouseMembers': 'houseMembers'
+    };
 
+    callBackend('getAllData', function(raw) {
+      try {
+        var bundle = JSON.parse(raw);
+        debugLog('Bulk', 'OK', 'getAllData returned ' + Object.keys(bundle).length + ' keys');
+        // Pre-seed sessionStorage cache for each action
+        Object.keys(bulkMap).forEach(function(action) {
+          var key = bulkMap[action];
+          if (bundle[key] !== undefined) {
+            var str = JSON.stringify(bundle[key]);
+            saveCache('optima_' + action, 'optima_' + action + '_ts', str);
+          }
+        });
+        updateDataTimestamp();
+      } catch(e) {
+        debugLog('Bulk', 'WARN', 'getAllData parse failed: ' + e);
+      }
+      // Now run loaders — they will find cached data and render instantly
+      self._runLoaders();
+    }, function(err) {
+      debugLog('Bulk', 'FAIL', 'getAllData failed (' + err + '), falling back to individual calls');
+      self._runLoaders();
+    });
 
-    // ── Parallel load: fire ALL calls simultaneously ──
-    // No sequential gate — each tab renders as soon as its data arrives
-    // GAS cold-start hits only the first call (~3s); rest are warm (~1-2s)
+  },
+
+  _runLoaders: function() {
+    var self = this;
     callBackend('getGamesData', function(raw) {
       self._gamesRaw = raw;
       self._buildGameMaps(raw);
-      // These tabs depend on game maps — fire after maps are built
       self.loadSchedule();
       self.loadGames();
       debugLog('Parallel', 'OK', 'Games maps built — dependent tabs fired');
@@ -19119,15 +19146,11 @@ var App = {
       self.loadSchedule();
       self.loadGames();
     });
-    // These tabs don't need game maps — fire immediately in parallel
     self.loadLiveScores();
     try { self.loadRankings(); } catch(e) { console.error(e); }
     try { self.loadPlayerProfiles(); } catch(e) { console.error(e); }
     try { self.loadHouses(); } catch(e) { console.error(e); }
     try { if (typeof Gallery !== 'undefined') Gallery.load(); } catch(e) { console.error('Gallery load error:', e); }
-
-
-
   },
 
 
@@ -30086,7 +30109,7 @@ VoiceGuide.init();
         VoiceGuide.triggerScrollHint();
       }
     }
-  }, 15000);
+  }, 30000);
 
   // Dashboard numbers — Dobby (fires 3s after Great Hall loads, once per session)
   var _dashNumsDone = false;

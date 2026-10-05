@@ -17629,93 +17629,15 @@ function callBackend(action, onSuccess, onFailure) {
 
 
 function fetchFromGAS(action, onSuccess, onFailure) {
-
-
-
-  var url = GAS_API_URL + '?action=' + encodeURIComponent(action);
-
-
-
-  fetch(url, { redirect: 'follow', headers: { 'Accept': 'application/json' } })
-
-
-
-    .then(function(res) {
-
-
-
-      // GAS redirects to a different URL â€” fetch follows automatically
-
-
-
-      // If response is opaque-redirect or not ok, try text anyway
-
-
-
-      return res.text();
-
-
-
-    })
-
-
-
-    .then(function(text) {
-
-
-
-      // GAS sometimes wraps in HTML on error â€” detect and handle
-
-
-
-      if (text && text.charAt(0) !== '<') {
-
-
-
-        if (onSuccess) onSuccess(text);
-
-
-
-      } else {
-
-
-
-        // Got HTML instead of JSON â€” likely auth/redirect issue
-
-
-
-        window._mdbg.push('GAS [' + action + ']: got HTML, trying JSONP'); console.warn('GAS returned HTML for [' + action + '], trying JSONP fallback');
-
-
-
-        fetchViaScript(action, onSuccess, onFailure);
-
-
-
-      }
-
-
-
-    })
-
-
-
-    .catch(function(err) {
-
-
-
-      window._mdbg.push('GAS [' + action + ']: fetch failed (' + err + '), trying JSONP'); console.error('Fetch failed [' + action + '], trying JSONP fallback:', err);
-
-
-
+  // GAS fetch() always returns HTML from cross-origin (GitHub Pages) due to
+  // redirect through accounts.google.com. Skip fetch, use JSONP directly.
+  fetchViaScript(action, onSuccess, function(err) {
+    // Retry once on failure (GAS cold-start or throttle)
+    window._mdbg.push('GAS [' + action + ']: JSONP failed (' + err + '), retrying...');
+    setTimeout(function() {
       fetchViaScript(action, onSuccess, onFailure);
-
-
-
-    });
-
-
-
+    }, 2000);
+  });
 }
 
 
@@ -19132,12 +19054,14 @@ var App = {
 
   _runLoaders: function() {
     var self = this;
+    // Stagger calls to avoid GAS concurrent execution throttling
+    // Fire games first (other tabs depend on game maps), then stagger rest
     callBackend('getGamesData', function(raw) {
       self._gamesRaw = raw;
       self._buildGameMaps(raw);
       self.loadSchedule();
       self.loadGames();
-      debugLog('Parallel', 'OK', 'Games maps built — dependent tabs fired');
+      debugLog('Parallel', 'OK', 'Games maps built');
     }, function() {
       self._gamesRaw = null;
       self._gameMap = {};
@@ -19146,10 +19070,11 @@ var App = {
       self.loadSchedule();
       self.loadGames();
     });
-    self.loadLiveScores();
-    try { self.loadRankings(); } catch(e) { console.error(e); }
-    try { self.loadPlayerProfiles(); } catch(e) { console.error(e); }
-    try { self.loadHouses(); } catch(e) { console.error(e); }
+    // Stagger remaining calls 1.5s apart to avoid GAS throttling
+    setTimeout(function() { self.loadLiveScores(); }, 1500);
+    setTimeout(function() { try { self.loadRankings(); } catch(e) { console.error(e); } }, 3000);
+    setTimeout(function() { try { self.loadPlayerProfiles(); } catch(e) { console.error(e); } }, 4500);
+    setTimeout(function() { try { self.loadHouses(); } catch(e) { console.error(e); } }, 6000);
     try { if (typeof Gallery !== 'undefined') Gallery.load(); } catch(e) { console.error('Gallery load error:', e); }
   },
 
@@ -29131,14 +29056,7 @@ var Quiz = {
       self._loaded = true;
       cb();
     }
-    // Method 1: direct fetch (handles GAS redirect on most browsers)
-    try {
-      var url = GAS_API_URL + '?action=getQuizQuestions&t=' + Date.now();
-      fetch(url).then(function(r){ return r.text(); }).then(function(t){
-        try { var d = JSON.parse(t); window._mdbg.push('Quiz: got ' + d.length + ' questions via fetch'); finish(d); } catch(e){ window._mdbg.push('Quiz: fetch parse fail, trying JSONP'); tryScript(); }
-      }).catch(function(){ console.warn('Quiz fetch fail, trying script tag'); tryScript(); });
-    } catch(e) { tryScript(); }
-    // Method 2: inject script tag (bypasses CORS entirely)
+    // JSONP only — fetch() always returns HTML from cross-origin GAS
     function tryScript() {
       var s = document.createElement('script');
       s.src = GAS_API_URL + '?action=getQuizQuestions&callback=_quizQCb&t=' + Date.now();

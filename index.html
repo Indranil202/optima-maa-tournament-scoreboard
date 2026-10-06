@@ -19505,7 +19505,7 @@ var App = {
 
 
 
-          '<div style="font-size:0.7rem;color:var(--text-muted);margin-top:2px" id="dWinnersSub">from completed games</div></div>' +
+          '<div style="font-size:0.7rem;color:var(--text-muted);margin-top:2px" id="dWinnersSub">from completed games</div><div style="font-size:0.7rem;color:var(--gold);margin-top:1px;font-weight:600" id="dWinnersTotal"</div></div>' +
 
 
 
@@ -19515,7 +19515,7 @@ var App = {
 
           '<div style="font-size:0.7rem;color:var(--text-muted);margin-top:2px" id="dLeaderPts"></div></div>' +
         '<div class="stat-card completed"><div class="stat-value" id="dParticipation">0</div><div class="stat-label">Unique Players</div><i class="fas fa-users stat-icon"></i><div class="stat-hint">Unique players who participated in completed games</div>' +
-          '<div style="font-size:0.7rem;color:var(--text-muted);margin-top:2px" id="dPartSub">across completed games</div></div>';
+          '<div style="font-size:0.7rem;color:var(--text-muted);margin-top:2px" id="dPartSub">across completed games</div><div style="font-size:0.7rem;color:var(--neon-blue);margin-top:1px;font-weight:600" id="dPartTotal"</div></div>';
 
 
 
@@ -19566,8 +19566,12 @@ var App = {
         animateCounter(document.getElementById('dParticipation'), d._totalParticipation || 0);
         var partSub = document.getElementById('dPartSub');
         if (partSub && d._participationGames) partSub.textContent = 'across ' + d._participationGames + ' completed games';
+        var pTotal = document.getElementById('dPartTotal');
+        if (pTotal) pTotal.textContent = (d._totalParticipationEntries || 0) + ' overall participations';
         var wSub = document.getElementById('dWinnersSub');
         if (wSub && d._completedGameCategories) wSub.textContent = 'from ' + d._completedGameCategories + ' game categories';
+        var wTotal = document.getElementById('dWinnersTotal');
+        if (wTotal) wTotal.textContent = (d._totalWinEntries || 0) + ' total wins (1st-3rd)';
         var lPts = document.getElementById('dLeaderPts');
 
 
@@ -24872,6 +24876,17 @@ var stats = { total: 0, scheduled: 0, live: 0, completed: 0 };
             });
           });
           completedGames = Object.keys(gameSet).length;
+          // Count total win entries (1st-3rd, all entries not just unique players)
+          var totalWinEntries = 0;
+          profiles.forEach(function(p) {
+            (p.Games || []).forEach(function(g) {
+              if (g.position >= 1 && g.position <= 3) {
+                var key = (g.game||'').toLowerCase() + '|' + (g.category||'').toLowerCase();
+                if (!hasDoneFilter || doneGames[key]) totalWinEntries++;
+              }
+            });
+          });
+          self.dashData._totalWinEntries = totalWinEntries;
           self.dashData._uniqueWinners = uniqueWinners;
           // Total participation: count unique players who participated in completed games
           var partPlayerSet = {}, partGameSet = {};
@@ -24887,6 +24902,15 @@ var stats = { total: 0, scheduled: 0, live: 0, completed: 0 };
             if (participated) partPlayerSet[(p.Name||'').toLowerCase()] = 1;
           });
           self.dashData._totalParticipation = Object.keys(partPlayerSet).length;
+          // Also store overall (non-unique) participation count
+          var totalPartEntries = 0;
+          profiles.forEach(function(p) {
+            (p.Games || []).forEach(function(g) {
+              var key = (g.game||'').toLowerCase() + '|' + (g.category||'').toLowerCase();
+              if (!hasDoneFilter || doneGames[key]) totalPartEntries++;
+            });
+          });
+          self.dashData._totalParticipationEntries = totalPartEntries;
           self.dashData._participationGames = Object.keys(partGameSet).length;
           self.dashData._completedGameCategories = completedGames;
           self.dashData.players = profiles.length; updateStatusTicker();

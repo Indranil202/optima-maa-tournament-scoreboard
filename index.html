@@ -19501,7 +19501,7 @@ var App = {
 
 
 
-        '<div class="stat-card players"><div class="stat-value" id="dPlayers">0</div><div class="stat-label">Winners</div><i class="fas fa-hat-wizard stat-icon"></i><div class="stat-hint">Unique winners across completed games</div>' +
+        '<div class="stat-card players"><div class="stat-value" id="dPlayers">0</div><div class="stat-label">Winners</div><i class="fas fa-hat-wizard stat-icon"></i><div class="stat-hint">Unique podium finishers (1st-3rd) in completed games</div>' +
 
 
 
@@ -19514,7 +19514,7 @@ var App = {
 
 
           '<div style="font-size:0.7rem;color:var(--text-muted);margin-top:2px" id="dLeaderPts"></div></div>' +
-        '<div class="stat-card completed"><div class="stat-value" id="dParticipation">0</div><div class="stat-label">Total Participation</div><i class="fas fa-users stat-icon"></i><div class="stat-hint">Total player entries across all completed matches</div>' +
+        '<div class="stat-card completed"><div class="stat-value" id="dParticipation">0</div><div class="stat-label">Unique Players</div><i class="fas fa-users stat-icon"></i><div class="stat-hint">Unique players who participated in completed games</div>' +
           '<div style="font-size:0.7rem;color:var(--text-muted);margin-top:2px" id="dPartSub">across completed games</div></div>';
 
 
@@ -24855,8 +24855,10 @@ var stats = { total: 0, scheduled: 0, live: 0, completed: 0 };
           var hasDoneFilter = Object.keys(doneGames).length > 0;
           var uniqueWinners = profiles.filter(function(p) {
             if (!p.Games || !p.Games.length) return false;
-            if (!hasDoneFilter) return true; // no match data yet — show all
+            // Only count 1st, 2nd, 3rd place (exclude 4th)
             return p.Games.some(function(g) {
+              if (g.position < 1 || g.position > 3) return false;
+              if (!hasDoneFilter) return true;
               var key = (g.game||'').toLowerCase() + '|' + (g.category||'').toLowerCase();
               return !!doneGames[key];
             });
@@ -24871,18 +24873,20 @@ var stats = { total: 0, scheduled: 0, live: 0, completed: 0 };
           });
           completedGames = Object.keys(gameSet).length;
           self.dashData._uniqueWinners = uniqueWinners;
-          // Total participation: count all player-game entries from completed games
-          var totalPart = 0, partGameSet = {};
+          // Total participation: count unique players who participated in completed games
+          var partPlayerSet = {}, partGameSet = {};
           profiles.forEach(function(p) {
+            var participated = false;
             (p.Games || []).forEach(function(g) {
               var key = (g.game||'').toLowerCase() + '|' + (g.category||'').toLowerCase();
               if (!hasDoneFilter || doneGames[key]) {
-                totalPart++;
+                participated = true;
                 partGameSet[g.game + '|' + g.category] = 1;
               }
             });
+            if (participated) partPlayerSet[(p.Name||'').toLowerCase()] = 1;
           });
-          self.dashData._totalParticipation = totalPart;
+          self.dashData._totalParticipation = Object.keys(partPlayerSet).length;
           self.dashData._participationGames = Object.keys(partGameSet).length;
           self.dashData._completedGameCategories = completedGames;
           self.dashData.players = profiles.length; updateStatusTicker();

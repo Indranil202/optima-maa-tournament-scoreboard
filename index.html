@@ -19913,7 +19913,12 @@ var App = {
 
             '<div class="gh-player-pts">' + (p.TotalPoints||0) + ' pts</div>' +
             (function() {
-              var gms = p.Games || [];
+              var _dg = (typeof App !== 'undefined' && App.dashData._doneGames) ? App.dashData._doneGames : {};
+              var _hasDg = Object.keys(_dg).length > 0;
+              var gms = (p.Games || []).filter(function(g) {
+                if (!_hasDg) return true;
+                return !!_dg[(g.game||'').toLowerCase() + '|' + (g.category||'').toLowerCase()];
+              });
               if (!gms.length) return '';
               var bd = gms.map(function(g) { return '<span style="display:inline-block;background:rgba(255,255,255,0.06);border-radius:4px;padding:1px 5px;margin:1px;font-size:0.55rem;white-space:nowrap">' + (g.game||'') + (g.category ? ' (' + g.category + ')' : '') + ' #' + (g.position||'-') + '</span>'; }).join('');
               return '<div class="gh-player-breakdown" style="width:100%;margin-top:2px;padding-left:36px;line-height:1.4">' + bd + '</div>';
@@ -20810,7 +20815,10 @@ var stats = { live: 0, scheduled: 0, completed: 0 };
 
 
 
-        if (status === 'completed' || status === 'complete') { stats.completed++; status = 'completed'; }
+        if (status === 'completed' || status === 'complete') { stats.completed++; status = 'completed';
+          if (!stats._doneGames) stats._doneGames = {};
+          stats._doneGames[(gameMeta.name||'').toLowerCase() + '|' + (catName||'').toLowerCase()] = 1;
+        }
 
 
 
@@ -24853,11 +24861,25 @@ var stats = { total: 0, scheduled: 0, live: 0, completed: 0 };
 
 
 
-          // Count unique winners (players with at least one game entry = participated)
-          var uniqueWinners = profiles.filter(function(p) { return p.Games && p.Games.length > 0; }).length;
+          // Count unique winners — only from games that are actually completed
+          var doneGames = (self.dashData._doneGames) || {};
+          var hasDoneFilter = Object.keys(doneGames).length > 0;
+          var uniqueWinners = profiles.filter(function(p) {
+            if (!p.Games || !p.Games.length) return false;
+            if (!hasDoneFilter) return true; // no match data yet — show all
+            return p.Games.some(function(g) {
+              var key = (g.game||'').toLowerCase() + '|' + (g.category||'').toLowerCase();
+              return !!doneGames[key];
+            });
+          }).length;
           var completedGames = 0;
           var gameSet = {};
-          profiles.forEach(function(p) { (p.Games || []).forEach(function(g) { var k = g.game + '|' + g.category; gameSet[k] = 1; }); });
+          profiles.forEach(function(p) {
+            (p.Games || []).forEach(function(g) {
+              var key = (g.game||'').toLowerCase() + '|' + (g.category||'').toLowerCase();
+              if (!hasDoneFilter || doneGames[key]) { gameSet[g.game + '|' + g.category] = 1; }
+            });
+          });
           completedGames = Object.keys(gameSet).length;
           self.dashData._uniqueWinners = uniqueWinners;
           self.dashData._completedGameCategories = completedGames;

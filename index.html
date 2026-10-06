@@ -29057,6 +29057,7 @@ var Quiz = {
       cb();
     }
     // JSONP only — fetch() always returns HTML from cross-origin GAS
+    tryScript();
     function tryScript() {
       var s = document.createElement('script');
       s.src = GAS_API_URL + '?action=getQuizQuestions&callback=_quizQCb&t=' + Date.now();

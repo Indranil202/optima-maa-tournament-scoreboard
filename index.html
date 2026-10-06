@@ -24329,65 +24329,17 @@ var stats = { total: 0, scheduled: 0, live: 0, completed: 0 };
 
 
     callBackend('getRankings', function(rankRaw) {
-
-
-
+        // Build doneSet from MatchCentre completed status (NOT Rankings pre-fills)
+        // dashData._doneGames keys: "gamename|catname" → convert to "gamename - catname"
         var doneSet = {};
-
-
-
-        try {
-
-
-
-          var rd = JSON.parse(rankRaw || '[]');
-
-
-
-          for (var ri = 1; ri < rd.length; ri++) {
-
-
-
-            var gn = (rd[ri][0] || '').toString().trim().toLowerCase();
-
-
-
-            var seg = (rd[ri][1] || '').toString().trim();
-
-
-
-            if (!gn || !seg) continue;
-
-
-
-            var p1 = (rd[ri][2] || '').toString().trim();
-
-
-
-            var p2 = (rd[ri][3] || '').toString().trim();
-
-
-
-            var p3 = (rd[ri][4] || '').toString().trim();
-
-
-
-            var p4 = (rd[ri][5] || '').toString().trim();
-
-
-
-            if (p1 && p2 && p3 && p4) doneSet[gn] = true;
-
-
-
-          }
-
-
-
-        } catch(e) {}
-
-
-
+        var dgMap = (self.dashData && self.dashData._doneGames) ? self.dashData._doneGames : {};
+        Object.keys(dgMap).forEach(function(key) {
+          var parts = key.split('|');
+          var gn = parts[0] || '';
+          var cat = parts[1] || '';
+          if (gn && cat) doneSet[gn + ' - ' + cat] = true;
+          if (gn) doneSet[gn + '|' + (cat||'')] = true;
+        });
         self._gamesDoneSet = doneSet;
 
 
@@ -24741,13 +24693,13 @@ var stats = { total: 0, scheduled: 0, live: 0, completed: 0 };
       if (doneSet[key1]) { status = 'done'; }
       else if (g.categories.length <= 1 && doneSet[key2]) { status = 'done'; }
       else {
-        // Partial match
-        Object.keys(doneSet).forEach(function(dk) {
-          if (status !== 'done') {
-            if (dk.indexOf(gameName.toLowerCase()) === 0) status = 'done';
-            if (key1.indexOf(dk) === 0 && dk.length > 3) status = 'done';
-          }
-        });
+        // Exact key1 match only — no cross-category bleed
+        // (partial match removed: it caused e.g. "Foosball Men" to mark "Foosball Women" done)
+        if (!doneSet[key1]) {
+          // Try gameName|cat format as fallback
+          var key3 = gameName.toLowerCase() + '|' + c.toLowerCase();
+          if (doneSet[key3]) status = 'done';
+        }
       }
       if (status === 'done') catsDone++;
       var ico = status === 'done' ? '<i class="fas fa-circle-check"></i> ' : '<i class="fas fa-clock"></i> ';

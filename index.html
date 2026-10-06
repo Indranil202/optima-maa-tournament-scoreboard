@@ -16443,7 +16443,7 @@ window.addEventListener('unhandledrejection', function(e) {
 
 
 
-    <div class="tab-guide" id="guide-dashboard"><i class="fas fa-hat-wizard"></i><span>Welcome to The Great Hall, wizard! Behold the tournament at a glance — scheduled battles, completion enchantments, enrolled wizards, and the reigning Cup Leader. The mystic rings reveal tournament progress. Scroll down for recent duels and upcoming encounters.</span><span class="tab-guide-dismiss" onclick="this.parentElement.style.display='none';localStorage.setItem('guide-dashboard','1')" title="Dismiss">✖</span></div>
+    <div class="tab-guide" id="guide-dashboard"><i class="fas fa-hat-wizard"></i><span>Welcome to The Great Hall, wizard! Behold the tournament at a glance — scheduled battles, completion enchantments, enrolled wizards, and the trending house. The mystic rings reveal tournament progress. Scroll down for recent duels and upcoming encounters.</span><span class="tab-guide-dismiss" onclick="this.parentElement.style.display='none';localStorage.setItem('guide-dashboard','1')" title="Dismiss">✖</span></div>
 
 
 
@@ -16613,7 +16613,7 @@ window.addEventListener('unhandledrejection', function(e) {
 
 
 
-        <div id="topPlayersContent" class="gh-players-list">
+        <div id="topPlayersContent" class="gh-players-list" style="max-height:320px;overflow:hidden;position:relative">
 
 
 
@@ -17300,14 +17300,7 @@ window.addEventListener('unhandledrejection', function(e) {
   <div class="quiz-modal">
     <button class="quiz-modal-close" onclick="Quiz.closeModal()"><i class="fas fa-xmark"></i></button>
     <!-- Login Gate -->
-    <div id="quizLogin" class="quiz-start-screen">
-      <div class="quiz-jackpot-icon"><i class="fas fa-lock"></i></div>
-      <h2 class="quiz-jackpot-title" style="font-size:1.2rem">RESTRICTED SECTION</h2>
-      <p class="quiz-jackpot-subtitle">Enter the passphrase to access the quiz</p>
-      <div class="quiz-login-wrap">
-        <input type="password" id="quizPassword" class="quiz-name-input" placeholder="Enter passphrase..." onkeydown="if(event.key==='Enter')Quiz.checkLogin()">
-        <button class="quiz-jackpot-go" onclick="Quiz.checkLogin()" style="margin-top:10px;font-size:.85rem;padding:10px 24px"><i class="fas fa-key"></i> ENTER</button>
-      </div>
+    <div id="quizLogin" class="quiz-start-screen" style="display:none">
       <p id="quizLoginError" style="color:#e74c3c;font-size:.75rem;margin-top:8px;display:none"><i class="fas fa-times-circle"></i> Wrong passphrase!</p>
     </div>
 
@@ -17332,6 +17325,7 @@ window.addEventListener('unhandledrejection', function(e) {
         <div class="quiz-rule"><i class="fas fa-check-circle" style="color:#4ecdc4"></i> <span>Each correct answer earns <strong>1 point</strong>. No negatives.</span></div>
         <div class="quiz-rule"><i class="fas fa-trophy" style="color:#f39c12"></i> <span>Your score + time determines your <strong>O.W.L. grade</strong>.</span></div>
         <div class="quiz-rule"><i class="fas fa-hat-wizard" style="color:#9b59b6"></i> <span>Pick your <strong>House</strong> at the end to claim your place on the leaderboard!</span></div>
+        <div class="quiz-rule"><i class="fas fa-exclamation-triangle" style="color:#e74c3c"></i> <span>This quiz is <strong>just for fun</strong> — scores will <strong>NOT</strong> count in the Tournament Scoreboard.</span></div>
       </div>
       <button class="quiz-jackpot-go quiz-rules-start-btn" onclick="Quiz.beginCountdown()"><i class="fas fa-hat-wizard"></i> START</button>
     </div>
@@ -17374,7 +17368,7 @@ window.addEventListener('unhandledrejection', function(e) {
         <button class="quiz-jackpot-go" onclick="Quiz.submitScore()" style="margin-top:12px;font-size:.85rem;padding:10px 24px"><i class="fas fa-paper-plane"></i> Submit Score</button>
         <button class="quiz-name-skip" onclick="Quiz.closeModal()">Skip</button>
       </div>
-      <p class="quiz-disclaimer"><i class="fas fa-info-circle"></i> These scores will be added in the Hogwarts Tournament.</p>
+      <p class="quiz-disclaimer"><i class="fas fa-info-circle"></i> This is just for fun! Scores will <strong>NOT</strong> be added to the Tournament Scoreboard.</p>
       <button class="quiz-retry-btn" onclick="Quiz.restart()"><i class="fas fa-redo"></i> Try Again</button>
     </div>
   </div>
@@ -18283,7 +18277,7 @@ function updateStatusTicker() {
 
 
 
-    parts.push('🏆 Cup Leader: ' + e2 + ' ' + (lead.name||'') + ' \u2014 ' + (lead.points||0) + ' pts');
+    parts.push('🏆 Trending House: ' + e2 + ' ' + (lead.name||'') + ' \u2014 ' + (lead.points||0) + ' pts');
 
 
 
@@ -19502,7 +19496,7 @@ var App = {
 
 
 
-          '<div style="font-size:0.7rem;color:var(--text-muted);margin-top:2px">' + (d.live||0) + ' Live • ' + (d.scheduled||0) + ' Upcoming</div></div>' +
+          '<div style="font-size:0.7rem;color:var(--text-muted);margin-top:2px">' + (d.scheduled||0) + ' Upcoming</div></div>' +
 
 
 
@@ -19514,15 +19508,15 @@ var App = {
 
 
 
-        '<div class="stat-card players"><div class="stat-value" id="dPlayers">0</div><div class="stat-label">Wizards</div><i class="fas fa-hat-wizard stat-icon"></i><div class="stat-hint">Total registered players</div>' +
+        '<div class="stat-card players"><div class="stat-value" id="dPlayers">0</div><div class="stat-label">Winners</div><i class="fas fa-hat-wizard stat-icon"></i><div class="stat-hint">Unique winners across completed games</div>' +
 
 
 
-          '<div style="font-size:0.7rem;color:var(--text-muted);margin-top:2px">Across ' + houseCount + ' Houses</div></div>' +
+          '<div style="font-size:0.7rem;color:var(--text-muted);margin-top:2px" id="dWinnersSub">from completed games</div></div>' +
 
 
 
-        '<div class="stat-card scheduled" style="border-color:var(--gold);border-width:1px;border-style:solid;border-image:none;position:relative;overflow:hidden"><div id="dLeaderLogo" style="position:absolute;right:-8px;top:50%;transform:translateY(-50%);width:70px;height:70px;opacity:0.15;pointer-events:none"></div><div class="stat-value" id="dLeader" style="color:var(--gold);font-size:clamp(0.7rem,2.2vw,0.95rem);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%;display:block">—</div><div class="stat-label">Cup Leader</div><i class="fas fa-crown stat-icon" style="color:var(--gold)"></i><div class="stat-hint">House leading the overall points race</div>' +
+        '<div class="stat-card scheduled" style="border-color:var(--gold);border-width:1px;border-style:solid;border-image:none;position:relative;overflow:hidden"><div id="dLeaderLogo" style="position:absolute;right:-8px;top:50%;transform:translateY(-50%);width:70px;height:70px;opacity:0.15;pointer-events:none"></div><div class="stat-value" id="dLeader" style="color:var(--gold);font-size:clamp(0.7rem,2.2vw,0.95rem);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%;display:block">—</div><div class="stat-label">Trending House</div><i class="fas fa-crown stat-icon" style="color:var(--gold)"></i><div class="stat-hint">House currently leading the points race</div>' +
 
 
 
@@ -19542,7 +19536,7 @@ var App = {
 
 
 
-        animateCounter(document.getElementById('dPlayers'), d.players || d._memberCount || 0);
+        animateCounter(document.getElementById('dPlayers'), d._uniqueWinners || d.players || 0);
 
 
 
@@ -19574,6 +19568,8 @@ var App = {
 
 
 
+        var wSub = document.getElementById('dWinnersSub');
+        if (wSub && d._completedGameCategories) wSub.textContent = 'from ' + d._completedGameCategories + ' game categories';
         var lPts = document.getElementById('dLeaderPts');
 
 
@@ -19897,7 +19893,7 @@ var App = {
 
 
 
-        players.slice(0, 5).forEach(function(p, i) {
+        players.forEach(function(p, i) {
 
 
 
@@ -19925,7 +19921,13 @@ var App = {
 
 
 
-            '<div class="gh-player-pts">' + (p.TotalPoints||0) + ' pts</div></div>';
+            '<div class="gh-player-pts">' + (p.TotalPoints||0) + ' pts</div>' +
+            (function() {
+              var gms = p.Games || [];
+              if (!gms.length) return '';
+              var bd = gms.map(function(g) { return '<span style="display:inline-block;background:rgba(255,255,255,0.06);border-radius:4px;padding:1px 5px;margin:1px;font-size:0.55rem;white-space:nowrap">' + (g.game||'') + (g.category ? ' (' + g.category + ')' : '') + ' #' + (g.position||'-') + '</span>'; }).join('');
+              return '<div class="gh-player-breakdown" style="margin-top:2px;line-height:1.4">' + bd + '</div>';
+            })() + '</div>';
 
 
 
@@ -19934,6 +19936,20 @@ var App = {
 
 
         tpEl.innerHTML = tpHtml || '<p style="color:var(--text-muted);font-size:0.8rem">—</p>';
+        // Auto-scroll Top Wizards if content overflows
+        if (tpEl.scrollHeight > tpEl.clientHeight) {
+          var _twScroll = function() {
+            if (tpEl.scrollTop + tpEl.clientHeight >= tpEl.scrollHeight - 2) {
+              tpEl.scrollTop = 0;
+            } else {
+              tpEl.scrollTop += 1;
+            }
+          };
+          if (tpEl._scrollTimer) clearInterval(tpEl._scrollTimer);
+          tpEl._scrollTimer = setInterval(_twScroll, 50);
+          tpEl.addEventListener('mouseenter', function() { clearInterval(tpEl._scrollTimer); });
+          tpEl.addEventListener('mouseleave', function() { tpEl._scrollTimer = setInterval(_twScroll, 50); });
+        }
 
 
 
@@ -24855,6 +24871,14 @@ var stats = { total: 0, scheduled: 0, live: 0, completed: 0 };
 
 
 
+          // Count unique winners (players with at least one game entry = participated)
+          var uniqueWinners = profiles.filter(function(p) { return p.Games && p.Games.length > 0; }).length;
+          var completedGames = 0;
+          var gameSet = {};
+          profiles.forEach(function(p) { (p.Games || []).forEach(function(g) { var k = g.game + '|' + g.category; gameSet[k] = 1; }); });
+          completedGames = Object.keys(gameSet).length;
+          self.dashData._uniqueWinners = uniqueWinners;
+          self.dashData._completedGameCategories = completedGames;
           self.dashData.players = profiles.length; updateStatusTicker();
 
           // ── Populate Wizards KPI cards ──
@@ -29112,8 +29136,8 @@ var Quiz = {
       VoiceGuide._currentClip = null; VoiceGuide._currentPriority = 0;
     }
     document.getElementById('quizModal').style.display = 'flex';
-    document.getElementById('quizLogin').style.display = this._loggedIn ? 'none' : 'block';
-    document.getElementById('quizStart').style.display = this._loggedIn ? 'block' : 'none';
+    document.getElementById('quizLogin').style.display = 'none';
+    document.getElementById('quizStart').style.display = 'block';
     document.getElementById('quizPlay').style.display = 'none';
     document.getElementById('quizResult').style.display = 'none';
     document.getElementById('quizRules').style.display = 'none';

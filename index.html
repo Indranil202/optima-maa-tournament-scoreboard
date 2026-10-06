@@ -16282,14 +16282,14 @@ window.addEventListener('unhandledrejection', function(e) {
 
 
 
-    <button class="nav-btn" data-tab="houses"><i class="fas fa-shield-halved"></i> Houses</button>
+    <button class="nav-btn" data-tab="rankings"><i class="fas fa-trophy"></i> House Cup</button>
 
 
     <button class="nav-btn" data-tab="matchCentre"><i class="fas fa-quidditch-broom-ball"></i> Match Centre <span class="badge" id="liveBadge" style="display:none"></span></button>
 
 
 
-    <button class="nav-btn" data-tab="rankings"><i class="fas fa-trophy"></i> House Cup</button>
+    <button class="nav-btn" data-tab="houses"><i class="fas fa-shield-halved"></i> Houses</button>
 
     <button class="nav-btn" data-tab="games"><i class="fas fa-broom-ball"></i> Tournament Arena</button>
 
@@ -19500,11 +19500,11 @@ var App = {
 
 
 
-        '<div class="stat-card completed"><div class="stat-value" id="dCompPct">0</div><div class="stat-label">Completion %</div><i class="fas fa-flag-checkered stat-icon"></i><div class="stat-hint">% of scheduled matches completed</div>' +
+        '<div class="stat-card completed"><div class="stat-value" id="dCompPct">0</div><div class="stat-label">Completion %</div><i class="fas fa-flag-checkered stat-icon"></i><div class="stat-hint">% of game segments covered with results</div>' +
 
 
 
-          '<div style="font-size:0.7rem;color:var(--text-muted);margin-top:2px">' + ptcDone + ' of ' + ptcTotal + ' games covered</div></div>' +
+          '<div style="font-size:0.7rem;color:var(--text-muted);margin-top:2px">' + ptcDone + ' of ' + ptcTotal + ' game segments covered</div></div>' +
 
 
 
@@ -19935,20 +19935,12 @@ var App = {
 
 
 
-        tpEl.innerHTML = tpHtml || '<p style="color:var(--text-muted);font-size:0.8rem">—</p>';
-        // Auto-scroll Top Wizards if content overflows
-        if (tpEl.scrollHeight > tpEl.clientHeight) {
-          var _twScroll = function() {
-            if (tpEl.scrollTop + tpEl.clientHeight >= tpEl.scrollHeight - 2) {
-              tpEl.scrollTop = 0;
-            } else {
-              tpEl.scrollTop += 1;
-            }
-          };
-          if (tpEl._scrollTimer) clearInterval(tpEl._scrollTimer);
-          tpEl._scrollTimer = setInterval(_twScroll, 50);
-          tpEl.addEventListener('mouseenter', function() { clearInterval(tpEl._scrollTimer); });
-          tpEl.addEventListener('mouseleave', function() { tpEl._scrollTimer = setInterval(_twScroll, 50); });
+        // Wrap in CSS autoscroll (same as Recent Results)
+        var playerCount = players.length;
+        if (playerCount > 3) {
+          tpEl.innerHTML = '<div class="gh-autoscroll-wrap" style="--scroll-dur:' + Math.max(15, playerCount * 4) + 's">' + tpHtml + tpHtml + '</div>';
+        } else {
+          tpEl.innerHTML = tpHtml || '<p style="color:var(--text-muted);font-size:0.8rem">—</p>';
         }
 
 

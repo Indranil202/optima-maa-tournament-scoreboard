@@ -9097,7 +9097,7 @@ body::after {
 
 
 
-.gh-recent-list, .gh-upcoming-list, .gh-players-list {
+.gh-recent-list, .gh-upcoming-list {
 
 
 
@@ -14375,6 +14375,9 @@ a, button, .nav-btn, .stat-card, .house-card, .game-card2, .ms-card, .ls-match-c
 
 
 .gh-player-pts { font-weight: 800; font-size: 0.85rem; color: var(--gold); font-variant-numeric: tabular-nums; }
+.gh-players-list { max-height: 320px; overflow-y: auto; position: relative; scroll-behavior: smooth; }
+.gh-players-list::-webkit-scrollbar { width: 4px; }
+.gh-players-list::-webkit-scrollbar-thumb { background: rgba(212,160,23,0.3); border-radius: 4px; }
 
 
 
@@ -16271,7 +16274,7 @@ window.addEventListener('unhandledrejection', function(e) {
 
 
 
-    <button class="nav-btn" data-tab="rankings"><i class="fas fa-trophy"></i> House Cup</button>
+    <button class="nav-btn" data-tab="rankings"><i class="fas fa-trophy"></i> House Points</button>
 
 
     <button class="nav-btn" data-tab="matchCentre"><i class="fas fa-quidditch-broom-ball"></i> Match Centre <span class="badge" id="liveBadge" style="display:none"></span></button>
@@ -16465,7 +16468,7 @@ window.addEventListener('unhandledrejection', function(e) {
 
 
     </div>
-    <!-- Row 2: House Cup Race + Leading House -->
+    <!-- Row 2: House Points Race + Leading House -->
 
 
 
@@ -16490,7 +16493,7 @@ window.addEventListener('unhandledrejection', function(e) {
 
 
 
-        <div class="gh-card-header"><i class="fas fa-trophy" style="color:var(--gold)"></i> House Cup Race</div>
+        <div class="gh-card-header"><i class="fas fa-trophy" style="color:var(--gold)"></i> House Points Race</div>
 
 
 
@@ -16824,7 +16827,7 @@ window.addEventListener('unhandledrejection', function(e) {
 
 
 
-      <h2>House Cup</h2>
+      <h2>House Points</h2>
 
 
 
@@ -16832,7 +16835,7 @@ window.addEventListener('unhandledrejection', function(e) {
 
 
 
-    <div class="tab-guide" id="guide-rankings"><i class="fas fa-trophy"></i><span>House Cup tracks the overall standings. The leaderboard shows each house's total points. Point Breakdown splits scores by Indoor, Outdoor, and Cultural segments. The tracker below shows which game results have been updated.</span><span class="tab-guide-dismiss" onclick="this.parentElement.style.display='none';localStorage.setItem('guide-rankings','1')" title="Dismiss">✖</span></div>
+    <div class="tab-guide" id="guide-rankings"><i class="fas fa-trophy"></i><span>House Points tracks the overall standings. The leaderboard shows each house's total points. Point Breakdown splits scores by Indoor, Outdoor, and Cultural segments. The tracker below shows which game results have been updated.</span><span class="tab-guide-dismiss" onclick="this.parentElement.style.display='none';localStorage.setItem('guide-rankings','1')" title="Dismiss">✖</span></div>
 
 
 
@@ -19486,11 +19489,11 @@ var App = {
 
 
 
-          '<div style="font-size:0.7rem;color:var(--text-muted);margin-top:2px">' + (d.scheduled||0) + ' Upcoming</div></div>' +
+          '<div style="font-size:0.7rem;color:var(--text-muted);margin-top:2px">All matches in the tournament</div></div>' +
 
 
 
-        '<div class="stat-card completed"><div class="stat-value" id="dCompPct">0</div><div class="stat-label">Completion %</div><i class="fas fa-flag-checkered stat-icon"></i><div class="stat-hint">% of game segments covered with results</div>' +
+        '<div class="stat-card completed"><div class="stat-value" id="dCompPct">0</div><div class="stat-label">Completion %</div><i class="fas fa-flag-checkered stat-icon"></i><div class="stat-hint">% of total games/events completed</div>' +
 
 
 
@@ -19510,7 +19513,9 @@ var App = {
 
 
 
-          '<div style="font-size:0.7rem;color:var(--text-muted);margin-top:2px" id="dLeaderPts"></div></div>';
+          '<div style="font-size:0.7rem;color:var(--text-muted);margin-top:2px" id="dLeaderPts"></div></div>' +
+        '<div class="stat-card completed"><div class="stat-value" id="dParticipation">0</div><div class="stat-label">Total Participation</div><i class="fas fa-users stat-icon"></i><div class="stat-hint">Total player entries across all completed matches</div>' +
+          '<div style="font-size:0.7rem;color:var(--text-muted);margin-top:2px" id="dPartSub">across completed games</div></div>';
 
 
 
@@ -19522,7 +19527,8 @@ var App = {
 
 
 
-        animateCounter(document.getElementById('dCompPct'), completionPct, '%');
+        var matchPct = totalMatches > 0 ? Math.round(((d.completed||0) / totalMatches) * 100) : 0;
+        animateCounter(document.getElementById('dCompPct'), matchPct, '%');
 
 
 
@@ -19558,6 +19564,9 @@ var App = {
 
 
 
+        animateCounter(document.getElementById('dParticipation'), d._totalParticipation || 0);
+        var partSub = document.getElementById('dPartSub');
+        if (partSub && d._participationGames) partSub.textContent = 'across ' + d._participationGames + ' completed games';
         var wSub = document.getElementById('dWinnersSub');
         if (wSub && d._completedGameCategories) wSub.textContent = 'from ' + d._completedGameCategories + ' game categories';
         var lPts = document.getElementById('dLeaderPts');
@@ -19592,7 +19601,7 @@ var App = {
 
 
 
-    // ── House Cup Race Bars ──
+    // ── House Points Race Bars ──
 
 
           var HOUSE_LOGO_MAP = { 'Gryffindor': 'assets/House%20logo/Gryffindor.png', 'Slytherin': 'assets/House%20logo/Slytherin.png', 'Ravenclaw': 'assets/House%20logo/Ravenclaw.png', 'Hufflepuff': 'assets/House%20logo/Hufflepuff.png' };
@@ -19920,7 +19929,24 @@ var App = {
                 return !!_dg[(g.game||'').toLowerCase() + '|' + (g.category||'').toLowerCase()];
               });
               if (!gms.length) return '';
-              var bd = gms.map(function(g) { return '<span style="display:inline-block;background:rgba(255,255,255,0.06);border-radius:4px;padding:1px 5px;margin:1px;font-size:0.55rem;white-space:nowrap">' + (g.game||'') + (g.category ? ' (' + g.category + ')' : '') + ' #' + (g.position||'-') + '</span>'; }).join('');
+              var _PTS = { indoor: [0,40,30,20,10], online: [0,40,30,20,10], outdoor: [0,80,60,40,20], cultural: [0,80,60,40,20], inhouse: [0,40,30,20,10] };
+              var _segMap = (typeof App !== 'undefined' && App._allGames) ? App._allGames : {};
+              function _getSegForGame(gn) {
+                var gnl = (gn||'').toLowerCase();
+                var segs = Object.keys(_segMap);
+                for (var si = 0; si < segs.length; si++) {
+                  var sg = _segMap[segs[si]] || [];
+                  for (var gi = 0; gi < sg.length; gi++) { if ((sg[gi].name||'').toLowerCase() === gnl) return segs[si]; }
+                }
+                return 'indoor';
+              }
+              var bd = gms.map(function(g) {
+                var seg = _getSegForGame(g.game);
+                var pts = (g.position >= 1 && g.position <= 4) ? (_PTS[seg] || _PTS.indoor)[g.position] : 0;
+                var posColors = ['','#ffd700','#c0c0c0','#cd7f32','#888'];
+                var pc = posColors[g.position] || '#888';
+                return '<span style="display:inline-block;background:rgba(255,255,255,0.06);border-radius:4px;padding:1px 6px;margin:1px;font-size:0.55rem;white-space:nowrap;border-left:2px solid ' + pc + '">' + (g.game||'') + (g.category ? ' (' + g.category + ')' : '') + ' #' + (g.position||'-') + ' <strong style="color:' + pc + '">' + pts + 'pts</strong></span>';
+              }).join('');
               return '<div class="gh-player-breakdown" style="width:100%;margin-top:2px;padding-left:36px;line-height:1.4">' + bd + '</div>';
             })() + '</div>';
 
@@ -19930,12 +19956,23 @@ var App = {
 
 
 
-        // Wrap in CSS autoscroll (same as Recent Results)
-        var playerCount = players.length;
-        if (playerCount > 3) {
-          tpEl.innerHTML = '<div class="gh-autoscroll-wrap" style="--scroll-dur:' + Math.max(15, playerCount * 4) + 's">' + tpHtml + tpHtml + '</div>';
-        } else {
-          tpEl.innerHTML = tpHtml || '<p style="color:var(--text-muted);font-size:0.8rem">—</p>';
+        tpEl.innerHTML = tpHtml || '<p style="color:var(--text-muted);font-size:0.8rem">—</p>';
+        // Auto-scroll (slow) + manual scroll; pauses on hover/touch
+        if (tpEl.scrollHeight > tpEl.clientHeight) {
+          var _twSpeed = 80; // ms per pixel — slow like recent results
+          function _twTick() {
+            if (tpEl.scrollTop + tpEl.clientHeight >= tpEl.scrollHeight - 2) {
+              tpEl.scrollTop = 0;
+            } else {
+              tpEl.scrollTop += 1;
+            }
+          }
+          if (tpEl._twTimer) clearInterval(tpEl._twTimer);
+          tpEl._twTimer = setInterval(_twTick, _twSpeed);
+          tpEl.onmouseenter = function() { clearInterval(tpEl._twTimer); };
+          tpEl.onmouseleave = function() { tpEl._twTimer = setInterval(_twTick, _twSpeed); };
+          tpEl.ontouchstart = function() { clearInterval(tpEl._twTimer); };
+          tpEl.ontouchend = function() { setTimeout(function() { tpEl._twTimer = setInterval(_twTick, _twSpeed); }, 3000); };
         }
 
 
@@ -24835,6 +24872,19 @@ var stats = { total: 0, scheduled: 0, live: 0, completed: 0 };
           });
           completedGames = Object.keys(gameSet).length;
           self.dashData._uniqueWinners = uniqueWinners;
+          // Total participation: count all player-game entries from completed games
+          var totalPart = 0, partGameSet = {};
+          profiles.forEach(function(p) {
+            (p.Games || []).forEach(function(g) {
+              var key = (g.game||'').toLowerCase() + '|' + (g.category||'').toLowerCase();
+              if (!hasDoneFilter || doneGames[key]) {
+                totalPart++;
+                partGameSet[g.game + '|' + g.category] = 1;
+              }
+            });
+          });
+          self.dashData._totalParticipation = totalPart;
+          self.dashData._participationGames = Object.keys(partGameSet).length;
           self.dashData._completedGameCategories = completedGames;
           self.dashData.players = profiles.length; updateStatusTicker();
 
@@ -29702,7 +29752,7 @@ var VoiceGuide = {
     'dob-mc-filters':         'assets/audio/voices/dobby/mc-filters.mp3',
     'mcg-mc-match-table':     'assets/audio/voices/mcgonagall/mc-match-table.mp3',
 
-    // House Cup sections
+    // House Points sections
     'hat-hc-leaderboard':     'assets/audio/voices/sorting-hat/hc-leaderboard.mp3',
     'mcg-hc-breakdown':       'assets/audio/voices/mcgonagall/hc-breakdown.mp3',
     'dob-hc-tracker':         'assets/audio/voices/dobby/hc-tracker.mp3',
@@ -30076,7 +30126,7 @@ VoiceGuide.init();
     '#lsGameFilter':        'dob-mc-filters',
     '#lsStatusFilter':      'dob-mc-filters',
 
-    // House Cup sections
+    // House Points sections
     '.rank-legend':         'mcg-hc-breakdown',
 
     // Tournament Arena
@@ -30120,7 +30170,7 @@ VoiceGuide.init();
       return;
     }
 
-    // House Cup — leaderboard table click
+    // House Points — leaderboard table click
     var rankTable = e.target.closest ? e.target.closest('#rankLeaderboard') : null;
     if (rankTable) {
       if (now - _secLast < 15000 && _secLastKey === 'hat-hc-leaderboard') return;
@@ -30165,7 +30215,7 @@ VoiceGuide.init();
       return;
     }
 
-    // House Cup — tracker section
+    // House Points — tracker section
     var tracker = e.target.closest ? e.target.closest('#rankUpdateTracker') : null;
     if (tracker) {
       if (now - _secLast < 15000 && _secLastKey === 'dob-hc-tracker') return;

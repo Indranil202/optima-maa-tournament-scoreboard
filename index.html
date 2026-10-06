@@ -14155,14 +14155,9 @@ a, button, .nav-btn, .stat-card, .house-card, .game-card2, .ms-card, .ls-match-c
 
 
 .gh-house-race, .gh-recent, .gh-upcoming, .gh-top-players, .gh-leading-house, .gh-progress {
-
-
-
   padding: 1.2rem;
-
-
-
 }
+.gh-recent, .gh-upcoming { align-self: start; }
 
 
 
@@ -19542,7 +19537,7 @@ var App = {
 
 
 
-        '<div class="stat-card completed"><div class="stat-value" id="dCompPct">0</div><div class="stat-label">Completion %</div><i class="fas fa-flag-checkered stat-icon"></i><div class="stat-hint">% of total games/events with results</div>' +
+        '<div class="stat-card completed"><div class="stat-value" id="dCompPct">0</div><div class="stat-label">Completion %</div><i class="fas fa-flag-checkered stat-icon"></i><div class="stat-hint">% of games/events completed (all categories done)</div>' +
 
 
 
@@ -20076,7 +20071,7 @@ var App = {
 
 
 
-          umEl.innerHTML = '<p style="color:var(--text-muted);font-size:0.8rem;padding:0.5rem 0">No upcoming matches</p>';
+          umEl.innerHTML = '<div style="text-align:center;padding:1.2rem 0.5rem"><div style="font-size:2rem;margin-bottom:0.4rem">&#9889;&#127942;</div><div style="color:var(--gold);font-family:Cinzel,serif;font-size:0.95rem;font-weight:700;margin-bottom:0.3rem">All Battles Concluded!</div><div style="color:var(--text-muted);font-size:0.78rem;line-height:1.4">The arena falls silent&hellip; every duel has been fought, every spell cast.<br>Stay tuned for the next chapter of glory!</div></div>';
 
 
 
@@ -20184,7 +20179,7 @@ var App = {
 
 
 
-      var livePct2 = (d.live||0) > 0 ? Math.min(100 - ptcPct, Math.round(((d.live||0) / Math.max(ptcT,1)) * 100)) : 0;
+
 
 
 
@@ -20233,13 +20228,6 @@ var App = {
 
 
         makeRing(ptcPct, 'var(--neon-green)', 'Covered', ptcD + '/' + ptcT) +
-
-
-
-        makeRing(livePct2, 'var(--neon-red)', 'Live', d.live||0) +
-
-
-
         makeRing(remPct, 'var(--neon-yellow)', 'Pending', ptcRemaining) +
 
 
@@ -22491,14 +22479,9 @@ var stats = { live: 0, scheduled: 0, completed: 0 };
 
 
             games.forEach(function(g) {
-
-
-
+              totalAll++;
+              var _gAllDone = true;
               g.cats.forEach(function(cat) {
-
-
-
-                totalAll++;
 
 
 
@@ -22534,7 +22517,7 @@ var stats = { live: 0, scheduled: 0, completed: 0 };
 
 
 
-                if (status === 'done') totalDone++;
+                if (status !== 'done') _gAllDone = false;
 
 
 
@@ -22551,12 +22534,8 @@ var stats = { live: 0, scheduled: 0, completed: 0 };
 
 
               });
-
-
-
+              if (_gAllDone) totalDone++;
             });
-
-
 
             tkHtml += '</div></div>';
 

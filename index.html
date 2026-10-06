@@ -22512,44 +22512,21 @@ var stats = { live: 0, scheduled: 0, completed: 0 };
 
             games.forEach(function(g) {
               totalAll++;
-              var _gAllDone = true;
+              var _gAnyDone = false;
+              var _hasCats = g.cats && g.cats.length > 0;
+              if (_hasCats) {
               g.cats.forEach(function(cat) {
-
-
 
                 var label = g.cats.length > 1 ? g.name + ' - ' + cat : g.name;
 
-
-
                 // Check if this game+category combo exists in Rankings data with all 4 places
-
-
-
                 var status = 'pending'; // pending | partial | done
-
-
-
                 var checkKey = label.toLowerCase();
-
-
-
                 if (updatedGames[checkKey]) { status = updatedGames[checkKey]; }
-
-
-
                 // Also try just game name (for team games with single category)
-
-
-
                 if (status === 'pending' && updatedGames[g.name.toLowerCase()]) { status = updatedGames[g.name.toLowerCase()]; }
-
-
-
-                                // Exact match only — no cross-category bleed
-
-
-
-                if (status !== 'done') _gAllDone = false;
+                // Exact match only — no cross-category bleed
+                if (status === 'done') _gAnyDone = true;
 
 
 
@@ -22563,10 +22540,16 @@ var stats = { live: 0, scheduled: 0, completed: 0 };
 
                 tkHtml += '<span class="rt-game-chip ' + chipClass + '" style="cursor:pointer" onclick="App._showGameWinners(\'' + label.replace(/'/g, '') + '\')"><i class="fas ' + chipIcon + '"></i> ' + label + '</span>';
 
-
-
               });
-              if (_gAllDone) totalDone++;
+              } else {
+                // No categories — single chip for the game itself
+                var _ncStatus = updatedGames[g.name.toLowerCase()] || 'pending';
+                var _ncClass = _ncStatus === 'done' ? 'done' : _ncStatus === 'partial' ? 'partial' : 'pending';
+                var _ncIcon = _ncStatus === 'done' ? 'fa-circle-check' : _ncStatus === 'partial' ? 'fa-pen' : 'fa-clock';
+                tkHtml += '<span class="rt-game-chip ' + _ncClass + '" style="cursor:pointer" onclick="App._showGameWinners(\'' + g.name.replace(/'/g, '') + '\')"><i class="fas ' + _ncIcon + '"></i> ' + g.name + '</span>';
+                if (_ncStatus === 'done') _gAnyDone = true;
+              }
+              if (_gAnyDone) totalDone++;
             });
 
             tkHtml += '</div></div>';

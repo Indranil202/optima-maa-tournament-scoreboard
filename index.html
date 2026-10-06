@@ -19493,7 +19493,7 @@ var App = {
 
 
 
-        '<div class="stat-card completed"><div class="stat-value" id="dCompPct">0</div><div class="stat-label">Completion %</div><i class="fas fa-flag-checkered stat-icon"></i><div class="stat-hint">% of total games/events completed</div>' +
+        '<div class="stat-card completed"><div class="stat-value" id="dCompPct">0</div><div class="stat-label">Completion %</div><i class="fas fa-flag-checkered stat-icon"></i><div class="stat-hint">% of total games/events with results</div>' +
 
 
 
@@ -19527,8 +19527,7 @@ var App = {
 
 
 
-        var matchPct = totalMatches > 0 ? Math.round(((d.completed||0) / totalMatches) * 100) : 0;
-        animateCounter(document.getElementById('dCompPct'), matchPct, '%');
+        animateCounter(document.getElementById('dCompPct'), completionPct, '%');
 
 
 

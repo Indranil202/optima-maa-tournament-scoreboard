@@ -24542,19 +24542,28 @@ var stats = { total: 0, scheduled: 0, live: 0, completed: 0 };
 
       // ── Populate Tournament KPI cards ──
       var gkTotalGames = 0, gkTotalCats = 0, gkSegCount = 0;
+      function _countGamesIn(gd) {
+        if (!gd) return;
+        if (Array.isArray(gd)) {
+          gd.forEach(function(g) {
+            gkTotalGames++;
+            var cats = g.categories || [];
+            gkTotalCats += Math.max(cats.length, 1);
+          });
+        } else if (typeof gd === 'object') {
+          Object.keys(gd).forEach(function(ck) {
+            var v = gd[ck];
+            if (Array.isArray(v)) { _countGamesIn(v); }
+            else if (v && v.games) { _countGamesIn(v.games); }
+            else if (v && v.items) { _countGamesIn(v.items); }
+          });
+        }
+      }
       segKeys.forEach(function(sk) {
         var s = segments[sk];
         if (!s || !s.name) return;
         gkSegCount++;
-        var gd = s.games;
-        if (gd && typeof gd === 'object' && !Array.isArray(gd)) {
-          Object.keys(gd).forEach(function(ck) {
-            var catGames = gd[ck];
-            if (Array.isArray(catGames)) { gkTotalGames += catGames.length; gkTotalCats++; }
-          });
-        } else if (Array.isArray(gd)) {
-          gkTotalGames += gd.length; gkTotalCats++;
-        }
+        _countGamesIn(s.games);
       });
       animateCounter(document.getElementById('gkSegments'), gkSegCount);
       animateCounter(document.getElementById('gkGames'), gkTotalGames);

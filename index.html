@@ -19076,6 +19076,14 @@ var App = {
     setTimeout(function() { try { self.loadPlayerProfiles(); } catch(e) { console.error(e); } }, 4500);
     setTimeout(function() { try { self.loadHouses(); } catch(e) { console.error(e); } }, 6000);
     try { if (typeof Gallery !== 'undefined') Gallery.load(); } catch(e) { console.error('Gallery load error:', e); }
+    // Pre-fetch quiz questions so they're ready when user opens quiz
+    setTimeout(function() {
+      if (typeof Quiz !== 'undefined' && !Quiz._allQuestions.length) {
+        Quiz._fetchQuestions(function() {
+          window._mdbg.push('Quiz: pre-fetched ' + Quiz._allQuestions.length + ' questions');
+        });
+      }
+    }, 8000);
   },
 
 
@@ -29050,22 +29058,42 @@ var Quiz = {
     if (this._allQuestions.length > 0) { cb(); return; }
     var self = this;
     var done = false;
+    var retried = false;
     function finish(data) {
       if (done) return; done = true;
       if (data && data.length) self._allQuestions = data;
       self._loaded = true;
       cb();
     }
-    // JSONP only — fetch() always returns HTML from cross-origin GAS
-    tryScript();
     function tryScript() {
+      var cbName = '_quizQCb_' + Date.now();
       var s = document.createElement('script');
-      s.src = GAS_API_URL + '?action=getQuizQuestions&callback=_quizQCb&t=' + Date.now();
-      window._quizQCb = function(d) { delete window._quizQCb; finish(typeof d==='string'?JSON.parse(d):d); };
-      s.onerror = function() { window._mdbg.push('Quiz: JSONP script tag also failed'); finish([]); };
-      setTimeout(function(){ if(!done) finish([]); }, 12000);
+      s.id = cbName;
+      s.src = GAS_API_URL + '?action=getQuizQuestions&callback=' + cbName + '&t=' + Date.now();
+      window[cbName] = function(d) {
+        clearTimeout(timer);
+        delete window[cbName];
+        var el = document.getElementById(cbName); if (el) el.remove();
+        window._mdbg.push('Quiz: JSONP success, got ' + (d ? d.length : 0) + ' questions');
+        finish(typeof d === 'string' ? JSON.parse(d) : d);
+      };
+      s.onerror = function() {
+        clearTimeout(timer);
+        delete window[cbName];
+        var el = document.getElementById(cbName); if (el) el.remove();
+        if (!retried) { retried = true; window._mdbg.push('Quiz: JSONP failed, retrying...'); setTimeout(tryScript, 2000); }
+        else { window._mdbg.push('Quiz: JSONP retry also failed'); finish([]); }
+      };
+      var timer = setTimeout(function() {
+        if (done) return;
+        delete window[cbName];
+        var el = document.getElementById(cbName); if (el) el.remove();
+        if (!retried) { retried = true; window._mdbg.push('Quiz: JSONP timeout, retrying...'); tryScript(); }
+        else { window._mdbg.push('Quiz: JSONP retry also timed out'); finish([]); }
+      }, 30000);
       document.head.appendChild(s);
     }
+    tryScript();
   },
 
   _pickRound: function() {

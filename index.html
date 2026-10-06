@@ -15725,17 +15725,22 @@ body.light-theme input,body.light-theme select{background:rgba(255,253,246,.8);c
 
 <script>
 window._mdbg = [];
+window._pushDebugOwl = function(title, msg) {
+  window._mdbg.push(msg);
+  if (typeof OwlPost !== 'undefined') {
+    OwlPost._push(title, msg, '#e74c3c');
+  } else {
+    window._pendingOwl = window._pendingOwl || [];
+    window._pendingOwl.push({title: title, msg: msg});
+  }
+};
 window.onerror = function(msg, src, line, col, err) {
   if (msg === 'Script error.' && line === 0) return true;
-  window._mdbg.push('ERR: ' + msg + ' (line ' + line + ')');
-  var el = document.getElementById('mobileDebug');
-  if (el) { el.style.display = 'block'; el.innerHTML = '<b>JS Errors:</b><br>' + window._mdbg.join('<br>'); }
+  window._pushDebugOwl('\u26a0\ufe0f JS Error', msg + ' (line ' + line + ')');
   return false;
 };
 window.addEventListener('unhandledrejection', function(e) {
-  window._mdbg.push('PROMISE: ' + (e.reason || e));
-  var el = document.getElementById('mobileDebug');
-  if (el) { el.style.display = 'block'; el.innerHTML = '<b>JS Errors:</b><br>' + window._mdbg.join('<br>'); }
+  window._pushDebugOwl('\u26a0\ufe0f Promise Error', String(e.reason || e).substring(0, 80));
 });
 </script>
 <style>
@@ -15964,7 +15969,7 @@ window.addEventListener('unhandledrejection', function(e) {
     <div class="curtain-enter-btn"><i class="fas fa-door-open"></i> Tap to Enter</div>
   </div>
 </div>
-<div id="mobileDebug" style="display:none;position:fixed;bottom:0;left:0;right:0;z-index:99999;background:#1a0a0a;color:#ff6b6b;font-size:11px;padding:8px 12px;max-height:30vh;overflow:auto;border-top:2px solid #e74c3c;font-family:monospace"></div>
+<!-- mobileDebug removed — errors go to Owl Post -->
 
 
 
@@ -24922,6 +24927,16 @@ var stats = { total: 0, scheduled: 0, live: 0, completed: 0 };
           });
           self._gameHousePlayers = ghpMap;
 
+          // Owl notification: players with 3+ games
+          var multiGamers = profiles.filter(function(p) { return p.Games && p.Games.length >= 3; });
+          if (multiGamers.length > 0) {
+            multiGamers.sort(function(a,b) { return b.Games.length - a.Games.length; });
+            var topN = multiGamers.slice(0, 5);
+            var names = topN.map(function(p) { return p.Name + ' (' + p.Games.length + ' games)'; }).join(', ');
+            var extra = multiGamers.length > 5 ? ' +' + (multiGamers.length - 5) + ' more' : '';
+            OwlPost._push('\u2728 Multi-Game Wizards!', multiGamers.length + ' player' + (multiGamers.length > 1 ? 's' : '') + ' in 3+ games: ' + names + extra, '#9b59b6');
+          }
+
           // Count unique winners — only from games that are actually completed
           var doneGames = (self.dashData._doneGames) || {};
           var hasDoneFilter = Object.keys(doneGames).length > 0;
@@ -28912,6 +28927,7 @@ var Bracket = {
   function initFeatures() {
     // ThemeToggle removed
     OwlPost.init();
+    if (window._pendingOwl) { window._pendingOwl.forEach(function(o) { OwlPost._push(o.title, o.msg, '#e74c3c'); }); window._pendingOwl = null; }
     Countdown.start();
     // Close panels on outside click
     document.addEventListener('click', function(e) {

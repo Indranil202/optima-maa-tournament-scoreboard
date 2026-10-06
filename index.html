@@ -2591,7 +2591,7 @@ body::after {
 
 
 
-  grid-template-columns: repeat(5, 1fr);
+  grid-template-columns: repeat(4, 1fr);
 
 
 
@@ -9098,22 +9098,13 @@ body::after {
 
 
 .gh-recent-list, .gh-upcoming-list {
-
-
-
   max-height: 200px;
-
-
-
-  overflow: hidden;
-
-
-
+  overflow-y: auto;
   position: relative;
-
-
-
+  scroll-behavior: smooth;
 }
+.gh-recent-list::-webkit-scrollbar, .gh-upcoming-list::-webkit-scrollbar { width: 4px; }
+.gh-recent-list::-webkit-scrollbar-thumb, .gh-upcoming-list::-webkit-scrollbar-thumb { background: rgba(212,160,23,0.3); border-radius: 4px; }
 
 
 
@@ -13947,7 +13938,7 @@ a, button, .nav-btn, .stat-card, .house-card, .game-card2, .ms-card, .ls-match-c
 
 
 
-  .stats-grid { grid-template-columns: repeat(5, 1fr); }
+  .stats-grid { grid-template-columns: repeat(4, 1fr); }
 
 
 
@@ -18269,7 +18260,7 @@ function updateStatusTicker() {
 
 
 
-    parts.push('🏆 Trending House: ' + e2 + ' ' + (lead.name||'') + ' \u2014 ' + (lead.points||0) + ' pts');
+
 
 
 
@@ -19079,6 +19070,64 @@ var App = {
 
 
 
+
+
+  // ── House Detail Popup (House Points tab) ──
+  _showHouseDetail: function(houseName) {
+    var detail = (this._houseGameDetail || {})[houseName] || [];
+    if (!detail.length) { alert(houseName + ': No game results yet'); return; }
+    var posLabels = ['','🥇 1st','🥈 2nd','🥉 3rd','4th'];
+    var posColors = ['','#ffd700','#c0c0c0','#cd7f32','#888'];
+    detail.sort(function(a,b) { return a.position - b.position || b.points - a.points; });
+    var html = '<div style="max-height:60vh;overflow-y:auto;padding:0.5rem">';
+    html += '<h3 style="margin:0 0 0.8rem;color:var(--gold);font-family:Cinzel,serif;font-size:1rem;text-align:center">' + houseName + ' — Game Results</h3>';
+    html += '<table style="width:100%;border-collapse:collapse;font-size:0.8rem">';
+    html += '<tr style="border-bottom:1px solid rgba(212,160,23,0.2)"><th style="text-align:left;padding:4px 8px;color:var(--gold)">Game/Event</th><th style="padding:4px 8px;color:var(--gold)">Position</th><th style="padding:4px 8px;color:var(--gold)">Points</th></tr>';
+    detail.forEach(function(d) {
+      html += '<tr style="border-bottom:1px solid rgba(255,255,255,0.05)">' +
+        '<td style="padding:4px 8px;color:var(--text-primary)">' + d.game + '</td>' +
+        '<td style="padding:4px 8px;text-align:center;color:' + (posColors[d.position]||'#888') + ';font-weight:700">' + (posLabels[d.position]||d.position) + '</td>' +
+        '<td style="padding:4px 8px;text-align:center;color:var(--gold);font-weight:700">+' + d.points + '</td></tr>';
+    });
+    var totalPts = detail.reduce(function(s,d){return s+d.points;},0);
+    html += '<tr style="border-top:2px solid var(--gold)"><td style="padding:6px 8px;font-weight:700;color:var(--gold)">Total</td><td></td><td style="padding:6px 8px;text-align:center;font-weight:800;color:var(--gold);font-size:1rem">' + totalPts + '</td></tr>';
+    html += '</table></div>';
+    this._showPopup(html);
+  },
+
+  // ── Game Winners Popup (House Points tracker chips) ──
+  _showGameWinners: function(gameName) {
+    var gw = (this._gameWinners || {})[gameName.toLowerCase()] || null;
+    if (!gw) { alert(gameName + ': No results yet'); return; }
+    var posLabels = ['🥇 1st Place','🥈 2nd Place','🥉 3rd Place','4th Place'];
+    var posColors = ['#ffd700','#c0c0c0','#cd7f32','#888'];
+    var html = '<div style="padding:0.5rem;text-align:center">';
+    html += '<h3 style="margin:0 0 0.8rem;color:var(--gold);font-family:Cinzel,serif;font-size:1rem">' + gw.name + '</h3>';
+    html += '<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;max-width:320px;margin:0 auto">';
+    [gw.p1, gw.p2, gw.p3, gw.p4].forEach(function(p, i) {
+      html += '<div style="background:rgba(255,255,255,0.04);border-radius:8px;padding:10px 8px;border-left:3px solid ' + posColors[i] + '">' +
+        '<div style="font-size:0.65rem;color:' + posColors[i] + ';font-weight:700;margin-bottom:2px">' + posLabels[i] + '</div>' +
+        '<div style="font-size:0.8rem;color:var(--text-primary);font-weight:600">' + (p || '—') + '</div></div>';
+    });
+    html += '</div></div>';
+    this._showPopup(html);
+  },
+
+  // ── Generic Popup ──
+  _showPopup: function(contentHtml) {
+    var existing = document.getElementById('appPopupOverlay');
+    if (existing) existing.remove();
+    var overlay = document.createElement('div');
+    overlay.id = 'appPopupOverlay';
+    overlay.style.cssText = 'position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.7);z-index:9999;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(4px)';
+    overlay.onclick = function(e) { if (e.target === overlay) overlay.remove(); };
+    var box = document.createElement('div');
+    box.style.cssText = 'background:var(--bg-card);border:1px solid var(--border-glass);border-radius:16px;padding:1.5rem;max-width:480px;width:90%;box-shadow:0 20px 60px rgba(0,0,0,0.5);position:relative';
+    box.innerHTML = '<button onclick="this.parentElement.parentElement.remove()" style="position:absolute;top:8px;right:12px;background:none;border:none;color:var(--text-muted);font-size:1.2rem;cursor:pointer">&times;</button>' + contentHtml;
+    overlay.appendChild(box);
+    document.body.appendChild(overlay);
+  },
+
   _loadAllTabs: function() {
 
 
@@ -19849,7 +19898,20 @@ var App = {
 
 
 
-          rEl.innerHTML = '<div class="gh-autoscroll-wrap" style="--scroll-dur:' + Math.max(12, completed.length * 3) + 's">' + rHtml + rHtml + '</div>';
+          rEl.innerHTML = rHtml;
+          // Auto-scroll (slow) + manual scroll
+          if (rEl.scrollHeight > rEl.clientHeight) {
+            var _rrSpeed = 80;
+            function _rrTick() {
+              if (rEl.scrollTop + rEl.clientHeight >= rEl.scrollHeight - 2) { rEl.scrollTop = 0; } else { rEl.scrollTop += 1; }
+            }
+            if (rEl._rrTimer) clearInterval(rEl._rrTimer);
+            rEl._rrTimer = setInterval(_rrTick, _rrSpeed);
+            rEl.onmouseenter = function() { clearInterval(rEl._rrTimer); };
+            rEl.onmouseleave = function() { rEl._rrTimer = setInterval(_rrTick, _rrSpeed); };
+            rEl.ontouchstart = function() { clearInterval(rEl._rrTimer); };
+            rEl.ontouchend = function() { setTimeout(function() { rEl._rrTimer = setInterval(_rrTick, _rrSpeed); }, 3000); };
+          }
 
 
 
@@ -22181,7 +22243,7 @@ var stats = { live: 0, scheduled: 0, completed: 0 };
 
 
 
-            lbHtml += '<div class="rank-house-card ' + posClass + '">' +
+            lbHtml += '<div class="rank-house-card ' + posClass + '" style="cursor:pointer" onclick="App._showHouseDetail(\'' + h + '\')">' +
 
 
 
@@ -22500,7 +22562,7 @@ var stats = { live: 0, scheduled: 0, completed: 0 };
 
 
 
-                tkHtml += '<span class="rt-game-chip ' + chipClass + '"><i class="fas ' + chipIcon + '"></i> ' + label + '</span>';
+                tkHtml += '<span class="rt-game-chip ' + chipClass + '" style="cursor:pointer" onclick="App._showGameWinners(\'' + label.replace(/'/g, '') + '\')"><i class="fas ' + chipIcon + '"></i> ' + label + '</span>';
 
 
 

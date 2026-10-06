@@ -29000,7 +29000,7 @@ var Gallery = {
   var obs = new MutationObserver(function() {
     gc.querySelectorAll('video').forEach(function(v) {
       v.muted = true;
-      if (v.paused) { try { v.play(); } catch(e){} }
+      if (v.paused) { var p = v.play(); if (p && p.catch) p.catch(function(){}); }
     });
   });
   obs.observe(gc, { childList: true, subtree: true });
@@ -29009,7 +29009,7 @@ var Gallery = {
     if (!document.hidden) {
       gc.querySelectorAll('video').forEach(function(v) {
         v.muted = true;
-        if (v.paused) { try { v.play(); } catch(e){} }
+        if (v.paused) { var p = v.play(); if (p && p.catch) p.catch(function(){}); }
       });
     }
   });

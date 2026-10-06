@@ -19555,14 +19555,6 @@ var App = {
 
 
           '<div style="font-size:0.7rem;color:var(--text-muted);margin-top:2px" id="dWinnersSub">from completed games</div><div style="font-size:0.7rem;color:var(--gold);margin-top:1px;font-weight:600" id="dWinnersTotal"></div></div>' +
-
-
-
-        '<div class="stat-card scheduled" style="border-color:var(--gold);border-width:1px;border-style:solid;border-image:none;position:relative;overflow:hidden"><div id="dLeaderLogo" style="position:absolute;right:-8px;top:50%;transform:translateY(-50%);width:70px;height:70px;opacity:0.15;pointer-events:none"></div><div class="stat-value" id="dLeader" style="color:var(--gold);font-size:clamp(0.7rem,2.2vw,0.95rem);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%;display:block">—</div><div class="stat-label">Trending House</div><i class="fas fa-crown stat-icon" style="color:var(--gold)"></i><div class="stat-hint">House currently leading the points race</div>' +
-
-
-
-          '<div style="font-size:0.7rem;color:var(--text-muted);margin-top:2px" id="dLeaderPts"></div></div>' +
         '<div class="stat-card completed"><div class="stat-value" id="dParticipation">0</div><div class="stat-label">Unique Players</div><i class="fas fa-users stat-icon"></i><div class="stat-hint">Unique players who participated in completed games</div>' +
           '<div style="font-size:0.7rem;color:var(--text-muted);margin-top:2px" id="dPartSub">across completed games</div><div style="font-size:0.7rem;color:var(--neon-blue);margin-top:1px;font-weight:600" id="dPartTotal"></div></div>';
 
@@ -19590,31 +19582,7 @@ var App = {
 
 
 
-        var leaderEl = document.getElementById('dLeader');
 
-
-
-        if (leaderEl && topHouse) {
-
-
-
-          leaderEl.textContent = topHouseName;
-
-
-
-          leaderEl.style.color = topHouse.color || 'var(--gold)';
-
-
-
-          var dLogo = document.getElementById('dLeaderLogo');
-
-
-
-          if (dLogo && HOUSE_LOGO_MAP[(lead.name||"")]) dLogo.innerHTML = '<img src="' + HOUSE_LOGO_MAP[(lead.name||"")] + '" style="width:100%;height:100%;object-fit:contain">';
-
-
-
-        }
 
 
 
@@ -19627,11 +19595,7 @@ var App = {
         if (wSub && d._completedGameCategories) wSub.textContent = 'from ' + d._completedGameCategories + ' game categories';
         var wTotal = document.getElementById('dWinnersTotal');
         if (wTotal) wTotal.textContent = (d._totalWinEntries || 0) + ' total wins (1st-3rd)';
-        var lPts = document.getElementById('dLeaderPts');
 
-
-
-        if (lPts && topHouse) lPts.textContent = (topHouse.points||0) + ' points';
 
 
 
@@ -22210,6 +22174,26 @@ var stats = { live: 0, scheduled: 0, completed: 0 };
 
 
 
+
+          // Build house game detail and game winners lookup
+          var hgd = {}; var gwm = {};
+          rows.forEach(function(row) {
+            var gn = (row[0] || '').toString().trim();
+            var seg = (row[1] || '').toString().toLowerCase().trim();
+            if (!gn || !seg) return;
+            var sk = (seg === 'indoor' || seg === 'online') ? 'indoor' : (seg === 'cultural') ? 'cultural' : (seg === 'inhouse') ? 'inhouse' : 'outdoor';
+            var p = PTS[sk]; if (!p) return;
+            gwm[gn.toLowerCase()] = {name: gn, p1: normHouse(row[2]||''), p2: normHouse(row[3]||''), p3: normHouse(row[4]||''), p4: normHouse(row[5]||'')};
+            for (var pi = 0; pi < 4; pi++) {
+              var hn = normHouse(row[pi + 2]);
+              if (hn && stats[hn]) {
+                if (!hgd[hn]) hgd[hn] = [];
+                hgd[hn].push({game: gn, position: pi + 1, points: p[pi]});
+              }
+            }
+          });
+          App._houseGameDetail = hgd;
+          App._gameWinners = gwm;
 
           // Sort houses by total points descending
 

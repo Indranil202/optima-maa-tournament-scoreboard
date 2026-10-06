@@ -15726,6 +15726,7 @@ body.light-theme input,body.light-theme select{background:rgba(255,253,246,.8);c
 <script>
 window._mdbg = [];
 window.onerror = function(msg, src, line, col, err) {
+  if (msg === 'Script error.' && line === 0) return true;
   window._mdbg.push('ERR: ' + msg + ' (line ' + line + ')');
   var el = document.getElementById('mobileDebug');
   if (el) { el.style.display = 'block'; el.innerHTML = '<b>JS Errors:</b><br>' + window._mdbg.join('<br>'); }
@@ -19091,6 +19092,31 @@ var App = {
   },
 
   // ── Game Winners Popup (House Points tracker chips) ──
+  _showGameHousePlayers: function(gameName, houseName) {
+    var ghp = this._gameHousePlayers || {};
+    var gKey = (gameName || '').toLowerCase().trim();
+    var hKey = (houseName || '').toLowerCase().trim();
+    var players = (ghp[gKey] || {})[hKey] || [];
+    if (!players.length) { this._showPopup('<div style="padding:1rem;text-align:center"><div style="font-size:1.5rem;margin-bottom:0.5rem">\u{1F9D9}</div><div style="color:var(--gold);font-family:Cinzel,serif;font-size:0.95rem;font-weight:700;margin-bottom:0.3rem">No Player Data Yet</div><div style="color:var(--text-muted);font-size:0.78rem">Player details for this game will appear once the Wizards sheet is updated.</div></div>'); return; }
+    var posLabels = {1:'\ud83e\udd47 1st',2:'\ud83e\udd48 2nd',3:'\ud83e\udd49 3rd',4:'4th'};
+    var posColors = {1:'#ffd700',2:'#c0c0c0',3:'#cd7f32',4:'#888'};
+    players.sort(function(a,b) { return (a.position||99) - (b.position||99); });
+    var html = '<div style="max-height:50vh;overflow-y:auto;padding:0.5rem">';
+    html += '<h3 style="margin:0 0 0.3rem;color:var(--gold);font-family:Cinzel,serif;font-size:1rem;text-align:center">' + gameName + '</h3>';
+    html += '<div style="text-align:center;margin-bottom:0.8rem;font-size:0.75rem;color:var(--text-muted)">' + houseName + ' \u2014 ' + players.length + ' player' + (players.length > 1 ? 's' : '') + '</div>';
+    players.forEach(function(p) {
+      var pc = posColors[p.position] || '#888';
+      var pl = posLabels[p.position] || (p.position ? '#' + p.position : 'Participant');
+      html += '<div style="display:flex;align-items:center;gap:10px;padding:6px 8px;border-bottom:1px solid rgba(255,255,255,0.05)">';
+      html += '<div style="min-width:60px;font-size:0.7rem;color:' + pc + ';font-weight:700">' + pl + '</div>';
+      html += '<div style="font-size:0.85rem;color:var(--text-primary);font-weight:600">' + p.name + '</div>';
+      if (p.category) html += '<div style="margin-left:auto;font-size:0.65rem;color:var(--text-muted);background:rgba(255,255,255,0.05);padding:2px 6px;border-radius:4px">' + p.category + '</div>';
+      html += '</div>';
+    });
+    html += '</div>';
+    this._showPopup(html);
+  },
+
   _showGameWinners: function(gameName) {
     var gw = (this._gameWinners || {})[gameName.toLowerCase()] || null;
     if (!gw) { alert(gameName + ': No results yet'); return; }
@@ -22853,19 +22879,19 @@ var stats = { live: 0, scheduled: 0, completed: 0 };
 
 
 
-                '<td class="dt-house-name dt-pos-1">' + '<span style="display:inline-flex;align-items:center;gap:4px">' + ((HMETA[normHouse(row[2]||'')] || {}).logo ? '<img src="' + HMETA[normHouse(row[2]||'')].logo + '" style="width:18px;height:18px;border-radius:50%;object-fit:contain">' : '') + normHouse(row[2] || '-') + '</span>' + '</td>' +
+                '<td class="dt-house-name dt-pos-1" style="cursor:pointer" onclick="App._showGameHousePlayers(\'' + game.replace(/'/g, '') + '\', \'' + normHouse(row[2]||'').replace(/'/g, '') + '\')">' + '<span style="display:inline-flex;align-items:center;gap:4px">' + ((HMETA[normHouse(row[2]||'')] || {}).logo ? '<img src="' + HMETA[normHouse(row[2]||'')].logo + '" style="width:18px;height:18px;border-radius:50%;object-fit:contain">' : '') + normHouse(row[2] || '-') + '</span>' + '</td>' +
 
 
 
-                '<td class="dt-house-name dt-pos-2">' + '<span style="display:inline-flex;align-items:center;gap:4px">' + ((HMETA[normHouse(row[3]||'')] || {}).logo ? '<img src="' + HMETA[normHouse(row[3]||'')].logo + '" style="width:18px;height:18px;border-radius:50%;object-fit:contain">' : '') + normHouse(row[3] || '-') + '</span>' + '</td>' +
+                '<td class="dt-house-name dt-pos-2" style="cursor:pointer" onclick="App._showGameHousePlayers(\'' + game.replace(/'/g, '') + '\', \'' + normHouse(row[3]||'').replace(/'/g, '') + '\')">' + '<span style="display:inline-flex;align-items:center;gap:4px">' + ((HMETA[normHouse(row[3]||'')] || {}).logo ? '<img src="' + HMETA[normHouse(row[3]||'')].logo + '" style="width:18px;height:18px;border-radius:50%;object-fit:contain">' : '') + normHouse(row[3] || '-') + '</span>' + '</td>' +
 
 
 
-                '<td class="dt-house-name dt-pos-3">' + '<span style="display:inline-flex;align-items:center;gap:4px">' + ((HMETA[normHouse(row[4]||'')] || {}).logo ? '<img src="' + HMETA[normHouse(row[4]||'')].logo + '" style="width:18px;height:18px;border-radius:50%;object-fit:contain">' : '') + normHouse(row[4] || '-') + '</span>' + '</td>' +
+                '<td class="dt-house-name dt-pos-3" style="cursor:pointer" onclick="App._showGameHousePlayers(\'' + game.replace(/'/g, '') + '\', \'' + normHouse(row[4]||'').replace(/'/g, '') + '\')">' + '<span style="display:inline-flex;align-items:center;gap:4px">' + ((HMETA[normHouse(row[4]||'')] || {}).logo ? '<img src="' + HMETA[normHouse(row[4]||'')].logo + '" style="width:18px;height:18px;border-radius:50%;object-fit:contain">' : '') + normHouse(row[4] || '-') + '</span>' + '</td>' +
 
 
 
-                '<td class="dt-house-name dt-pos-4">' + '<span style="display:inline-flex;align-items:center;gap:4px">' + ((HMETA[normHouse(row[5]||'')] || {}).logo ? '<img src="' + HMETA[normHouse(row[5]||'')].logo + '" style="width:18px;height:18px;border-radius:50%;object-fit:contain">' : '') + normHouse(row[5] || '-') + '</span>' + '</td>' +
+                '<td class="dt-house-name dt-pos-4" style="cursor:pointer" onclick="App._showGameHousePlayers(\'' + game.replace(/'/g, '') + '\', \'' + normHouse(row[5]||'').replace(/'/g, '') + '\')">' + '<span style="display:inline-flex;align-items:center;gap:4px">' + ((HMETA[normHouse(row[5]||'')] || {}).logo ? '<img src="' + HMETA[normHouse(row[5]||'')].logo + '" style="width:18px;height:18px;border-radius:50%;object-fit:contain">' : '') + normHouse(row[5] || '-') + '</span>' + '</td>' +
 
 
 
@@ -24865,6 +24891,26 @@ var stats = { total: 0, scheduled: 0, live: 0, completed: 0 };
 
 
 
+
+          // Build game→house→players lookup for Rankings detail popup
+          var ghpMap = {};
+          profiles.forEach(function(p) {
+            if (!p.Games || !p.Games.length) return;
+            p.Games.forEach(function(g) {
+              var gKey = (g.game || '').toLowerCase().trim();
+              if (!gKey) return;
+              // Also build with category suffix
+              var catKey = g.category ? (g.game + ' - ' + g.category).toLowerCase().trim() : gKey;
+              [gKey, catKey].forEach(function(k) {
+                if (!ghpMap[k]) ghpMap[k] = {};
+                var hKey = (p.House || '').toLowerCase().trim();
+                if (!hKey) return;
+                if (!ghpMap[k][hKey]) ghpMap[k][hKey] = [];
+                ghpMap[k][hKey].push({name: p.Name || p.Alias || '?', position: g.position || 0, category: g.category || ''});
+              });
+            });
+          });
+          self._gameHousePlayers = ghpMap;
 
           // Count unique winners — only from games that are actually completed
           var doneGames = (self.dashData._doneGames) || {};
@@ -28876,10 +28922,10 @@ var Gallery = {
 
   load: function() {
     var self = this;
-    (function(){ window._mdbg.push('Gallery: fetching json...'); return fetch('assets/Gallery/gallery.json'); })()
+    (function(){ /* gallery debug */; return fetch('assets/Gallery/gallery.json'); })()
       .then(function(r) { return r.json(); })
       .then(function(data) {
-        window._mdbg.push('Gallery: got data, games=' + ((data.games||data.tracks||[]).length));
+        // Gallery data loaded
         self._data = (data.tracks || data.games || data || []);
         // Normalize: support both {tracks:[]} and root array
         if (!Array.isArray(self._data)) {
@@ -29158,7 +29204,7 @@ var Quiz = {
         if (done) return;
         delete window[cbName];
         var el = document.getElementById(cbName); if (el) el.remove();
-        if (!retried) { retried = true; window._mdbg.push('Quiz: JSONP timeout, retrying...'); tryScript(); }
+        if (!retried) { retried = true; /* Quiz retry (silent) */ tryScript(); }
         else { window._mdbg.push('Quiz: JSONP retry also timed out'); finish([]); }
       }, 30000);
       document.head.appendChild(s);

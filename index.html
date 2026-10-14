@@ -8924,7 +8924,20 @@ window.addEventListener('unhandledrejection', function(e) {
     <!-- ── Match Cards (unified view) ── -->
     <div id="mcResults">
 
-      <!-- KPI cards removed -->
+      <div class="stats-grid" id="matchStats">
+        <div class="stat-card scheduled">
+          <div class="stat-value" id="upcomingStat">0</div>
+          <div class="stat-label">Scheduled</div>
+          <i class="fas fa-clock stat-icon"></i>
+<div class="stat-hint">Upcoming matches yet to be played</div>
+        </div>
+        <div class="stat-card completed">
+          <div class="stat-value" id="completedStat">0</div>
+          <div class="stat-label">Completed</div>
+          <i class="fas fa-check-circle stat-icon"></i>
+<div class="stat-hint">Matches finished with final results</div>
+        </div>
+      </div>
 
     <div id="liveScoresContent">
         <div class="skeleton skel-card"></div>

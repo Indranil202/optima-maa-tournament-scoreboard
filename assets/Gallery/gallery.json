@@ -1,24 +1,6 @@
 {
   "games": [
     {
-      "name": "8 Ball Pool",
-      "folder": "8 Ball Pool",
-      "icon": "fa-circle",
-      "photos": []
-    },
-    {
-      "name": "Badminton",
-      "folder": "Badminton",
-      "icon": "fa-shuttlecock",
-      "photos": []
-    },
-    {
-      "name": "Basketball",
-      "folder": "Basketball",
-      "icon": "fa-basketball",
-      "photos": []
-    },
-    {
       "name": "Carrom",
       "folder": "Carrom",
       "icon": "fa-bullseye",
@@ -60,36 +42,6 @@
       ]
     },
     {
-      "name": "Cricket",
-      "folder": "Cricket",
-      "icon": "fa-cricket-bat-ball",
-      "photos": []
-    },
-    {
-      "name": "FIFA FC25",
-      "folder": "FIFA FC25",
-      "icon": "fa-gamepad",
-      "photos": []
-    },
-    {
-      "name": "Foosball",
-      "folder": "Foosball",
-      "icon": "fa-gamepad",
-      "photos": []
-    },
-    {
-      "name": "Football",
-      "folder": "Football",
-      "icon": "fa-futbol",
-      "photos": []
-    },
-    {
-      "name": "General",
-      "folder": "General",
-      "icon": "fa-camera",
-      "photos": []
-    },
-    {
       "name": "Mascot",
       "folder": "Mascot",
       "icon": "fa-image",
@@ -116,12 +68,6 @@
       ]
     },
     {
-      "name": "Mortal Combat",
-      "folder": "Mortal Combat",
-      "icon": "fa-hand-fist",
-      "photos": []
-    },
-    {
       "name": "PUBG",
       "folder": "PUBG",
       "icon": "fa-crosshairs",
@@ -141,24 +87,6 @@
         "WhatsApp Image 2026-09-30 at 17.09.52.jpeg",
         "WhatsApp Image 2026-09-30 at 17.09.53.jpeg"
       ]
-    },
-    {
-      "name": "Table Tennis",
-      "folder": "Table Tennis",
-      "icon": "fa-table-tennis-paddle-ball",
-      "photos": []
-    },
-    {
-      "name": "Throwball",
-      "folder": "Throwball",
-      "icon": "fa-volleyball",
-      "photos": []
-    },
-    {
-      "name": "Volleyball",
-      "folder": "Volleyball",
-      "icon": "fa-volleyball",
-      "photos": []
     }
   ]
 }

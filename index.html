@@ -18573,15 +18573,18 @@ var Oracle = {
 </script>
 
 
-<!-- ═══ ANIMATED STARFIELD ═══ -->
+<!-- ═══ ANIMATED STARFIELD — PANNING SKY ═══ -->
 <script>
 (function() {
   var c = document.getElementById('starfield');
   if (!c) return;
   var ctx = c.getContext('2d');
-  var W, H, stars = [], shooters = [];
-  var STAR_COUNT = 220;
+  var W, H;
+  var STAR_COUNT = 300;
   var SHOOT_INTERVAL = 6000;
+
+  // Camera — the entire sky pans slowly
+  var cam = { x: 0, y: 0, dx: 0.15, dy: 0.06 };
 
   function resize() {
     W = c.width = window.innerWidth;
@@ -18590,31 +18593,33 @@ var Oracle = {
   window.addEventListener('resize', resize);
   resize();
 
-  // Create stars
+  // Stars placed on a large virtual sky (3x viewport) — camera pans over them
+  var SKY_W = W * 3, SKY_H = H * 3;
+  var stars = [], shooters = [];
+
   for (var i = 0; i < STAR_COUNT; i++) {
+    var depth = Math.random(); // 0=far, 1=near
     stars.push({
-      x: Math.random() * W,
-      y: Math.random() * H,
-      r: Math.random() * 1.8 + 0.3,
-      dx: (Math.random() - 0.5) * 0.08,
-      dy: (Math.random() - 0.5) * 0.05 + 0.02,
-      alpha: Math.random() * 0.6 + 0.3,
-      twinkleSpeed: Math.random() * 0.015 + 0.005,
+      sx: Math.random() * SKY_W,
+      sy: Math.random() * SKY_H,
+      r: depth * 1.6 + 0.3,
+      parallax: 0.3 + depth * 0.7, // far stars move slower
+      alpha: 0.25 + depth * 0.55,
+      twinkleSpeed: Math.random() * 0.02 + 0.004,
       twinklePhase: Math.random() * Math.PI * 2,
-      hue: Math.random() > 0.85 ? (Math.random() > 0.5 ? 40 : 220) : 0 // some gold, some blue
+      hue: Math.random() > 0.82 ? (Math.random() > 0.5 ? 40 : 220) : 0
     });
   }
 
   // Shooting star spawner
   function spawnShooter() {
     shooters.push({
-      x: Math.random() * W * 0.8,
-      y: Math.random() * H * 0.3,
-      len: Math.random() * 80 + 40,
-      speed: Math.random() * 6 + 4,
-      angle: Math.PI / 4 + (Math.random() - 0.5) * 0.3,
-      alpha: 1,
-      life: 0
+      x: cam.x + Math.random() * W,
+      y: cam.y + Math.random() * H * 0.4,
+      len: Math.random() * 90 + 50,
+      speed: Math.random() * 7 + 5,
+      angle: Math.PI / 4.5 + (Math.random() - 0.5) * 0.4,
+      alpha: 1
     });
     setTimeout(spawnShooter, SHOOT_INTERVAL + Math.random() * 8000);
   }
@@ -18623,64 +18628,72 @@ var Oracle = {
   function draw() {
     ctx.clearRect(0, 0, W, H);
 
-    // Draw stars
+    // Pan camera
+    cam.x += cam.dx;
+    cam.y += cam.dy;
+    // Wrap camera within sky bounds
+    if (cam.x > SKY_W) cam.x -= SKY_W;
+    if (cam.y > SKY_H) cam.y -= SKY_H;
+
+    // Draw stars with parallax
     for (var i = 0; i < stars.length; i++) {
       var s = stars[i];
       s.twinklePhase += s.twinkleSpeed;
-      var twinkle = 0.5 + 0.5 * Math.sin(s.twinklePhase);
+      var twinkle = 0.45 + 0.55 * Math.sin(s.twinklePhase);
       var a = s.alpha * twinkle;
 
-      // Move
-      s.x += s.dx;
-      s.y += s.dy;
-      if (s.x < -5) s.x = W + 5;
-      if (s.x > W + 5) s.x = -5;
-      if (s.y < -5) s.y = H + 5;
-      if (s.y > H + 5) s.y = -5;
+      // Screen position with parallax wrapping
+      var sx = (s.sx - cam.x * s.parallax) % SKY_W;
+      if (sx < 0) sx += SKY_W;
+      var sy = (s.sy - cam.y * s.parallax) % SKY_H;
+      if (sy < 0) sy += SKY_H;
+      // Map sky coords to viewport
+      sx = sx % (W + 20) - 10;
+      sy = sy % (H + 20) - 10;
 
       // Glow for brighter stars
-      if (s.r > 1.2) {
+      if (s.r > 1.0) {
         ctx.beginPath();
-        ctx.arc(s.x, s.y, s.r * 3, 0, Math.PI * 2);
-        var col = s.hue ? 'hsla(' + s.hue + ',60%,70%,' : 'hsla(0,0%,100%,';
-        ctx.fillStyle = col + (a * 0.1) + ')';
+        ctx.arc(sx, sy, s.r * 3, 0, Math.PI * 2);
+        var gc = s.hue ? 'hsla(' + s.hue + ',60%,70%,' : 'hsla(0,0%,100%,';
+        ctx.fillStyle = gc + (a * 0.12) + ')';
         ctx.fill();
       }
 
       ctx.beginPath();
-      ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
-      var fill = s.hue ? 'hsla(' + s.hue + ',60%,80%,' : 'hsla(0,0%,100%,';
-      ctx.fillStyle = fill + a + ')';
+      ctx.arc(sx, sy, s.r, 0, Math.PI * 2);
+      var fc = s.hue ? 'hsla(' + s.hue + ',55%,82%,' : 'hsla(0,0%,100%,';
+      ctx.fillStyle = fc + a + ')';
       ctx.fill();
     }
 
     // Draw shooting stars
     for (var j = shooters.length - 1; j >= 0; j--) {
       var sh = shooters[j];
-      sh.life++;
       sh.x += Math.cos(sh.angle) * sh.speed;
       sh.y += Math.sin(sh.angle) * sh.speed;
-      sh.alpha -= 0.015;
-      if (sh.alpha <= 0 || sh.x > W + 100 || sh.y > H + 100) {
+      sh.alpha -= 0.012;
+      // Screen position
+      var shx = sh.x - cam.x, shy = sh.y - cam.y;
+      if (sh.alpha <= 0 || shx > W + 150 || shy > H + 150 || shx < -150) {
         shooters.splice(j, 1);
         continue;
       }
-      var tx = sh.x - Math.cos(sh.angle) * sh.len;
-      var ty = sh.y - Math.sin(sh.angle) * sh.len;
-      var grad = ctx.createLinearGradient(tx, ty, sh.x, sh.y);
+      var tx = shx - Math.cos(sh.angle) * sh.len;
+      var ty = shy - Math.sin(sh.angle) * sh.len;
+      var grad = ctx.createLinearGradient(tx, ty, shx, shy);
       grad.addColorStop(0, 'rgba(255,255,255,0)');
-      grad.addColorStop(0.6, 'rgba(200,180,140,' + (sh.alpha * 0.3) + ')');
-      grad.addColorStop(1, 'rgba(255,220,130,' + sh.alpha + ')');
+      grad.addColorStop(0.5, 'rgba(220,200,150,' + (sh.alpha * 0.25) + ')');
+      grad.addColorStop(1, 'rgba(255,225,140,' + sh.alpha + ')');
       ctx.beginPath();
       ctx.moveTo(tx, ty);
-      ctx.lineTo(sh.x, sh.y);
+      ctx.lineTo(shx, shy);
       ctx.strokeStyle = grad;
-      ctx.lineWidth = 1.5;
+      ctx.lineWidth = 1.8;
       ctx.stroke();
-      // Head glow
       ctx.beginPath();
-      ctx.arc(sh.x, sh.y, 2, 0, Math.PI * 2);
-      ctx.fillStyle = 'rgba(255,230,150,' + sh.alpha + ')';
+      ctx.arc(shx, shy, 2.5, 0, Math.PI * 2);
+      ctx.fillStyle = 'rgba(255,235,160,' + sh.alpha + ')';
       ctx.fill();
     }
 

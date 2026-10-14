@@ -11233,6 +11233,15 @@ var stats = { live: 0, scheduled: 0, completed: 0 };
 
         var _rawFmt = (row[_C.scoreFmt] || '').toString().trim();
         var _rawScore = (row[_C.score] || '').toString().trim();
+        // Fix: Google Sheets auto-converts scores like "10-10" to ISO dates
+        function _fixDateScore(v) {
+          if (!v) return v;
+          var dm = v.match(/^\d{4}-(\d{2})-(\d{2})T/);
+          if (dm) return parseInt(dm[1],10) + '-' + parseInt(dm[2],10);
+          return v;
+        }
+        _rawFmt = _fixDateScore(_rawFmt);
+        _rawScore = _fixDateScore(_rawScore);
         var score = parseScore(_rawFmt || _rawScore, parsed.gameCode);
         var rawDisplay = _rawFmt || _rawScore || null;
 

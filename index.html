@@ -11183,7 +11183,7 @@ var stats = { live: 0, scheduled: 0, completed: 0 };
 
         var isTeamGame = !!HOUSE_COLORS[team1raw] || !!HOUSE_COLORS[team2raw];
 
-        var score = parseScore(row[_C.score], parsed.gameCode);
+        var score = parseScore(row[_C.scoreFmt] || row[_C.score], parsed.gameCode);
 
         // Player names from extended columns (G-J = indices 6-9)
 
@@ -16008,86 +16008,7 @@ var Gallery = {
 
 // ======= HOGWARTS LORE QUIZ — Modal + Leaderboard =======
 var Quiz = {
-  _allQuestions: [{"q": "What is the name of the three-headed dog guarding the Philosopher's Stone?", "opts": ["Fang", "Fluffy", "Norbert", "Buckbeak"], "_k": "MToz"},
-{"q": "What does the Mirror of Erised show?", "opts": ["The future", "The past", "The deepest desire of one's heart", "Hidden enemies"], "_k": "Mjoz"},
-{"q": "Who gave Harry his first broomstick?", "opts": ["Dumbledore", "Hagrid", "Professor McGonagall", "Sirius Black"], "_k": "Mzoy"},
-{"q": "What position does Harry play in Quidditch?", "opts": ["Chaser", "Beater", "Keeper", "Seeker"], "_k": "NDoy"},
-{"q": "What flavour does Dumbledore find in Bertie Bott's Every Flavour Beans?", "opts": ["Lemon sherbet", "Earwax", "Chocolate", "Grass"], "_k": "NToz"},
-{"q": "Who is the Half-Blood Prince?", "opts": ["Voldemort", "Snape", "Dumbledore", "Draco Malfoy"], "_k": "Njoy"},
-{"q": "What is the core of Harry's wand?", "opts": ["Dragon heartstring", "Unicorn hair", "Phoenix feather", "Thestral tail hair"], "_k": "Nzoy"},
-{"q": "How do first-year students travel to Hogwarts castle from the train station?", "opts": ["Thestral carriages", "Flying broomsticks", "Boats across the lake", "Walking through a tunnel"], "_k": "ODox"},
-{"q": "What chess piece does Ron play as in the giant chess game?", "opts": ["King", "Bishop", "Knight", "Rook"], "_k": "OTow"},
-{"q": "What does Hagrid name his pet dragon?", "opts": ["Norberta", "Norbert", "Fang", "Aragog"], "_k": "MTA6Mg=="},
-{"q": "What type of creature is Aragog?", "opts": ["Basilisk", "Acromantula", "Hippogriff", "Thestral"], "_k": "MTE6MQ=="},
-{"q": "What is the name of the house-elf who tries to prevent Harry from returning to Hogwarts?", "opts": ["Kreacher", "Winky", "Dobby", "Hokey"], "_k": "MTI6MQ=="},
-{"q": "What must you speak to open the Chamber of Secrets?", "opts": ["Latin incantations", "Parseltongue", "Ancient runes", "Mermish"], "_k": "MTM6Mw=="},
-{"q": "What creature lives in the Chamber of Secrets?", "opts": ["Acromantula", "Hungarian Horntail", "Basilisk", "Dementor"], "_k": "MTQ6Mw=="},
-{"q": "How does Harry destroy Tom Riddle's diary?", "opts": ["With Fiendfyre", "With a Basilisk fang", "With the Sword of Gryffindor", "With a curse"], "_k": "MTU6MQ=="},
-{"q": "What magical plant do Professor Sprout's students repot in their second year?", "opts": ["Gillyweed", "Mandrake", "Devil's Snare", "Whomping Willow"], "_k": "MTY6MA=="},
-{"q": "Who is petrified first in the Chamber of Secrets?", "opts": ["Hermione Granger", "Colin Creevey", "Mrs Norris", "Justin Finch-Fletchley"], "_k": "MTc6MA=="},
-{"q": "What does the Howler that Ron receives from his mother do?", "opts": ["Explodes", "Screams her message aloud", "Burns his hands", "Turns into a bat"], "_k": "MTg6Mg=="},
-{"q": "What is the name of the Weasley family's flying car?", "opts": ["Ford Anglia", "Ford Cortina", "Vauxhall Victor", "Morris Minor"], "_k": "MTk6MA=="},
-{"q": "Who is the ghost of Slytherin house?", "opts": ["Nearly Headless Nick", "Moaning Myrtle", "The Grey Lady", "The Bloody Baron"], "_k": "MjA6Mg=="},
-{"q": "What creature does a Boggart turn into when it faces Neville Longbottom?", "opts": ["A spider", "Professor Snape", "A mummy", "A Dementor"], "_k": "MjE6Mw=="},
-{"q": "What is Sirius Black's Animagus form?", "opts": ["A stag", "A rat", "A large black dog", "A werewolf"], "_k": "MjI6Mw=="},
-{"q": "What device does Hermione use to attend multiple classes at once?", "opts": ["Portkey", "Time-Turner", "Vanishing Cabinet", "Floo Powder"], "_k": "MjM6MQ=="},
-{"q": "What is the name of Hagrid's Hippogriff?", "opts": ["Fawkes", "Witherwings", "Buckbeak", "Tenebrus"], "_k": "MjQ6MQ=="},
-{"q": "Who is Moony in the Marauder's Map?", "opts": ["Sirius Black", "Peter Pettigrew", "James Potter", "Remus Lupin"], "_k": "MjU6MQ=="},
-{"q": "What spell does Harry use to drive away the Dementors at the lake?", "opts": ["Stupefy", "Expelliarmus", "Expecto Patronum", "Lumos Maxima"], "_k": "MjY6Mw=="},
-{"q": "What form does Harry's Patronus take?", "opts": ["A phoenix", "A stag", "A doe", "An otter"], "_k": "Mjc6MQ=="},
-{"q": "Who is Padfoot?", "opts": ["Remus Lupin", "James Potter", "Peter Pettigrew", "Sirius Black"], "_k": "Mjg6Mg=="},
-{"q": "What sweet does Professor Lupin offer Harry on the Hogwarts Express?", "opts": ["Bertie Bott's Beans", "Chocolate Frog", "Chocolate", "Liquorice Wand"], "_k": "Mjk6MA=="},
-{"q": "Who is Wormtail?", "opts": ["Sirius Black", "Remus Lupin", "Peter Pettigrew", "James Potter"], "_k": "MzA6Mw=="},
-{"q": "How many Triwizard Tournament tasks are there?", "opts": ["Two", "Three", "Four", "Five"], "_k": "MzE6MQ=="},
-{"q": "What dragon does Harry face in the first task?", "opts": ["Swedish Short-Snout", "Chinese Fireball", "Hungarian Horntail", "Common Welsh Green"], "_k": "MzI6MQ=="},
-{"q": "What does Harry use to breathe underwater in the second task?", "opts": ["A Bubble-Head Charm", "Gillyweed", "A magical snorkel", "Transfiguration"], "_k": "MzM6Mw=="},
-{"q": "Who puts Harry's name in the Goblet of Fire?", "opts": ["Snape", "Karkaroff", "Barty Crouch Jr", "Voldemort"], "_k": "MzQ6Mw=="},
-{"q": "What is the name of the Beauxbatons champion?", "opts": ["Cho Chang", "Fleur Delacour", "Gabrielle Delacour", "Padma Patil"], "_k": "MzU6MQ=="},
-{"q": "What spell do Harry's and Voldemort's wands produce when they connect?", "opts": ["Expelliarmus", "Priori Incantatem", "Avada Kedavra", "Protego"], "_k": "MzY6MA=="},
-{"q": "What creature does Barty Crouch Jr (as Moody) turn Draco Malfoy into?", "opts": ["A spider", "A ferret", "A toad", "A slug"], "_k": "Mzc6Mw=="},
-{"q": "Who is the headmaster of Durmstrang Institute?", "opts": ["Gregorovitch", "Viktor Krum", "Igor Karkaroff", "Gellert Grindelwald"], "_k": "Mzg6Mw=="},
-{"q": "What is the name of the graveyard where Voldemort returns to his body?", "opts": ["Godric's Hollow", "Little Hangleton", "Hogsmeade", "Spinner's End"], "_k": "Mzk6MQ=="},
-{"q": "Who wins the Quidditch World Cup in Goblet of Fire?", "opts": ["England", "Bulgaria", "Ireland", "France"], "_k": "NDA6MQ=="},
-{"q": "What is the address of the Order of the Phoenix headquarters?", "opts": ["4 Privet Drive", "12 Grimmauld Place", "The Burrow", "Shell Cottage"], "_k": "NDE6Mw=="},
-{"q": "Who is the leader of Dumbledore's Army?", "opts": ["Hermione Granger", "Neville Longbottom", "Harry Potter", "Ron Weasley"], "_k": "NDI6Mw=="},
-{"q": "What does O.W.L. stand for?", "opts": ["Ordinary Wizard Levels", "Ordinary Wizarding Level", "Outstanding Wizarding Learners", "Official Wizard License"], "_k": "NDM6MQ=="},
-{"q": "Who becomes the new Defence Against the Dark Arts teacher in Harry's fifth year?", "opts": ["Snape", "Umbridge", "Lupin", "Moody"], "_k": "NDQ6MA=="},
-{"q": "What is the name of the room where Dumbledore's Army practises?", "opts": ["The Chamber of Secrets", "The Room of Requirement", "The Astronomy Tower", "The Shrieking Shack"], "_k": "NDU6Mw=="},
-{"q": "What prophecy is kept in the Department of Mysteries?", "opts": ["About Dumbledore's death", "About Harry and Voldemort", "About the Elder Wand", "About the Deathly Hallows"], "_k": "NDY6Mg=="},
-{"q": "Who kills Sirius Black?", "opts": ["Voldemort", "Lucius Malfoy", "Bellatrix Lestrange", "Snape"], "_k": "NDc6Mg=="},
-{"q": "What are Thestrals visible only to people who have?", "opts": ["Pure blood", "Seen death", "Magical eyesight", "A special potion"], "_k": "NDg6MA=="},
-{"q": "What does Umbridge force Harry to write in detention?", "opts": ["I will behave", "I must not tell lies", "I am sorry", "I will obey"], "_k": "NDk6Mw=="},
-{"q": "Who is the Ravenclaw ghost?", "opts": ["Moaning Myrtle", "The Fat Friar", "The Grey Lady", "Nearly Headless Nick"], "_k": "NTA6Mw=="},
-{"q": "What potion does Harry win Felix Felicis for brewing perfectly?", "opts": ["Veritaserum", "Polyjuice Potion", "Draught of Living Death", "Amortentia"], "_k": "NTE6Mg=="},
-{"q": "What does Felix Felicis do?", "opts": ["Makes you invisible", "Gives you liquid luck", "Makes you brave", "Heals all injuries"], "_k": "NTI6MA=="},
-{"q": "How many Horcruxes did Voldemort intentionally create?", "opts": ["Five", "Six", "Seven", "Eight"], "_k": "NTM6Mw=="},
-{"q": "What object is the first Horcrux that Dumbledore and Harry find together?", "opts": ["The locket", "The ring", "Slytherin's locket", "Hufflepuff's cup"], "_k": "NTQ6MQ=="},
-{"q": "Who kills Dumbledore at the top of the Astronomy Tower?", "opts": ["Draco Malfoy", "Bellatrix Lestrange", "Severus Snape", "Voldemort"], "_k": "NTU6Mg=="},
-{"q": "What Unbreakable Vow does Snape make with Narcissa Malfoy?", "opts": ["To kill Harry", "To protect Draco and complete his task if he fails", "To betray Dumbledore", "To join the Death Eaters"], "_k": "NTY6MA=="},
-{"q": "What memory does Dumbledore show Harry involving a young Tom Riddle at an orphanage?", "opts": ["Riddle stealing from other children", "Riddle's first use of magic and cruelty", "Riddle meeting a snake", "Riddle receiving his Hogwarts letter"], "_k": "NTc6Mw=="},
-{"q": "Who is R.A.B. whose note is found in the fake locket?", "opts": ["Regulus Arcturus Black", "Rodolphus Augustus Bagnold", "Rufus Algernon Bones", "Rabastan Arwin Bulstrode"], "_k": "NTg6MQ=="},
-{"q": "What does Amortentia smell like?", "opts": ["Roses for everyone", "Different to each person based on what attracts them", "Freshly baked bread", "Nothing at all"], "_k": "NTk6MQ=="},
-{"q": "What spell does Harry use against Draco in the bathroom?", "opts": ["Stupefy", "Expelliarmus", "Sectumsempra", "Crucio"], "_k": "NjA6MQ=="},
-{"q": "What are the three Deathly Hallows?", "opts": ["Wand, Stone, Cloak", "Sword, Ring, Map", "Wand, Cup, Diadem", "Stone, Locket, Diary"], "_k": "NjE6Mg=="},
-{"q": "Who destroys the Horcrux in Hufflepuff's cup?", "opts": ["Ron Weasley", "Harry Potter", "Hermione Granger", "Neville Longbottom"], "_k": "NjI6Mw=="},
-{"q": "What does Hermione use to destroy Hufflepuff's cup?", "opts": ["Fiendfyre", "Basilisk fang", "Sword of Gryffindor", "Avada Kedavra"], "_k": "NjM6MQ=="},
-{"q": "Who destroys the final Horcrux — the snake Nagini?", "opts": ["Harry Potter", "Ron Weasley", "Hermione Granger", "Neville Longbottom"], "_k": "NjQ6Mg=="},
-{"q": "What is the name of the eldest of the three Peverell brothers?", "opts": ["Ignotus", "Cadmus", "Antioch", "Salazar"], "_k": "NjU6MA=="},
-{"q": "Which Deathly Hallow did Harry already possess before learning about them?", "opts": ["The Elder Wand", "The Resurrection Stone", "The Cloak of Invisibility", "None of them"], "_k": "NjY6Mw=="},
-{"q": "Who is the true master of the Elder Wand when Voldemort uses it?", "opts": ["Voldemort", "Snape", "Draco Malfoy", "Harry Potter"], "_k": "Njc6Mw=="},
-{"q": "What do Harry, Ron, and Hermione use to break into Gringotts?", "opts": ["Polyjuice Potion and a dragon escape", "Invisibility Cloak", "Apparition", "Felix Felicis"], "_k": "Njg6Mw=="},
-{"q": "Where does the Battle of Hogwarts take place?", "opts": ["Hogsmeade", "Hogwarts Castle", "Ministry of Magic", "The Forbidden Forest"], "_k": "Njk6Mw=="},
-{"q": "What does Harry see when he is hit by the Killing Curse in the forest?", "opts": ["Nothing", "King's Cross station with Dumbledore", "His parents", "The Mirror of Erised"], "_k": "NzA6Mg=="},
-{"q": "How many staircases does Hogwarts have?", "opts": ["42", "142", "242", "342"], "_k": "NzE6MQ=="},
-{"q": "What is the name of the Hogwarts caretaker?", "opts": ["Hagrid", "Filch", "Dobby", "Peeves"], "_k": "NzI6MA=="},
-{"q": "Which house common room is accessed through a barrel tap sequence?", "opts": ["Gryffindor", "Slytherin", "Ravenclaw", "Hufflepuff"], "_k": "NzM6MQ=="},
-{"q": "What is the Hogwarts school motto translated to English?", "opts": ["Knowledge is power", "Never tickle a sleeping dragon", "Magic is might", "Wisdom conquers all"], "_k": "NzQ6Mg=="},
-{"q": "Who is the Hogwarts Potions Master before Snape takes over as DADA teacher?", "opts": ["Slughorn teaches after Snape", "Horace Slughorn", "Snape was always both", "There was no replacement"], "_k": "NzU6MQ=="},
-{"q": "What floor is the Room of Requirement on?", "opts": ["Third floor", "Fifth floor", "Seventh floor", "Tenth floor"], "_k": "NzY6MQ=="},
-{"q": "What creature guards the entrance to the Ravenclaw common room?", "opts": ["A portrait", "An eagle-shaped knocker", "A gargoyle", "A ghost"], "_k": "Nzc6Mw=="},
-{"q": "What is Nearly Headless Nick's full name?", "opts": ["Sir Nicholas de Mimsy-Porpington", "Sir Nicholas de Canterville", "Sir Nicholas de Beaumont", "Sir Nicholas de Locksley"], "_k": "Nzg6MQ=="},
-{"q": "How many points is catching the Golden Snitch worth?", "opts": ["100", "150", "200", "50"], "_k": "Nzk6MQ=="},
-{"q": "What subject does Professor Binns teach?", "opts": ["Potions", "Defence Against the Dark Arts", "History of Magic", "Divination"], "_k": "ODA6MQ=="}],
+  _allQuestions: [],  // Fetched from QuizQuestions Google Sheet
   _questions: [],     // 10 shuffled questions for current round
   _current: 0, _score: 0, _timer: null, _seconds: 0, _answered: false, _selectedHouse: '', _skips: 0, _maxSkips: 2, _answers: [],
   _loaded: false,
@@ -18321,57 +18242,52 @@ var Oracle = {
 
   _gameDetails: function() {
     this._userMsg("🎯 Game Details");
-    var raw = App.dashData._gamesRaw;
-    if (!raw) {
-      var ag = App._allGames || [];
-      if (!ag.length) { this._botMsg("Game data not loaded."); this._showChips([], true); return; }
-      var chips = ag.map(function(g) {
-        var name = g.name || g.Game || "?";
-        return {label: name, action: "Oracle._showGameInfo('" + name.replace(/'/g,"\\'") + "')", cls:"cat"};
+    var ag = App._allGames || {};
+    var segKeys = Object.keys(ag);
+    if (!segKeys.length) { this._botMsg("Game data not loaded yet. Please wait for the page to finish loading."); this._showChips([], true); return; }
+    var SEG_LABELS = {indoor:"🏠 Indoor", outdoor:"☀️ Outdoor", online:"🎮 Online", cultural:"🎭 Cultural", inhouse:"⭐ Inhouse"};
+    var chips = [];
+    segKeys.forEach(function(sk) {
+      var games = ag[sk] || [];
+      games.forEach(function(g) {
+        var label = (SEG_LABELS[sk] || sk) + " — " + g.name;
+        chips.push({label: label, action: "Oracle._showGameInfoFromMap('" + g.name.replace(/'/g,"\\'") + "','" + sk + "')", cls:"cat"});
       });
-      this._botMsg("Select a game for details:");
-      this._showChips(chips, true);
-      return;
-    }
-    try {
-      var games = JSON.parse(raw);
-      if (!games || games.length <= 1) { this._botMsg("No game data available."); this._showChips([], true); return; }
-      var headers = games[0];
-      var nameIdx = 0, segIdx = -1, catIdx = -1, venueIdx = -1, pocIdx = -1, dateIdx = -1;
-      headers.forEach(function(h, i) {
-        var hl = (h||"").toString().toLowerCase().trim();
-        if (hl === "game" || hl === "game name" || hl === "name") nameIdx = i;
-        if (hl === "segment" || hl === "seg") segIdx = i;
-        if (hl === "category" || hl === "cat") catIdx = i;
-        if (hl === "venue" || hl === "location") venueIdx = i;
-        if (hl === "poc" || hl === "coordinator" || hl === "point of contact") pocIdx = i;
-        if (hl === "date" || hl === "event date") dateIdx = i;
-      });
-      var seen = {};
-      var gameList = [];
-      for (var i = 1; i < games.length; i++) {
-        var r = games[i];
-        var name = (r[nameIdx]||"").toString().trim();
-        if (!name || seen[name]) continue;
-        seen[name] = true;
-        gameList.push({
-          name: name,
-          seg: segIdx >= 0 ? (r[segIdx]||"").toString().trim() : "",
-          cat: catIdx >= 0 ? (r[catIdx]||"").toString().trim() : "",
-          venue: venueIdx >= 0 ? (r[venueIdx]||"").toString().trim() : "",
-          poc: pocIdx >= 0 ? (r[pocIdx]||"").toString().trim() : "",
-          date: dateIdx >= 0 ? (r[dateIdx]||"").toString().trim() : ""
-        });
-      }
-      if (!gameList.length) { this._botMsg("No games found in data."); this._showChips([], true); return; }
-      var chips = gameList.map(function(g) {
-        return {label: g.name, action: "Oracle._showGameInfoFull('" + g.name.replace(/'/g,"\\'") + "')", cls:"cat"};
-      });
-      this._botMsg("Select a game (" + gameList.length + " games):");
-      this._showChips(chips, true);
-    } catch(e) { this._botMsg("Error parsing game data."); this._showChips([], true); }
+    });
+    if (!chips.length) { this._botMsg("No games found."); this._showChips([], true); return; }
+    this._botMsg("Select a game (" + chips.length + " games):");
+    this._showChips(chips, true);
   },
 
+  _showGameInfoFromMap: function(gameName, segKey) {
+    this._userMsg(gameName);
+    var ag = App._allGames || {};
+    var games = ag[segKey] || [];
+    var game = null;
+    for (var i = 0; i < games.length; i++) { if (games[i].name === gameName) { game = games[i]; break; } }
+    var SEG_LABELS = {indoor:"Indoor", outdoor:"Outdoor", online:"Online", cultural:"Cultural Events", inhouse:"Inhouse Events"};
+    var lines = ["🎯 <b>" + gameName + "</b>\n"];
+    lines.push("🏟️ Segment: <b>" + (SEG_LABELS[segKey] || segKey) + "</b>");
+    if (game && game.cats && game.cats.length) lines.push("📋 Categories: " + game.cats.join(", "));
+    // Check completion from rankings
+    var gm = App._gameMap || {};
+    var code = "";
+    Object.keys(gm).forEach(function(k) { if (gm[k].name === gameName) code = k; });
+    if (code) lines.push("🔤 Code: " + code);
+    // Check done status from gamesDoneSet
+    var ds = App._gamesDoneSet || {};
+    var allDone = true, anyDone = false;
+    if (game && game.cats) {
+      game.cats.forEach(function(c) {
+        var key = (gameName + " - " + c).toLowerCase();
+        if (ds[key]) anyDone = true; else allDone = false;
+      });
+    }
+    if (anyDone) lines.push("\n" + (allDone ? "✅ All categories completed!" : "⏳ Some categories still in progress"));
+    else lines.push("\n⏰ Not yet started");
+    this._botMsg(lines.join("\n"));
+    this._showChips([], true);
+  },
   _showGameInfo: function(gameName) {
     this._userMsg(gameName);
     var gw = (App._gameWinners || {});

@@ -8264,6 +8264,17 @@ body.light-theme input,body.light-theme select{background:rgba(255,253,246,.8);c
 .gw-result-info{flex:1;display:flex;flex-direction:column;gap:2px}
 .gw-players{font-size:.72rem;color:#b8b0a0;font-style:italic}
 .gw-players i{color:#d4a017;margin-right:4px;font-style:normal}
+.mg-player{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:12px;margin-bottom:10px;transition:all .2s}
+.mg-player:hover{border-color:rgba(212,160,23,.3)}
+.mg-player-hdr{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-bottom:8px}
+.mg-name{font-weight:700;font-size:.85rem;color:#fff}
+.mg-house{font-size:.72rem;font-weight:600}
+.mg-stats{font-size:.7rem;color:#888;margin-left:auto}
+.mg-games{display:flex;flex-wrap:wrap;gap:4px}
+.mg-game-row{display:inline-flex;align-items:center;gap:4px;padding:3px 8px;background:rgba(255,255,255,.04);border-radius:8px;font-size:.7rem;color:#b8b0a0}
+.mg-game-pos{font-size:.75rem}
+.mg-game-name{color:#e8d5a3}
+.notif-item[style*="cursor"]:hover{background:rgba(212,160,23,.08)}
 .gc-status-badge.partial { background: rgba(251,191,36,0.12); color: var(--neon-yellow); }
 .gc-status-badge.pending { background: rgba(255,255,255,0.05); color: var(--text-muted); }
 
@@ -11956,7 +11967,10 @@ var stats = { live: 0, scheduled: 0, completed: 0 };
                 var status = 'pending'; // pending | partial | done
                 var checkKey = label.toLowerCase();
                 if (updatedGames[checkKey]) { status = updatedGames[checkKey]; }
-                // Also try just game name (for team games with single category)
+                // For single-category games, label omits category but Rankings key includes it
+                var fullKey = (g.name + ' - ' + cat).toLowerCase();
+                if (status === 'pending' && updatedGames[fullKey]) { status = updatedGames[fullKey]; }
+                // Also try just game name
                 if (status === 'pending' && updatedGames[g.name.toLowerCase()]) { status = updatedGames[g.name.toLowerCase()]; }
                 // Exact match only — no cross-category bleed
                 if (status === 'done') _gAnyDone = true;
@@ -13194,13 +13208,15 @@ var stats = { total: 0, scheduled: 0, live: 0, completed: 0 };
           self._gameHousePlayers = ghpMap;
 
           // Owl notification: players with 3+ games
-          var multiGamers = profiles.filter(function(p) { return p.Games && p.Games.length >= 3; });
+          var multiGamers = profiles.filter(function(p) { return p.Games && p.Games.length > 3; });
           if (multiGamers.length > 0) {
             multiGamers.sort(function(a,b) { return b.Games.length - a.Games.length; });
+            // Store for popup
+            App._multiGameWizards = multiGamers;
             var topN = multiGamers.slice(0, 5);
             var names = topN.map(function(p) { return p.Name + ' (' + p.Games.length + ' games)'; }).join(', ');
             var extra = multiGamers.length > 5 ? ' +' + (multiGamers.length - 5) + ' more' : '';
-            OwlPost._push('\u2728 Multi-Game Wizards!', multiGamers.length + ' player' + (multiGamers.length > 1 ? 's' : '') + ' in 3+ games: ' + names + extra, '#9b59b6');
+            OwlPost._push('\u2728 Multi-Game Wizards!', multiGamers.length + ' player' + (multiGamers.length > 1 ? 's' : '') + ' with 4+ games: ' + names + extra, '#9b59b6');
           }
 
           // Count unique winners — only from games that are actually completed
@@ -15253,7 +15269,8 @@ var OwlPost = {
     var c=document.getElementById('toastContainer'); if(!c) return;
     var t=document.createElement('div'); t.className='owl-toast';
     t.style.borderLeftColor=color||'#ffd700';
-    t.innerHTML='<div class="toast-icon">\uD83E\uDDA9</div><div style="flex:1"><div class="toast-ttl">'+title+'</div><div class="toast-msg">'+msg+'</div></div><div class="toast-x" onclick="this.parentElement.remove()">\u2715</div>';
+    t.innerHTML='<div class="toast-icon">\uD83E\uDDA9</div><div style="flex:1"><div class="toast-ttl">'+title+'</div><div class="toast-msg">'+msg+'</div></div><div class="toast-x" onclick="event.stopPropagation();this.parentElement.remove()">\u2715</div>';
+    if (title.indexOf('Multi-Game') >= 0) { t.style.cursor='pointer'; t.onclick=function(){ MultiGamePopup.open(); }; }
     c.appendChild(t);
     setTimeout(function(){if(t.parentElement){t.style.opacity='0';t.style.transform='translateX(-120%)';setTimeout(function(){if(t.parentElement)t.remove();},400);}},5000);
   },
@@ -15274,7 +15291,8 @@ var OwlPost = {
       h.forEach(function(n){
         var ago=Math.round((Date.now()-n.t)/60000);
         var agoS=ago<1?'just now':ago<60?ago+'m ago':Math.round(ago/60)+'h ago';
-        html+='<div class="notif-item"><div class="notif-dot" style="background:'+(n.color||'#ffd700')+'"></div><div style="flex:1"><div class="notif-ttl">'+n.title+'</div><div class="notif-msg">'+n.msg+'</div><div class="notif-ago">'+agoS+'</div></div></div>';
+        var clickAttr = (n.title && n.title.indexOf('Multi-Game')>=0) ? ' style="cursor:pointer" onclick="MultiGamePopup.open();OwlPost.showHistory()"' : '';
+        html+='<div class="notif-item"'+clickAttr+'><div class="notif-dot" style="background:'+(n.color||'#ffd700')+'"></div><div style="flex:1"><div class="notif-ttl">'+n.title+'</div><div class="notif-msg">'+n.msg+'</div><div class="notif-ago">'+agoS+'</div></div></div>';
       });
       p.innerHTML='<div class="notif-panel-hdr"><span>\uD83E\uDDA9 Owl Post</span><span style="cursor:pointer;color:#888;font-size:.75rem" onclick="OwlPost._clear()">Clear all</span></div>'+html;
       p.style.display='block';
@@ -17276,6 +17294,50 @@ VoiceGuide.init();
   el.style.cursor = 'pointer';
   el.addEventListener('click', function(){ Oracle.toggle(); });
 })();
+
+var MultiGamePopup = {
+  open: function() {
+    var players = App._multiGameWizards || [];
+    if (!players.length) {
+      // Try to rebuild from _playersRaw
+      try {
+        var profiles = JSON.parse(App.dashData._playersRaw || '[]');
+        players = profiles.filter(function(p) { return p.Games && p.Games.length > 3; });
+        players.sort(function(a,b) { return b.Games.length - a.Games.length; });
+      } catch(e) {}
+    }
+    if (!players.length) return;
+
+    var hColors = {'Gryffindor':'#e74c3c','Slytherin':'#2ecc71','Ravenclaw':'#3498db','Hufflepuff':'#f1c40f'};
+    var posIcons = {1:'\uD83E\uDD47',2:'\uD83E\uDD48',3:'\uD83E\uDD49',4:'4\uFE0F\u20E3'};
+
+    var html = '<div class="gw-hdr"><div><div class="gw-title">\u2728 Multi-Game Wizards</div>';
+    html += '<div class="gw-subtitle">' + players.length + ' players with 4+ game participations</div>';
+    html += '</div><button class="gw-close" onclick="GamePopup.close()">&times;</button></div>';
+
+    players.forEach(function(p) {
+      var hc = hColors[p.House] || '#d4a017';
+      html += '<div class="mg-player">';
+      html += '<div class="mg-player-hdr">';
+      html += '<span class="mg-name">' + (p.Name || '?') + '</span>';
+      html += '<span class="mg-house" style="color:' + hc + '"><i class="fas fa-shield-halved"></i> ' + (p.House || '?') + '</span>';
+      html += '<span class="mg-stats">' + (p.Games||[]).length + ' games \u2022 ' + (p.TotalPoints||0) + ' pts</span>';
+      html += '</div>';
+      html += '<div class="mg-games">';
+      (p.Games || []).forEach(function(g) {
+        var pos = posIcons[g.position] || '\u2022';
+        html += '<div class="mg-game-row">';
+        html += '<span class="mg-game-pos">' + pos + '</span>';
+        html += '<span class="mg-game-name">' + (g.game || '?') + (g.category ? ' - ' + g.category : '') + '</span>';
+        html += '</div>';
+      });
+      html += '</div></div>';
+    });
+
+    document.getElementById('gwModal').innerHTML = html;
+    document.getElementById('gwOverlay').classList.add('open');
+  }
+};
 
 var GamePopup = {
   close: function() {

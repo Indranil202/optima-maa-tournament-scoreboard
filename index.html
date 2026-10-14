@@ -12933,6 +12933,32 @@ var stats = { total: 0, scheduled: 0, live: 0, completed: 0 };
             if (p1 && p2 && p3 && p4) doneSet[gn] = true;
           }
         } catch(e) {}
+        // Also check Live Scores for in-progress games (matches played but not yet in Rankings)
+        try {
+          var _lr = self.dashData._liveRaw;
+          if (_lr) {
+            var _ld = JSON.parse(_lr);
+            var _GM = self._gameMap || {};
+            var _CM = self._catMap || {};
+            var _COL = self.dashData._COL || {};
+            var _sc = _COL.status !== undefined ? _COL.status : 8;
+            for (var _i = 1; _i < _ld.length; _i++) {
+              var _r = _ld[_i];
+              var _mid = (_r[0]||'').toString().trim();
+              var _st = (_r[_sc]||'').toString().trim().toLowerCase();
+              if (!_mid || (_st !== 'completed' && _st !== 'live')) continue;
+              var _pts = _mid.split('-');
+              if (_pts.length < 3) continue;
+              var _gc = _pts.slice(0, _pts.length - 2).join('-');
+              var _cat = _pts[_pts.length - 2];
+              var _gm = _GM[_gc];
+              if (!_gm) continue;
+              var _cn = _CM[_cat] || _cat;
+              var _dk = (_gm.name + ' - ' + _cn).toLowerCase();
+              if (!doneSet[_dk]) doneSet[_dk] = 'partial';
+            }
+          }
+        } catch(_e) {}
         self._gamesDoneSet = doneSet;
 
         // Use cached Games data (already loaded in loadAll)
@@ -13113,32 +13139,31 @@ var stats = { total: 0, scheduled: 0, live: 0, completed: 0 };
     var gameName = g.name.toString().trim();
 
     // Build category chips with completion status
-    var catsDone = 0, catsTotal = 0;
+    var catsDone = 0, catsPartial = 0, catsTotal = 0;
     var cats = (g.categories || []).map(function(c) {
       catsTotal++;
       var key1 = (gameName + ' - ' + c).toLowerCase();
       var key2 = gameName.toLowerCase();
       var status = 'pending';
 
-      // Check exact match first
-      if (doneSet[key1]) { status = 'done'; }
-      else if (g.categories.length <= 1 && doneSet[key2]) { status = 'done'; }
+      // Check exact match first (true = done from Rankings, 'partial' = in progress from Live Scores)
+      if (doneSet[key1] === true) { status = 'done'; }
+      else if (doneSet[key1] === 'partial') { status = 'partial'; }
+      else if (g.categories.length <= 1 && doneSet[key2] === true) { status = 'done'; }
+      else if (g.categories.length <= 1 && doneSet[key2] === 'partial') { status = 'partial'; }
       else {
-        // Exact key1 match only — no cross-category bleed
-        // (partial match removed: it caused e.g. "Foosball Men" to mark "Foosball Women" done)
-        if (!doneSet[key1]) {
-          // Try gameName|cat format as fallback
-          var key3 = gameName.toLowerCase() + '|' + c.toLowerCase();
-          if (doneSet[key3]) status = 'done';
-        }
+        var key3 = gameName.toLowerCase() + '|' + c.toLowerCase();
+        if (doneSet[key3] === true) status = 'done';
+        else if (doneSet[key3] === 'partial') status = 'partial';
       }
       if (status === 'done') catsDone++;
-      var ico = status === 'done' ? '<i class="fas fa-circle-check"></i> ' : '<i class="fas fa-clock"></i> ';
+      if (status === 'partial') catsPartial++;
+      var ico = status === 'done' ? '<i class="fas fa-circle-check"></i> ' : status === 'partial' ? '<i class="fas fa-pen"></i> ' : '<i class="fas fa-clock"></i> ';
       return '<span class="gc-cat-tag ' + status + '">' + ico + c + '</span>';
     }).join('');
 
     // Overall game status
-    var gameStatus = catsTotal === 0 ? 'pending' : catsDone === catsTotal ? 'done' : catsDone > 0 ? 'partial' : 'pending';
+    var gameStatus = catsTotal === 0 ? 'pending' : catsDone === catsTotal ? 'done' : (catsDone > 0 || catsPartial > 0) ? 'partial' : 'pending';
     var cardClass = gameStatus === 'done' ? 'gc-all-done' : gameStatus === 'partial' ? 'gc-partial' : 'gc-pending';
     var badgeLabel = gameStatus === 'done' ? '<i class="fas fa-circle-check"></i> Completed' : gameStatus === 'partial' ? '<i class="fas fa-pen"></i> In Progress' : '<i class="fas fa-clock"></i> Pending';
 

@@ -6894,6 +6894,31 @@ a, button, .nav-btn, .stat-card, .house-card, .game-card2, .ms-card, .ls-match-c
 
 }
 
+
+/* ═══ GREAT HALL KPI DETAIL MODAL ═══ */
+.ghk-overlay{position:fixed;inset:0;z-index:99980;background:rgba(0,0,0,.7);backdrop-filter:blur(6px);display:none;align-items:center;justify-content:center}
+.ghk-overlay.open{display:flex}
+.ghk-modal{background:rgba(13,11,26,.99);border:1px solid rgba(212,160,23,.3);border-radius:20px;padding:24px;width:min(720px,95vw);max-height:85vh;overflow-y:auto;box-shadow:0 20px 80px rgba(0,0,0,.8);animation:gwSlideIn .3s ease}
+.ghk-hdr{display:flex;align-items:center;gap:12px;margin-bottom:16px;padding-bottom:12px;border-bottom:1px solid rgba(212,160,23,.15)}
+.ghk-hdr i{font-size:1.4rem;color:var(--gold)}
+.ghk-hdr h3{margin:0;font-size:1.1rem;color:var(--text-primary);font-family:'Cinzel Decorative',serif}
+.ghk-close{margin-left:auto;background:none;border:1px solid rgba(255,255,255,.1);color:var(--text-secondary);width:32px;height:32px;border-radius:50%;cursor:pointer;font-size:.9rem;display:flex;align-items:center;justify-content:center;transition:var(--transition)}
+.ghk-close:hover{border-color:rgba(212,160,23,.4);color:var(--gold)}
+.ghk-table{width:100%;border-collapse:separate;border-spacing:0;font-size:.78rem}
+.ghk-table thead th{position:sticky;top:0;background:rgba(13,11,26,.98);color:var(--gold);font-weight:600;text-transform:uppercase;font-size:.65rem;letter-spacing:.5px;padding:8px 10px;border-bottom:1px solid rgba(212,160,23,.2);text-align:left}
+.ghk-table tbody tr{transition:background .2s}
+.ghk-table tbody tr:hover{background:rgba(212,160,23,.05)}
+.ghk-table td{padding:7px 10px;border-bottom:1px solid rgba(255,255,255,.04);color:var(--text-secondary)}
+.ghk-table td:first-child{color:var(--text-primary);font-weight:500}
+.ghk-badge{display:inline-block;padding:2px 8px;border-radius:10px;font-size:.65rem;font-weight:600}
+.ghk-badge.scheduled{background:rgba(212,160,23,.15);color:var(--neon-yellow)}
+.ghk-badge.completed{background:rgba(16,185,129,.15);color:var(--neon-green)}
+.ghk-badge.live{background:rgba(239,68,68,.15);color:var(--neon-red)}
+.ghk-house-dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:5px;vertical-align:middle}
+.ghk-count{display:inline-block;min-width:22px;text-align:center;padding:1px 6px;border-radius:8px;font-size:.65rem;font-weight:700;background:rgba(212,160,23,.12);color:var(--gold);margin-left:4px}
+.ghk-search{width:100%;padding:8px 12px;margin-bottom:12px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:8px;color:var(--text-primary);font-size:.8rem;outline:none;font-family:Inter,sans-serif}
+.ghk-search:focus{border-color:rgba(212,160,23,.3)}
+
 /* â•â•â• GREAT HALL DASHBOARD â•â•â• */
 
 .gh-row2, .gh-row3, .gh-row4 {
@@ -10439,18 +10464,18 @@ var App = {
 
       grid.innerHTML =
 
-        '<div class="stat-card live"><div class="stat-value" id="dTotal">0</div><div class="stat-label">Total Scheduled</div><i class="fas fa-scroll stat-icon"></i><div class="stat-hint">Total matches planned in the tournament</div>' +
+        '<div class="stat-card live" style="cursor:pointer" onclick="GHKpi.showScheduled()"><div class="stat-value" id="dTotal">0</div><div class="stat-label">Total Scheduled</div><i class="fas fa-scroll stat-icon"></i><div class="stat-hint">Total matches planned in the tournament</div>' +
 
           '<div style="font-size:0.7rem;color:var(--text-muted);margin-top:2px" id="dSchedSub">All matches in the tournament</div></div>' +
 
-        '<div class="stat-card completed"><div class="stat-value" id="dCompPct">0</div><div class="stat-label">Completion %</div><i class="fas fa-flag-checkered stat-icon"></i><div class="stat-hint">% of games/events completed (all categories done)</div>' +
+        '<div class="stat-card completed" style="cursor:pointer" onclick="GHKpi.showCompletion()"><div class="stat-value" id="dCompPct">0</div><div class="stat-label">Completion %</div><i class="fas fa-flag-checkered stat-icon"></i><div class="stat-hint">% of games/events completed (all categories done)</div>' +
 
           '<div style="font-size:0.7rem;color:var(--text-muted);margin-top:2px">' + ptcDone + ' of ' + ptcTotal + ' games/events completed</div></div>' +
 
-        '<div class="stat-card players"><div class="stat-value" id="dPlayers">0</div><div class="stat-label">Winners</div><i class="fas fa-hat-wizard stat-icon"></i><div class="stat-hint">Unique podium finishers (1st-3rd) in completed games</div>' +
+        '<div class="stat-card players" style="cursor:pointer" onclick="GHKpi.showWinners()"><div class="stat-value" id="dPlayers">0</div><div class="stat-label">Winners</div><i class="fas fa-hat-wizard stat-icon"></i><div class="stat-hint">Unique podium finishers (1st-3rd) in completed games</div>' +
 
           '<div style="font-size:0.7rem;color:var(--text-muted);margin-top:2px" id="dWinnersSub">from completed games</div><div style="font-size:0.7rem;color:var(--gold);margin-top:1px;font-weight:600" id="dWinnersTotal"></div></div>' +
-        '<div class="stat-card completed"><div class="stat-value" id="dParticipation">0</div><div class="stat-label">Unique Players</div><i class="fas fa-users stat-icon"></i><div class="stat-hint">Unique players who participated in completed games</div>' +
+        '<div class="stat-card completed" style="cursor:pointer" onclick="GHKpi.showPlayers()"><div class="stat-value" id="dParticipation">0</div><div class="stat-label">Unique Players</div><i class="fas fa-users stat-icon"></i><div class="stat-hint">Unique players who participated in completed games</div>' +
           '<div style="font-size:0.7rem;color:var(--text-muted);margin-top:2px" id="dPartSub">across completed games</div><div style="font-size:0.7rem;color:var(--neon-blue);margin-top:1px;font-weight:600" id="dPartTotal"></div></div>';
 
       setTimeout(function() {
@@ -16088,6 +16113,187 @@ var Gallery = {
   });
 })();
 
+
+// ═══ GREAT HALL KPI DETAIL POPUPS ═══
+var GHKpi = {
+  _HCOLORS: { gryffindor:'#c0392b', slytherin:'#2ecc71', ravenclaw:'#5b7fc7', hufflepuff:'#d4a017' },
+  _HLOGOS: { 'Gryffindor':'assets/House%20logo/Gryffindor.png','Slytherin':'assets/House%20logo/Slytherin.png','Ravenclaw':'assets/House%20logo/Ravenclaw.png','Hufflepuff':'assets/House%20logo/Hufflepuff.png' },
+
+  close: function() {
+    var o = document.getElementById('ghkOverlay');
+    if (o) o.classList.remove('open');
+  },
+
+  _open: function(html) {
+    var m = document.getElementById('ghkModal');
+    var o = document.getElementById('ghkOverlay');
+    if (m) m.innerHTML = html;
+    if (o) o.classList.add('open');
+  },
+
+  _houseTag: function(house) {
+    if (!house) return '';
+    var c = this._HCOLORS[house.toLowerCase()] || '#888';
+    var logo = this._HLOGOS[house];
+    return (logo ? '<img src="' + logo + '" style="width:14px;height:14px;object-fit:contain;border-radius:50%;vertical-align:middle;margin-right:3px">' : '<span class="ghk-house-dot" style="background:' + c + '"></span>') + '<span style="color:' + c + ';font-weight:500">' + house + '</span>';
+  },
+
+  _filterScript: function(tableId) {
+    return '<input class="ghk-search" placeholder="Search..." oninput="(function(v,t){var rows=t.querySelectorAll(\'tbody tr\');for(var i=0;i<rows.length;i++){rows[i].style.display=rows[i].textContent.toLowerCase().indexOf(v)!==-1?\'\':  \'none\'}})(this.value.toLowerCase(),document.getElementById(\'' + tableId + '\'))">';
+  },
+
+  // ── 1. Total Scheduled ──
+  showScheduled: function() {
+    var raw = App && App.dashData && App.dashData._scheduleRaw;
+    if (!raw) { this._open('<div style="padding:2rem;text-align:center;color:var(--text-muted)">Schedule data not loaded yet</div>'); return; }
+    try {
+      var data = JSON.parse(raw);
+      if (!data || data.length <= 1) { this._open('<div style="padding:2rem;text-align:center;color:var(--text-muted)">No matches found</div>'); return; }
+      var rows = data.slice(1).filter(function(r) { return r[0] && r[0].toString().trim(); });
+      var h = '<div class="ghk-hdr"><i class="fas fa-scroll"></i><h3>All Scheduled Matches</h3><span class="ghk-count">' + rows.length + '</span><button class="ghk-close" onclick="GHKpi.close()"><i class="fas fa-xmark"></i></button></div>';
+      h += this._filterScript('ghkTbl1');
+      h += '<table class="ghk-table" id="ghkTbl1"><thead><tr><th>#</th><th>Match ID</th><th>Game</th><th>Team 1</th><th>Team 2</th><th>Date</th><th>Time</th><th>Venue</th><th>Status</th></tr></thead><tbody>';
+      var GAME_MAP = App._gameMap || {};
+      for (var i = 0; i < rows.length; i++) {
+        var r = rows[i];
+        var mid = (r[0]||'').toString().trim();
+        var gc = mid.replace(/[-_].*$/, '');
+        var gm = GAME_MAP[gc] || {};
+        var st = (r[8]||'').toString().trim().toLowerCase();
+        var stClass = st === 'completed' || st === 'complete' ? 'completed' : st === 'live' || st === 'in progress' ? 'live' : 'scheduled';
+        var stLabel = stClass === 'completed' ? 'Completed' : stClass === 'live' ? 'Live' : 'Scheduled';
+        h += '<tr><td>' + (i+1) + '</td><td style="font-weight:600;color:var(--gold)">' + mid + '</td><td>' + (gm.name || gc) + '</td>';
+        h += '<td>' + (r[3]||'') + '</td><td>' + (r[4]||'') + '</td>';
+        h += '<td>' + (r[1]||'') + '</td><td>' + (r[2]||'') + '</td><td>' + (r[7]||'') + '</td>';
+        h += '<td><span class="ghk-badge ' + stClass + '">' + stLabel + '</span></td></tr>';
+      }
+      h += '</tbody></table>';
+      this._open(h);
+    } catch(e) { this._open('<div style="padding:2rem;color:#e74c3c">Error: ' + e.message + '</div>'); }
+  },
+
+  // ── 2. Completion % ──
+  showCompletion: function() {
+    var d = App && App.dashData ? App.dashData : {};
+    var doneGames = d._doneGames || {};
+    var allGames = App._allGames || {};
+    var catMap = App._catMap || {};
+    var gameMap = App._gameMap || {};
+    var h = '<div class="ghk-hdr"><i class="fas fa-flag-checkered"></i><h3>Game Completion Status</h3><span class="ghk-count">' + (d.ptcDone||0) + '/' + (d.ptcTotal||0) + '</span><button class="ghk-close" onclick="GHKpi.close()"><i class="fas fa-xmark"></i></button></div>';
+    h += this._filterScript('ghkTbl2');
+    h += '<table class="ghk-table" id="ghkTbl2"><thead><tr><th>#</th><th>Game</th><th>Category</th><th>Segment</th><th>Status</th></tr></thead><tbody>';
+    var idx = 0;
+    var segments = Object.keys(allGames).sort();
+    for (var si = 0; si < segments.length; si++) {
+      var seg = segments[si];
+      var games = allGames[seg] || [];
+      for (var gi = 0; gi < games.length; gi++) {
+        var g = games[gi];
+        var cats = g.cats || [];
+        if (cats.length > 0) {
+          for (var ci = 0; ci < cats.length; ci++) {
+            idx++;
+            var label = g.name + ' - ' + cats[ci];
+            var key = label.toLowerCase();
+            var st = doneGames[key] ? 'done' : 'pending';
+            // Also check without category
+            if (!doneGames[key]) {
+              var key2 = (g.name + '|' + cats[ci]).toLowerCase();
+              st = doneGames[key2] ? 'done' : 'pending';
+            }
+            h += '<tr><td>' + idx + '</td><td style="font-weight:500">' + g.name + '</td><td>' + cats[ci] + '</td><td style="text-transform:capitalize">' + seg + '</td>';
+            h += '<td><span class="ghk-badge ' + (st==='done'?'completed':'scheduled') + '">' + (st==='done'?'✅ Completed':'⏳ Pending') + '</span></td></tr>';
+          }
+        } else {
+          idx++;
+          var key3 = g.name.toLowerCase();
+          var st3 = doneGames[key3] ? 'done' : 'pending';
+          h += '<tr><td>' + idx + '</td><td style="font-weight:500">' + g.name + '</td><td>—</td><td style="text-transform:capitalize">' + seg + '</td>';
+          h += '<td><span class="ghk-badge ' + (st3==='done'?'completed':'scheduled') + '">' + (st3==='done'?'✅ Completed':'⏳ Pending') + '</span></td></tr>';
+        }
+      }
+    }
+    h += '</tbody></table>';
+    this._open(h);
+  },
+
+  // ── 3. Winners ──
+  showWinners: function() {
+    var raw = App && App.dashData && App.dashData._playersRaw;
+    if (!raw) { this._open('<div style="padding:2rem;text-align:center;color:var(--text-muted)">Player data not loaded yet</div>'); return; }
+    try {
+      var profiles = JSON.parse(raw);
+      var doneGames = (App.dashData._doneGames) || {};
+      var hasDone = Object.keys(doneGames).length > 0;
+      var winners = [];
+      var self = this;
+      profiles.forEach(function(p) {
+        if (!p.Games || !p.Games.length) return;
+        p.Games.forEach(function(g) {
+          if (g.position < 1 || g.position > 3) return;
+          if (hasDone) {
+            var key = (g.game||'').toLowerCase() + '|' + (g.category||'').toLowerCase();
+            if (!doneGames[key]) return;
+          }
+          var medal = g.position === 1 ? '🥇' : g.position === 2 ? '🥈' : '🥉';
+          winners.push({ name: p.Name || p.Alias || '?', house: p.House || '', game: g.game || '', category: g.category || '', position: g.position, medal: medal });
+        });
+      });
+      winners.sort(function(a,b) { return a.position - b.position || a.game.localeCompare(b.game); });
+      var uniqueNames = {};
+      winners.forEach(function(w) { uniqueNames[w.name.toLowerCase()] = 1; });
+      var h = '<div class="ghk-hdr"><i class="fas fa-hat-wizard"></i><h3>All Winners (1st - 3rd Place)</h3><span class="ghk-count">' + Object.keys(uniqueNames).length + ' unique / ' + winners.length + ' wins</span><button class="ghk-close" onclick="GHKpi.close()"><i class="fas fa-xmark"></i></button></div>';
+      h += this._filterScript('ghkTbl3');
+      h += '<table class="ghk-table" id="ghkTbl3"><thead><tr><th>#</th><th>Position</th><th>Name</th><th>House</th><th>Game</th><th>Category</th></tr></thead><tbody>';
+      for (var i = 0; i < winners.length; i++) {
+        var w = winners[i];
+        h += '<tr><td>' + (i+1) + '</td><td style="font-size:1rem">' + w.medal + '</td><td style="font-weight:600">' + w.name + '</td><td>' + self._houseTag(w.house) + '</td><td>' + w.game + '</td><td>' + (w.category || '—') + '</td></tr>';
+      }
+      h += '</tbody></table>';
+      this._open(h);
+    } catch(e) { this._open('<div style="padding:2rem;color:#e74c3c">Error: ' + e.message + '</div>'); }
+  },
+
+  // ── 4. Unique Players ──
+  showPlayers: function() {
+    var raw = App && App.dashData && App.dashData._playersRaw;
+    if (!raw) { this._open('<div style="padding:2rem;text-align:center;color:var(--text-muted)">Player data not loaded yet</div>'); return; }
+    try {
+      var profiles = JSON.parse(raw);
+      var doneGames = (App.dashData._doneGames) || {};
+      var hasDone = Object.keys(doneGames).length > 0;
+      var players = [];
+      var self = this;
+      profiles.forEach(function(p) {
+        if (!p.Games || !p.Games.length) return;
+        var participated = false;
+        var gameList = [];
+        p.Games.forEach(function(g) {
+          if (hasDone) {
+            var key = (g.game||'').toLowerCase() + '|' + (g.category||'').toLowerCase();
+            if (!doneGames[key]) return;
+          }
+          participated = true;
+          gameList.push(g.game + (g.category ? ' (' + g.category + ')' : ''));
+        });
+        if (participated) {
+          players.push({ name: p.Name || p.Alias || '?', house: p.House || '', games: gameList, count: gameList.length, points: p.TotalPoints || 0 });
+        }
+      });
+      players.sort(function(a,b) { return b.count - a.count || b.points - a.points; });
+      var h = '<div class="ghk-hdr"><i class="fas fa-users"></i><h3>All Unique Players</h3><span class="ghk-count">' + players.length + '</span><button class="ghk-close" onclick="GHKpi.close()"><i class="fas fa-xmark"></i></button></div>';
+      h += this._filterScript('ghkTbl4');
+      h += '<table class="ghk-table" id="ghkTbl4"><thead><tr><th>#</th><th>Name</th><th>House</th><th>Games</th><th>Points</th><th>Participated In</th></tr></thead><tbody>';
+      for (var i = 0; i < players.length; i++) {
+        var pl = players[i];
+        h += '<tr><td>' + (i+1) + '</td><td style="font-weight:600">' + pl.name + '</td><td>' + self._houseTag(pl.house) + '</td><td style="text-align:center"><span class="ghk-count">' + pl.count + '</span></td><td style="color:var(--gold);font-weight:600">' + pl.points + '</td><td style="font-size:.7rem;max-width:250px">' + pl.games.join(', ') + '</td></tr>';
+      }
+      h += '</tbody></table>';
+      this._open(h);
+    } catch(e) { this._open('<div style="padding:2rem;color:#e74c3c">Error: ' + e.message + '</div>'); }
+  }
+};
+
 // ======= HOGWARTS LORE QUIZ â€” Modal + Leaderboard =======
 var Quiz = {
   _allQuestions: [],  // Fetched from QuizQuestions Google Sheet
@@ -17279,6 +17485,12 @@ VoiceGuide.init();
   // Don't re-wrap â€” VoiceGuide.playForTab is already called in the existing showTab
 })();
 </script>
+
+
+<!-- GREAT HALL KPI DETAIL MODAL -->
+<div class="ghk-overlay" id="ghkOverlay" onclick="if(event.target===this)GHKpi.close()">
+  <div class="ghk-modal" id="ghkModal"></div>
+</div>
 
 <!-- â•â•â• GAME WINNER POPUP â•â•â• -->
 <div class="gw-overlay" id="gwOverlay" onclick="if(event.target===this)GamePopup.close()">

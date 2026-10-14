@@ -10050,8 +10050,7 @@ var App = {
 
     var self = this;
 
-    // ── Strategy: single getAllData call → pre-seed cache → run loaders ──
-    // GAS throttles concurrent requests; one bulk call avoids timeouts
+    // ── Strategy: cache-first for instant render, then background refresh ──
     var bulkMap = {
       'getGamesData': 'games', 'getLiveScores': 'liveScores',
       'getRankings': 'rankings', 'getPlayerProfiles': 'players',
@@ -10059,41 +10058,76 @@ var App = {
       'getSchedule': 'liveScores'
     };
 
-    callBackend('getAllData', function(raw) {
-      try {
-        var bundle = JSON.parse(raw);
-        debugLog('Bulk', 'OK', 'getAllData returned ' + Object.keys(bundle).length + ' keys');
-        // Pre-seed sessionStorage cache for each action
-        Object.keys(bulkMap).forEach(function(action) {
-          var key = bulkMap[action];
-          if (bundle[key] !== undefined) {
-            var str = JSON.stringify(bundle[key]);
-            saveCache('optima_' + action, 'optima_' + action + '_ts', str);
-          }
-        });
-        updateDataTimestamp();
-      } catch(e) {
-        debugLog('Bulk', 'WARN', 'getAllData parse failed: ' + e);
+    // Check if ANY cached data exists from previous session
+    var hasCachedData = false;
+    try {
+      var actions = Object.keys(bulkMap);
+      for (var ai = 0; ai < actions.length; ai++) {
+        if (sessionStorage.getItem('optima_' + actions[ai])) { hasCachedData = true; break; }
       }
-      // Now run loaders — they will find cached data and render instantly
+    } catch(e) {}
+
+    if (hasCachedData) {
+      // Render from cache INSTANTLY — no waiting for network
+      debugLog('Bulk', 'CACHE-HIT', 'Rendering from cached data instantly');
       self._runLoaders();
-    }, function(err) {
-      debugLog('Bulk', 'FAIL', 'getAllData failed (' + err + '), falling back to individual calls');
-      self._runLoaders();
-    });
+      // Background refresh: fetch fresh data silently
+      callBackend('getAllData', function(raw) {
+        try {
+          var bundle = JSON.parse(raw);
+          debugLog('Bulk', 'BG-REFRESH', 'getAllData returned ' + Object.keys(bundle).length + ' keys');
+          Object.keys(bulkMap).forEach(function(action) {
+            var key = bulkMap[action];
+            if (bundle[key] !== undefined) {
+              saveCache('optima_' + action, 'optima_' + action + '_ts', JSON.stringify(bundle[key]));
+            }
+          });
+          updateDataTimestamp();
+        } catch(e) {
+          debugLog('Bulk', 'BG-WARN', 'Background refresh parse failed: ' + e);
+        }
+      }, function() {
+        debugLog('Bulk', 'BG-SKIP', 'Background refresh failed (cached data still valid)');
+      });
+    } else {
+      // First visit — no cache; must wait for getAllData
+      callBackend('getAllData', function(raw) {
+        try {
+          var bundle = JSON.parse(raw);
+          debugLog('Bulk', 'OK', 'getAllData returned ' + Object.keys(bundle).length + ' keys');
+          Object.keys(bulkMap).forEach(function(action) {
+            var key = bulkMap[action];
+            if (bundle[key] !== undefined) {
+              saveCache('optima_' + action, 'optima_' + action + '_ts', JSON.stringify(bundle[key]));
+            }
+          });
+          updateDataTimestamp();
+        } catch(e) {
+          debugLog('Bulk', 'WARN', 'getAllData parse failed: ' + e);
+        }
+        self._runLoaders();
+      }, function(err) {
+        debugLog('Bulk', 'FAIL', 'getAllData failed (' + err + '), falling back to individual calls');
+        self._runLoaders();
+      });
+    }
 
   },
 
   _runLoaders: function() {
     var self = this;
-    // Stagger calls to avoid GAS concurrent execution throttling
-    // Fire games first (other tabs depend on game maps), then stagger rest
+    // Check if data is cached — if so, skip stagger delays
+    var _cached = false;
+    try { _cached = !!sessionStorage.getItem('optima_getGamesData'); } catch(e) {}
+    var delay = _cached ? 0 : 1500; // 0ms when cached, 1.5s stagger when fetching from network
+
+    // Fire games first (other tabs depend on game maps)
     callBackend('getGamesData', function(raw) {
       self._gamesRaw = raw;
       self._buildGameMaps(raw);
       self.loadSchedule();
       self.loadGames();
-      debugLog('Parallel', 'OK', 'Games maps built');
+      debugLog('Parallel', 'OK', 'Games maps built' + (_cached ? ' (from cache)' : ''));
     }, function() {
       self._gamesRaw = null;
       self._gameMap = {};
@@ -10102,20 +10136,12 @@ var App = {
       self.loadSchedule();
       self.loadGames();
     });
-    // Stagger remaining calls 1.5s apart to avoid GAS throttling
-    setTimeout(function() { self.loadLiveScores(); }, 1500);
-    setTimeout(function() { try { self.loadRankings(); } catch(e) { console.error(e); } }, 3000);
-    setTimeout(function() { try { self.loadPlayerProfiles(); } catch(e) { console.error(e); } }, 4500);
-    setTimeout(function() { try { self.loadHouses(); } catch(e) { console.error(e); } }, 6000);
+    // Load remaining tabs — instant if cached, staggered if network
+    setTimeout(function() { self.loadLiveScores(); }, delay);
+    setTimeout(function() { try { self.loadRankings(); } catch(e) { console.error(e); } }, delay * 2);
+    setTimeout(function() { try { self.loadPlayerProfiles(); } catch(e) { console.error(e); } }, delay * 3);
+    setTimeout(function() { try { self.loadHouses(); } catch(e) { console.error(e); } }, delay * 4);
     try { if (typeof Gallery !== 'undefined') Gallery.load(); } catch(e) { console.error('Gallery load error:', e); }
-    // Pre-fetch quiz questions so they're ready when user opens quiz
-    setTimeout(function() {
-      if (typeof Quiz !== 'undefined' && !Quiz._allQuestions.length) {
-        Quiz._fetchQuestions(function() {
-          window._mdbg.push('Quiz: pre-fetched ' + Quiz._allQuestions.length + ' questions');
-        });
-      }
-    }, 8000);
   },
 
   // ── House Detail Popup (House Points tab) ──
@@ -15982,7 +16008,86 @@ var Gallery = {
 
 // ======= HOGWARTS LORE QUIZ — Modal + Leaderboard =======
 var Quiz = {
-  _allQuestions: [],  // Full bank fetched from Google Sheet
+  _allQuestions: [{"q": "What is the name of the three-headed dog guarding the Philosopher's Stone?", "opts": ["Fang", "Fluffy", "Norbert", "Buckbeak"], "_k": "MToz"},
+{"q": "What does the Mirror of Erised show?", "opts": ["The future", "The past", "The deepest desire of one's heart", "Hidden enemies"], "_k": "Mjoz"},
+{"q": "Who gave Harry his first broomstick?", "opts": ["Dumbledore", "Hagrid", "Professor McGonagall", "Sirius Black"], "_k": "Mzoy"},
+{"q": "What position does Harry play in Quidditch?", "opts": ["Chaser", "Beater", "Keeper", "Seeker"], "_k": "NDoy"},
+{"q": "What flavour does Dumbledore find in Bertie Bott's Every Flavour Beans?", "opts": ["Lemon sherbet", "Earwax", "Chocolate", "Grass"], "_k": "NToz"},
+{"q": "Who is the Half-Blood Prince?", "opts": ["Voldemort", "Snape", "Dumbledore", "Draco Malfoy"], "_k": "Njoy"},
+{"q": "What is the core of Harry's wand?", "opts": ["Dragon heartstring", "Unicorn hair", "Phoenix feather", "Thestral tail hair"], "_k": "Nzoy"},
+{"q": "How do first-year students travel to Hogwarts castle from the train station?", "opts": ["Thestral carriages", "Flying broomsticks", "Boats across the lake", "Walking through a tunnel"], "_k": "ODox"},
+{"q": "What chess piece does Ron play as in the giant chess game?", "opts": ["King", "Bishop", "Knight", "Rook"], "_k": "OTow"},
+{"q": "What does Hagrid name his pet dragon?", "opts": ["Norberta", "Norbert", "Fang", "Aragog"], "_k": "MTA6Mg=="},
+{"q": "What type of creature is Aragog?", "opts": ["Basilisk", "Acromantula", "Hippogriff", "Thestral"], "_k": "MTE6MQ=="},
+{"q": "What is the name of the house-elf who tries to prevent Harry from returning to Hogwarts?", "opts": ["Kreacher", "Winky", "Dobby", "Hokey"], "_k": "MTI6MQ=="},
+{"q": "What must you speak to open the Chamber of Secrets?", "opts": ["Latin incantations", "Parseltongue", "Ancient runes", "Mermish"], "_k": "MTM6Mw=="},
+{"q": "What creature lives in the Chamber of Secrets?", "opts": ["Acromantula", "Hungarian Horntail", "Basilisk", "Dementor"], "_k": "MTQ6Mw=="},
+{"q": "How does Harry destroy Tom Riddle's diary?", "opts": ["With Fiendfyre", "With a Basilisk fang", "With the Sword of Gryffindor", "With a curse"], "_k": "MTU6MQ=="},
+{"q": "What magical plant do Professor Sprout's students repot in their second year?", "opts": ["Gillyweed", "Mandrake", "Devil's Snare", "Whomping Willow"], "_k": "MTY6MA=="},
+{"q": "Who is petrified first in the Chamber of Secrets?", "opts": ["Hermione Granger", "Colin Creevey", "Mrs Norris", "Justin Finch-Fletchley"], "_k": "MTc6MA=="},
+{"q": "What does the Howler that Ron receives from his mother do?", "opts": ["Explodes", "Screams her message aloud", "Burns his hands", "Turns into a bat"], "_k": "MTg6Mg=="},
+{"q": "What is the name of the Weasley family's flying car?", "opts": ["Ford Anglia", "Ford Cortina", "Vauxhall Victor", "Morris Minor"], "_k": "MTk6MA=="},
+{"q": "Who is the ghost of Slytherin house?", "opts": ["Nearly Headless Nick", "Moaning Myrtle", "The Grey Lady", "The Bloody Baron"], "_k": "MjA6Mg=="},
+{"q": "What creature does a Boggart turn into when it faces Neville Longbottom?", "opts": ["A spider", "Professor Snape", "A mummy", "A Dementor"], "_k": "MjE6Mw=="},
+{"q": "What is Sirius Black's Animagus form?", "opts": ["A stag", "A rat", "A large black dog", "A werewolf"], "_k": "MjI6Mw=="},
+{"q": "What device does Hermione use to attend multiple classes at once?", "opts": ["Portkey", "Time-Turner", "Vanishing Cabinet", "Floo Powder"], "_k": "MjM6MQ=="},
+{"q": "What is the name of Hagrid's Hippogriff?", "opts": ["Fawkes", "Witherwings", "Buckbeak", "Tenebrus"], "_k": "MjQ6MQ=="},
+{"q": "Who is Moony in the Marauder's Map?", "opts": ["Sirius Black", "Peter Pettigrew", "James Potter", "Remus Lupin"], "_k": "MjU6MQ=="},
+{"q": "What spell does Harry use to drive away the Dementors at the lake?", "opts": ["Stupefy", "Expelliarmus", "Expecto Patronum", "Lumos Maxima"], "_k": "MjY6Mw=="},
+{"q": "What form does Harry's Patronus take?", "opts": ["A phoenix", "A stag", "A doe", "An otter"], "_k": "Mjc6MQ=="},
+{"q": "Who is Padfoot?", "opts": ["Remus Lupin", "James Potter", "Peter Pettigrew", "Sirius Black"], "_k": "Mjg6Mg=="},
+{"q": "What sweet does Professor Lupin offer Harry on the Hogwarts Express?", "opts": ["Bertie Bott's Beans", "Chocolate Frog", "Chocolate", "Liquorice Wand"], "_k": "Mjk6MA=="},
+{"q": "Who is Wormtail?", "opts": ["Sirius Black", "Remus Lupin", "Peter Pettigrew", "James Potter"], "_k": "MzA6Mw=="},
+{"q": "How many Triwizard Tournament tasks are there?", "opts": ["Two", "Three", "Four", "Five"], "_k": "MzE6MQ=="},
+{"q": "What dragon does Harry face in the first task?", "opts": ["Swedish Short-Snout", "Chinese Fireball", "Hungarian Horntail", "Common Welsh Green"], "_k": "MzI6MQ=="},
+{"q": "What does Harry use to breathe underwater in the second task?", "opts": ["A Bubble-Head Charm", "Gillyweed", "A magical snorkel", "Transfiguration"], "_k": "MzM6Mw=="},
+{"q": "Who puts Harry's name in the Goblet of Fire?", "opts": ["Snape", "Karkaroff", "Barty Crouch Jr", "Voldemort"], "_k": "MzQ6Mw=="},
+{"q": "What is the name of the Beauxbatons champion?", "opts": ["Cho Chang", "Fleur Delacour", "Gabrielle Delacour", "Padma Patil"], "_k": "MzU6MQ=="},
+{"q": "What spell do Harry's and Voldemort's wands produce when they connect?", "opts": ["Expelliarmus", "Priori Incantatem", "Avada Kedavra", "Protego"], "_k": "MzY6MA=="},
+{"q": "What creature does Barty Crouch Jr (as Moody) turn Draco Malfoy into?", "opts": ["A spider", "A ferret", "A toad", "A slug"], "_k": "Mzc6Mw=="},
+{"q": "Who is the headmaster of Durmstrang Institute?", "opts": ["Gregorovitch", "Viktor Krum", "Igor Karkaroff", "Gellert Grindelwald"], "_k": "Mzg6Mw=="},
+{"q": "What is the name of the graveyard where Voldemort returns to his body?", "opts": ["Godric's Hollow", "Little Hangleton", "Hogsmeade", "Spinner's End"], "_k": "Mzk6MQ=="},
+{"q": "Who wins the Quidditch World Cup in Goblet of Fire?", "opts": ["England", "Bulgaria", "Ireland", "France"], "_k": "NDA6MQ=="},
+{"q": "What is the address of the Order of the Phoenix headquarters?", "opts": ["4 Privet Drive", "12 Grimmauld Place", "The Burrow", "Shell Cottage"], "_k": "NDE6Mw=="},
+{"q": "Who is the leader of Dumbledore's Army?", "opts": ["Hermione Granger", "Neville Longbottom", "Harry Potter", "Ron Weasley"], "_k": "NDI6Mw=="},
+{"q": "What does O.W.L. stand for?", "opts": ["Ordinary Wizard Levels", "Ordinary Wizarding Level", "Outstanding Wizarding Learners", "Official Wizard License"], "_k": "NDM6MQ=="},
+{"q": "Who becomes the new Defence Against the Dark Arts teacher in Harry's fifth year?", "opts": ["Snape", "Umbridge", "Lupin", "Moody"], "_k": "NDQ6MA=="},
+{"q": "What is the name of the room where Dumbledore's Army practises?", "opts": ["The Chamber of Secrets", "The Room of Requirement", "The Astronomy Tower", "The Shrieking Shack"], "_k": "NDU6Mw=="},
+{"q": "What prophecy is kept in the Department of Mysteries?", "opts": ["About Dumbledore's death", "About Harry and Voldemort", "About the Elder Wand", "About the Deathly Hallows"], "_k": "NDY6Mg=="},
+{"q": "Who kills Sirius Black?", "opts": ["Voldemort", "Lucius Malfoy", "Bellatrix Lestrange", "Snape"], "_k": "NDc6Mg=="},
+{"q": "What are Thestrals visible only to people who have?", "opts": ["Pure blood", "Seen death", "Magical eyesight", "A special potion"], "_k": "NDg6MA=="},
+{"q": "What does Umbridge force Harry to write in detention?", "opts": ["I will behave", "I must not tell lies", "I am sorry", "I will obey"], "_k": "NDk6Mw=="},
+{"q": "Who is the Ravenclaw ghost?", "opts": ["Moaning Myrtle", "The Fat Friar", "The Grey Lady", "Nearly Headless Nick"], "_k": "NTA6Mw=="},
+{"q": "What potion does Harry win Felix Felicis for brewing perfectly?", "opts": ["Veritaserum", "Polyjuice Potion", "Draught of Living Death", "Amortentia"], "_k": "NTE6Mg=="},
+{"q": "What does Felix Felicis do?", "opts": ["Makes you invisible", "Gives you liquid luck", "Makes you brave", "Heals all injuries"], "_k": "NTI6MA=="},
+{"q": "How many Horcruxes did Voldemort intentionally create?", "opts": ["Five", "Six", "Seven", "Eight"], "_k": "NTM6Mw=="},
+{"q": "What object is the first Horcrux that Dumbledore and Harry find together?", "opts": ["The locket", "The ring", "Slytherin's locket", "Hufflepuff's cup"], "_k": "NTQ6MQ=="},
+{"q": "Who kills Dumbledore at the top of the Astronomy Tower?", "opts": ["Draco Malfoy", "Bellatrix Lestrange", "Severus Snape", "Voldemort"], "_k": "NTU6Mg=="},
+{"q": "What Unbreakable Vow does Snape make with Narcissa Malfoy?", "opts": ["To kill Harry", "To protect Draco and complete his task if he fails", "To betray Dumbledore", "To join the Death Eaters"], "_k": "NTY6MA=="},
+{"q": "What memory does Dumbledore show Harry involving a young Tom Riddle at an orphanage?", "opts": ["Riddle stealing from other children", "Riddle's first use of magic and cruelty", "Riddle meeting a snake", "Riddle receiving his Hogwarts letter"], "_k": "NTc6Mw=="},
+{"q": "Who is R.A.B. whose note is found in the fake locket?", "opts": ["Regulus Arcturus Black", "Rodolphus Augustus Bagnold", "Rufus Algernon Bones", "Rabastan Arwin Bulstrode"], "_k": "NTg6MQ=="},
+{"q": "What does Amortentia smell like?", "opts": ["Roses for everyone", "Different to each person based on what attracts them", "Freshly baked bread", "Nothing at all"], "_k": "NTk6MQ=="},
+{"q": "What spell does Harry use against Draco in the bathroom?", "opts": ["Stupefy", "Expelliarmus", "Sectumsempra", "Crucio"], "_k": "NjA6MQ=="},
+{"q": "What are the three Deathly Hallows?", "opts": ["Wand, Stone, Cloak", "Sword, Ring, Map", "Wand, Cup, Diadem", "Stone, Locket, Diary"], "_k": "NjE6Mg=="},
+{"q": "Who destroys the Horcrux in Hufflepuff's cup?", "opts": ["Ron Weasley", "Harry Potter", "Hermione Granger", "Neville Longbottom"], "_k": "NjI6Mw=="},
+{"q": "What does Hermione use to destroy Hufflepuff's cup?", "opts": ["Fiendfyre", "Basilisk fang", "Sword of Gryffindor", "Avada Kedavra"], "_k": "NjM6MQ=="},
+{"q": "Who destroys the final Horcrux — the snake Nagini?", "opts": ["Harry Potter", "Ron Weasley", "Hermione Granger", "Neville Longbottom"], "_k": "NjQ6Mg=="},
+{"q": "What is the name of the eldest of the three Peverell brothers?", "opts": ["Ignotus", "Cadmus", "Antioch", "Salazar"], "_k": "NjU6MA=="},
+{"q": "Which Deathly Hallow did Harry already possess before learning about them?", "opts": ["The Elder Wand", "The Resurrection Stone", "The Cloak of Invisibility", "None of them"], "_k": "NjY6Mw=="},
+{"q": "Who is the true master of the Elder Wand when Voldemort uses it?", "opts": ["Voldemort", "Snape", "Draco Malfoy", "Harry Potter"], "_k": "Njc6Mw=="},
+{"q": "What do Harry, Ron, and Hermione use to break into Gringotts?", "opts": ["Polyjuice Potion and a dragon escape", "Invisibility Cloak", "Apparition", "Felix Felicis"], "_k": "Njg6Mw=="},
+{"q": "Where does the Battle of Hogwarts take place?", "opts": ["Hogsmeade", "Hogwarts Castle", "Ministry of Magic", "The Forbidden Forest"], "_k": "Njk6Mw=="},
+{"q": "What does Harry see when he is hit by the Killing Curse in the forest?", "opts": ["Nothing", "King's Cross station with Dumbledore", "His parents", "The Mirror of Erised"], "_k": "NzA6Mg=="},
+{"q": "How many staircases does Hogwarts have?", "opts": ["42", "142", "242", "342"], "_k": "NzE6MQ=="},
+{"q": "What is the name of the Hogwarts caretaker?", "opts": ["Hagrid", "Filch", "Dobby", "Peeves"], "_k": "NzI6MA=="},
+{"q": "Which house common room is accessed through a barrel tap sequence?", "opts": ["Gryffindor", "Slytherin", "Ravenclaw", "Hufflepuff"], "_k": "NzM6MQ=="},
+{"q": "What is the Hogwarts school motto translated to English?", "opts": ["Knowledge is power", "Never tickle a sleeping dragon", "Magic is might", "Wisdom conquers all"], "_k": "NzQ6Mg=="},
+{"q": "Who is the Hogwarts Potions Master before Snape takes over as DADA teacher?", "opts": ["Slughorn teaches after Snape", "Horace Slughorn", "Snape was always both", "There was no replacement"], "_k": "NzU6MQ=="},
+{"q": "What floor is the Room of Requirement on?", "opts": ["Third floor", "Fifth floor", "Seventh floor", "Tenth floor"], "_k": "NzY6MQ=="},
+{"q": "What creature guards the entrance to the Ravenclaw common room?", "opts": ["A portrait", "An eagle-shaped knocker", "A gargoyle", "A ghost"], "_k": "Nzc6Mw=="},
+{"q": "What is Nearly Headless Nick's full name?", "opts": ["Sir Nicholas de Mimsy-Porpington", "Sir Nicholas de Canterville", "Sir Nicholas de Beaumont", "Sir Nicholas de Locksley"], "_k": "Nzg6MQ=="},
+{"q": "How many points is catching the Golden Snitch worth?", "opts": ["100", "150", "200", "50"], "_k": "Nzk6MQ=="},
+{"q": "What subject does Professor Binns teach?", "opts": ["Potions", "Defence Against the Dark Arts", "History of Magic", "Divination"], "_k": "ODA6MQ=="}],
   _questions: [],     // 10 shuffled questions for current round
   _current: 0, _score: 0, _timer: null, _seconds: 0, _answered: false, _selectedHouse: '', _skips: 0, _maxSkips: 2, _answers: [],
   _loaded: false,

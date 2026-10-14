@@ -8924,26 +8924,7 @@ window.addEventListener('unhandledrejection', function(e) {
     <!-- ── Match Cards (unified view) ── -->
     <div id="mcResults">
 
-      <div class="stats-grid" id="matchStats">
-        <div class="stat-card live">
-          <div class="stat-value" id="liveStat">0</div>
-          <div class="stat-label">Live</div>
-          <i class="fas fa-circle stat-icon"></i>
-<div class="stat-hint">Matches in progress right now</div>
-        </div>
-        <div class="stat-card scheduled">
-          <div class="stat-value" id="upcomingStat">0</div>
-          <div class="stat-label">Scheduled</div>
-          <i class="fas fa-clock stat-icon"></i>
-<div class="stat-hint">Upcoming matches yet to be played</div>
-        </div>
-        <div class="stat-card completed">
-          <div class="stat-value" id="completedStat">0</div>
-          <div class="stat-label">Completed</div>
-          <i class="fas fa-check-circle stat-icon"></i>
-<div class="stat-hint">Matches finished with final results</div>
-        </div>
-      </div>
+      <!-- KPI cards removed -->
 
     <div id="liveScoresContent">
         <div class="skeleton skel-card"></div>
@@ -9214,6 +9195,13 @@ window.addEventListener('unhandledrejection', function(e) {
     <button class="quiz-modal-close" onclick="Quiz.closeModal()"><i class="fas fa-xmark"></i></button>
     <!-- Login Gate -->
     <div id="quizLogin" class="quiz-start-screen" style="display:none">
+      <div class="quiz-jackpot-icon"><i class="fas fa-lock"></i></div>
+      <h2 class="quiz-jackpot-title" style="font-size:1.2rem">RESTRICTED AREA</h2>
+      <p class="quiz-jackpot-subtitle" style="font-size:.8rem">Enter the passphrase to unlock the quiz</p>
+      <div style="margin:1rem 0;display:flex;gap:8px;justify-content:center;align-items:center">
+        <input type="password" id="quizPassword" placeholder="Enter passphrase..." style="background:rgba(0,0,0,.3);border:1px solid rgba(212,160,23,.3);color:var(--text-primary);padding:10px 14px;border-radius:8px;font-family:inherit;font-size:.85rem;width:200px;outline:none;text-align:center" onkeydown="if(event.key==='Enter')Quiz.checkLogin()">
+        <button onclick="Quiz.checkLogin()" style="background:linear-gradient(135deg,#d4a017,#b8860b);color:#1a1a2e;border:none;padding:10px 18px;border-radius:8px;cursor:pointer;font-weight:700;font-size:.85rem"><i class="fas fa-key"></i> Unlock</button>
+      </div>
       <p id="quizLoginError" style="color:#e74c3c;font-size:.75rem;margin-top:8px;display:none"><i class="fas fa-times-circle"></i> Wrong passphrase!</p>
     </div>
 
@@ -11903,7 +11891,6 @@ var stats = { live: 0, scheduled: 0, completed: 0 };
           // ALL_GAMES â€” dynamic from Games sheet (source of truth)
 
           var ALL_GAMES = self._allGames || {};
-          console.log("[TRACKER DEBUG] _allGames keys:", Object.keys(ALL_GAMES), "online games:", (ALL_GAMES.online||[]).map(function(g){return g.name+"|"+JSON.stringify(g.cats);}), "updatedGames will be:", rows.filter(function(r){return (r[1]||"").toString().trim()==="Online";}).map(function(r){return r[0];}));
 
           // Collect game names from Rankings data â€” only if all 4 placements filled
 
@@ -15215,7 +15202,7 @@ var Countdown = {
         var r=data[i];
         if ((r[sc]||'').toString().toLowerCase().trim()!=='scheduled') continue;
         var ds=dc>=0?(r[dc]||'').toString().trim():''; if (!ds) continue;
-        var ts=tc>=0?(r[tc]||'').toString().trim():'';
+        var ts=tc>=0?(r[tc]||'').toString().trim():''; if (!ts) continue;
         try { var dt=new Date(ds+(ts?' '+ts:'')); if(isNaN(dt)||dt<=now) continue;
           if (!bdt||dt<bdt) { bdt=dt; best={dt:dt,team1:(r[t1c]||'?').toString(),team2:(r[t2c]||'?').toString(),mid:(r[mc]||'').toString(),venue:vc>=0?(r[vc]||'').toString():'' }; }
         } catch(e) {}
@@ -16066,8 +16053,13 @@ var Quiz = {
       VoiceGuide._currentClip = null; VoiceGuide._currentPriority = 0;
     }
     document.getElementById('quizModal').style.display = 'flex';
-    document.getElementById('quizLogin').style.display = 'none';
-    document.getElementById('quizStart').style.display = 'block';
+    if (this._loggedIn) {
+      document.getElementById('quizLogin').style.display = 'none';
+      document.getElementById('quizStart').style.display = 'block';
+    } else {
+      document.getElementById('quizLogin').style.display = 'block';
+      document.getElementById('quizStart').style.display = 'none';
+    }
     document.getElementById('quizPlay').style.display = 'none';
     document.getElementById('quizResult').style.display = 'none';
     document.getElementById('quizRules').style.display = 'none';
@@ -18435,6 +18427,27 @@ var Oracle = {
   // ══════════════════════════════════════════
   //  HELPER: Parse matches from liveRaw
   // ══════════════════════════════════════════
+  _fmtDate: function(s) {
+    if (!s) return "";
+    try {
+      var d = new Date(s);
+      if (isNaN(d.getTime())) return s;
+      var months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+      return months[d.getMonth()] + " " + d.getDate() + ", " + d.getFullYear();
+    } catch(e) { return s; }
+  },
+  _fmtTime: function(s) {
+    if (!s) return "";
+    try {
+      // Excel serial time comes as "1899-12-30T08:38:50.000Z" — extract HH:MM
+      var d = new Date(s);
+      if (isNaN(d.getTime())) return s;
+      var h = d.getUTCHours(), m = d.getUTCMinutes();
+      var ampm = h >= 12 ? "PM" : "AM";
+      h = h % 12; if (h === 0) h = 12;
+      return h + ":" + (m < 10 ? "0" : "") + m + " " + ampm;
+    } catch(e) { return s; }
+  },
   _getMatches: function() {
     var raw = App.dashData._liveRaw || App.dashData._scheduleRaw;
     if (!raw) return null;
@@ -18442,13 +18455,14 @@ var Oracle = {
       var data = JSON.parse(raw);
       if (!data || data.length <= 1) return [];
       var C = App.dashData._COL || {};
+      var self = this;
       var matches = [];
       for (var i = 1; i < data.length; i++) {
         var r = data[i];
         matches.push({
           id: (r[C.mid!==undefined?C.mid:0]||"").toString().trim(),
-          date: (r[C.date!==undefined?C.date:1]||"").toString().trim(),
-          time: (r[C.time!==undefined?C.time:2]||"").toString().trim(),
+          date: self._fmtDate((r[C.date!==undefined?C.date:1]||"").toString().trim()),
+          time: self._fmtTime((r[C.time!==undefined?C.time:2]||"").toString().trim()),
           t1: (r[C.team1!==undefined?C.team1:3]||"").toString().trim(),
           t2: (r[C.team2!==undefined?C.team2:4]||"").toString().trim(),
           score: (r[C.score!==undefined?C.score:5]||"").toString().trim(),

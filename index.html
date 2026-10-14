@@ -17835,9 +17835,11 @@ var Oracle = {
       var lines = ["📅 <b>Today's Matches (" + todayMatches.length + "):</b>\n"];
       todayMatches.forEach(function(m, i) {
         var status = m.status ? " [" + m.status.toUpperCase() + "]" : "";
-        lines.push((i+1) + ". <b>" + m.t1 + " vs " + m.t2 + "</b>" + status);
-        if (m.time) lines.push("   ⏰ " + m.time + (m.venue ? " — " + m.venue : ""));
-        if (m.score && m.status === "completed") lines.push("   Score: " + m.score);
+        var team1 = m.t1 || "TBD", team2 = m.t2 || "TBD";
+        var idTag = m.id ? " <span style='color:#888;font-size:.85em'>(" + m.id + ")</span>" : "";
+        lines.push((i+1) + ". <b>" + team1 + " vs " + team2 + "</b>" + status + idTag);
+        if (m.date || m.time) lines.push("   📅 " + (m.date||"") + (m.time ? " ⏰ " + m.time : "") + (m.venue ? " — " + m.venue : ""));
+        if (m.score && m.status === "completed") lines.push("   🏆 Score: " + m.score);
       });
       this._botMsg(lines.join("\n"));
     }
@@ -17857,7 +17859,9 @@ var Oracle = {
     } else {
       var lines = ["⏭️ <b>Upcoming Matches (" + upcoming.length + "):</b>\n"];
       upcoming.slice(0, 15).forEach(function(m, i) {
-        lines.push((i+1) + ". <b>" + m.t1 + " vs " + m.t2 + "</b>");
+        var team1 = m.t1 || "TBD", team2 = m.t2 || "TBD";
+        var idTag = m.id ? " <span style='color:#888;font-size:.85em'>(" + m.id + ")</span>" : "";
+        lines.push((i+1) + ". <b>" + team1 + " vs " + team2 + "</b>" + idTag);
         if (m.date || m.time) lines.push("   📅 " + (m.date||"TBA") + (m.time ? " ⏰ " + m.time : "") + (m.venue ? " — " + m.venue : ""));
       });
       if (upcoming.length > 15) lines.push("\n...and " + (upcoming.length - 15) + " more");
@@ -17876,7 +17880,8 @@ var Oracle = {
     } else {
       var lines = ["✅ <b>Completed Matches (" + done.length + "):</b>\n"];
       done.forEach(function(m, i) {
-        lines.push((i+1) + ". <b>" + m.t1 + " vs " + m.t2 + "</b>" + (m.score ? " — " + m.score : ""));
+        var team1 = m.t1 || "TBD", team2 = m.t2 || "TBD";
+        lines.push((i+1) + ". <b>" + team1 + " vs " + team2 + "</b>" + (m.score ? " — " + m.score : ""));
       });
       this._botMsg(lines.join("\n"));
     }
@@ -17900,7 +17905,8 @@ var Oracle = {
       lines.push("\n📅 <b>" + d + "</b>");
       byDate[d].forEach(function(m) {
         var st = m.status ? " [" + m.status.toUpperCase() + "]" : "";
-        lines.push("  • " + m.t1 + " vs " + m.t2 + (m.time ? " ⏰" + m.time : "") + st);
+        var _t1 = m.t1 || "TBD", _t2 = m.t2 || "TBD";
+        lines.push("  • " + _t1 + " vs " + _t2 + (m.time ? " ⏰ " + m.time : "") + st);
       });
     });
     this._botMsg(lines.join("\n"));

@@ -9239,7 +9239,7 @@ window.addEventListener('unhandledrejection', function(e) {
         <div class="quiz-rule"><i class="fas fa-check-circle" style="color:#4ecdc4"></i> <span>Each correct answer earns <strong>1 point</strong>. No negatives.</span></div>
         <div class="quiz-rule"><i class="fas fa-trophy" style="color:#f39c12"></i> <span>Your score + time determines your <strong>O.W.L. grade</strong>.</span></div>
         <div class="quiz-rule"><i class="fas fa-hat-wizard" style="color:#9b59b6"></i> <span>Pick your <strong>House</strong> at the end to claim your place on the leaderboard!</span></div>
-        <div class="quiz-rule"><i class="fas fa-exclamation-triangle" style="color:#e74c3c"></i> <span>This quiz is <strong>just for fun</strong> — scores will <strong>NOT</strong> count in the Tournament Scoreboard.</span></div>
+        <div class="quiz-rule" style="display:none"><i class="fas fa-exclamation-triangle" style="color:#e74c3c"></i> <span>This quiz is <strong>just for fun</strong> — scores will <strong>NOT</strong> count in the Tournament Scoreboard.</span></div>
       </div>
       <button class="quiz-jackpot-go quiz-rules-start-btn" onclick="Quiz.beginCountdown()"><i class="fas fa-hat-wizard"></i> START</button>
     </div>
@@ -9282,7 +9282,7 @@ window.addEventListener('unhandledrejection', function(e) {
         <button class="quiz-jackpot-go" onclick="Quiz.submitScore()" style="margin-top:12px;font-size:.85rem;padding:10px 24px"><i class="fas fa-paper-plane"></i> Submit Score</button>
         <button class="quiz-name-skip" onclick="Quiz.closeModal()">Skip</button>
       </div>
-      <p class="quiz-disclaimer"><i class="fas fa-info-circle"></i> This is just for fun! Scores will <strong>NOT</strong> be added to the Tournament Scoreboard.</p>
+      <p class="quiz-disclaimer" style="display:none"><i class="fas fa-info-circle"></i> This is just for fun! Scores will <strong>NOT</strong> be added to the Tournament Scoreboard.</p>
       <button class="quiz-retry-btn" onclick="Quiz.restart()"><i class="fas fa-redo"></i> Try Again</button>
     </div>
   </div>
@@ -11954,6 +11954,31 @@ var stats = { live: 0, scheduled: 0, completed: 0 };
             updatedGames[gn] = (p1 && p2 && p3 && p4) ? 'done' : 'partial';
 
           });
+
+          // Also check Live Scores for in-progress games (matches played but Rankings not yet updated)
+          try {
+            var _liveRaw = self.dashData._liveRaw;
+            if (_liveRaw) {
+              var _liveData = JSON.parse(_liveRaw);
+              var _GMAP = self._gameMap || {};
+              var _CMAP = self._catMap || {};
+              for (var _li = 1; _li < _liveData.length; _li++) {
+                var _lr = _liveData[_li];
+                var _lmid = (_lr[0]||'').toString().trim();
+                var _lst = (_lr[self.dashData._COL ? self.dashData._COL.status : 8]||'').toString().trim().toLowerCase();
+                if (!_lmid || (_lst !== 'completed' && _lst !== 'live')) continue;
+                var _lparts = _lmid.split('-');
+                if (_lparts.length < 3) continue;
+                var _lgc = _lparts.slice(0, _lparts.length - 2).join('-');
+                var _lcat = _lparts[_lparts.length - 2];
+                var _gm = _GMAP[_lgc];
+                if (!_gm) continue;
+                var _catName = _CMAP[_lcat] || _lcat;
+                var _lkey = (_gm.name + ' - ' + _catName).toLowerCase();
+                if (!updatedGames[_lkey]) updatedGames[_lkey] = 'partial';
+              }
+            }
+          } catch(_e) {}
 
           var totalAll = 0, totalDone = 0;
 

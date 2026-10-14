@@ -17827,6 +17827,7 @@ var Oracle = {
     if (!matches) { this._botMsg("Match data not loaded yet."); this._showChips([], true); return; }
     var today = new Date();
     var todayMatches = matches.filter(function(m) {
+      if (!m.t1 && !m.t2) return false;
       try { var pd = new Date(m.date); return !isNaN(pd.getTime()) && pd.toDateString() === today.toDateString(); } catch(e) { return false; }
     });
     if (!todayMatches.length) {
@@ -17851,8 +17852,9 @@ var Oracle = {
     var matches = this._getMatches();
     if (!matches) { this._botMsg("Match data not loaded yet."); this._showChips([], true); return; }
     var upcoming = matches.filter(function(m) {
+      if (!m.t1 && !m.t2) return false;
       var s = (m.status||"").toLowerCase();
-      return s === "scheduled" || s === "upcoming" || s === "";
+      return s === "scheduled" || s === "upcoming";
     });
     if (!upcoming.length) {
       this._botMsg("⚡ All battles concluded! No upcoming matches remain.");
@@ -17894,7 +17896,7 @@ var Oracle = {
     if (!matches) { this._botMsg("Match data not loaded yet."); this._showChips([], true); return; }
     if (!matches.length) { this._botMsg("No matches in schedule."); this._showChips([], true); return; }
     var byDate = {};
-    matches.forEach(function(m) {
+    matches.filter(function(m) { return m.t1 || m.t2; }).forEach(function(m) {
       var d = m.date || "TBA";
       if (!byDate[d]) byDate[d] = [];
       byDate[d].push(m);
@@ -18478,6 +18480,8 @@ var Oracle = {
       var matches = [];
       for (var i = 1; i < data.length; i++) {
         var r = data[i];
+        var _mid = (r[C.mid!==undefined?C.mid:0]||"").toString().trim();
+        if (!_mid) continue;
         matches.push({
           id: (r[C.mid!==undefined?C.mid:0]||"").toString().trim(),
           date: self._fmtDate((r[C.date!==undefined?C.date:1]||"").toString().trim()),

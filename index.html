@@ -11903,6 +11903,7 @@ var stats = { live: 0, scheduled: 0, completed: 0 };
           // ALL_GAMES â€” dynamic from Games sheet (source of truth)
 
           var ALL_GAMES = self._allGames || {};
+          console.log("[TRACKER DEBUG] _allGames keys:", Object.keys(ALL_GAMES), "online games:", (ALL_GAMES.online||[]).map(function(g){return g.name+"|"+JSON.stringify(g.cats);}), "updatedGames will be:", rows.filter(function(r){return (r[1]||"").toString().trim()==="Online";}).map(function(r){return r[0];}));
 
           // Collect game names from Rankings data â€” only if all 4 placements filled
 

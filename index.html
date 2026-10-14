@@ -156,6 +156,11 @@ body::after {
   100% { opacity: 0.5; transform: translate(-0.5%, 0.8%) scale(1.03); }
 }
 
+@keyframes updatePulse {
+  0%, 100% { box-shadow: 0 0 0 rgba(212,160,23,0); border-color: var(--border-glass); }
+  50% { box-shadow: 0 0 8px rgba(212,160,23,0.2); border-color: rgba(212,160,23,0.3); }
+}
+
 /* ═══ CINEMATIC HERO HEADER ═══ */
 
 .hero {
@@ -8717,6 +8722,8 @@ window.addEventListener('unhandledrejection', function(e) {
 
     </div>
 
+    <button id="lastUpdateBtn" title="Last data refresh time" style="background:var(--bg-glass);border:1px solid var(--border-glass);color:var(--text-secondary);height:42px;border-radius:var(--radius-sm);cursor:default;font-size:0.65rem;display:flex;align-items:center;gap:5px;padding:0 10px;white-space:nowrap;flex-shrink:0;font-family:'Inter',sans-serif;animation:updatePulse 2s ease-in-out infinite"><i class="fas fa-satellite-dish" style="color:var(--gold);font-size:0.7rem"></i><span id="lastUpdateTime" style="opacity:0.8">Loading...</span></button>
+
     <button onclick="forceRefreshAll()" title="Refresh all data from Google Sheets" style="background:var(--bg-glass);border:1px solid var(--border-glass);color:var(--gold);width:42px;height:42px;border-radius:var(--radius-sm);cursor:pointer;font-size:0.9rem;display:flex;align-items:center;justify-content:center;transition:var(--transition);flex-shrink:0" onmouseover="this.style.borderColor='rgba(212,160,23,0.4)';this.style.boxShadow='0 0 12px rgba(212,160,23,0.1)'" onmouseout="this.style.borderColor='';this.style.boxShadow=''"><i class="fas fa-sync-alt"></i></button>
 
     <!-- Quiz Button -->
@@ -9329,15 +9336,19 @@ var CACHE_TTL = 15 * 60 * 1000;  // 15 minutes â€” fresh data re-fetched af
 
     // -- Data refresh timestamp --
     function updateDataTimestamp() {
+      var now = new Date();
+      var dd = now.getDate(), mm = now.toLocaleString('en', {month:'short'}), yy = now.getFullYear();
+      var h = now.getHours(), m = now.getMinutes(), s = now.getSeconds();
+      var ampm = h >= 12 ? 'PM' : 'AM';
+      h = h % 12 || 12;
+      var ts = dd + ' ' + mm + ' ' + yy + ', ' + h + ':' + (m<10?'0':'') + m + ':' + (s<10?'0':'') + s + ' ' + ampm;
       var el = document.getElementById('tsText');
-      if (el) {
-        var now = new Date();
-        var dd = now.getDate(), mm = now.toLocaleString('en', {month:'short'}), yy = now.getFullYear();
-        var h = now.getHours(), m = now.getMinutes(), s = now.getSeconds();
-        var ampm = h >= 12 ? 'PM' : 'AM';
-        h = h % 12 || 12;
-        el.textContent = dd + ' ' + mm + ' ' + yy + ', ' + h + ':' + (m<10?'0':'') + m + ':' + (s<10?'0':'') + s + ' ' + ampm;
-      }
+      if (el) el.textContent = ts;
+      // Update the Last Updated button
+      var btn = document.getElementById('lastUpdateTime');
+      if (btn) { btn.textContent = h + ':' + (m<10?'0':'') + m + ' ' + ampm; btn.title = ts; }
+      var btnEl = document.getElementById('lastUpdateBtn');
+      if (btnEl) { btnEl.style.borderColor = 'rgba(46,204,113,0.4)'; btnEl.style.animation = 'none'; setTimeout(function() { btnEl.style.animation = 'updatePulse 2s ease-in-out infinite'; btnEl.style.borderColor = ''; }, 100); }
     }
 
 function callBackend(action, onSuccess, onFailure) {
@@ -10071,6 +10082,12 @@ var App = {
     if (hasCachedData) {
       // Render from cache INSTANTLY — no waiting for network
       debugLog('Bulk', 'CACHE-HIT', 'Rendering from cached data instantly');
+      // Mark all cache entries as fresh so individual loaders skip background refresh
+      // (the bulk getAllData below handles the silent refresh)
+      try {
+        var _now = String(Date.now());
+        actions.forEach(function(a) { var tk = 'optima_' + a + '_ts'; if (sessionStorage.getItem(tk)) sessionStorage.setItem(tk, _now); });
+      } catch(e) {}
       self._runLoaders();
       // Background refresh: fetch fresh data silently
       callBackend('getAllData', function(raw) {
@@ -10084,6 +10101,8 @@ var App = {
             }
           });
           updateDataTimestamp();
+          // Re-render tabs with fresh data
+          self._runLoaders();
         } catch(e) {
           debugLog('Bulk', 'BG-WARN', 'Background refresh parse failed: ' + e);
         }

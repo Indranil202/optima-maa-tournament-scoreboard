@@ -10243,7 +10243,16 @@ var App = {
   },
 
   _showGameWinners: function(gameName) {
-    var gw = (this._gameWinners || {})[gameName.toLowerCase()] || null;
+    var gwAll = this._gameWinners || {};
+    var gw = gwAll[gameName.toLowerCase()] || null;
+    // Fallback: if exact key not found, try partial match (single-category games pass just game name but Rankings key includes category)
+    if (!gw) {
+      var prefix = gameName.toLowerCase();
+      var keys = Object.keys(gwAll);
+      for (var _fi = 0; _fi < keys.length; _fi++) {
+        if (keys[_fi].indexOf(prefix) === 0) { gw = gwAll[keys[_fi]]; break; }
+      }
+    }
     if (!gw) { this._showPopup('<div style="padding:1rem;text-align:center"><div style="font-size:1.5rem;margin-bottom:0.5rem">&#x1F3AE;</div><div style="color:var(--gold);font-size:0.9rem;font-weight:700">' + gameName + '</div><div style="color:var(--text-muted);font-size:0.78rem;margin-top:0.3rem">Results will appear once the game is completed</div></div>'); return; }
     var posLabels = ['ðŸ¥‡ 1st Place','ðŸ¥ˆ 2nd Place','ðŸ¥‰ 3rd Place','4th Place'];
     var posColors = ['#ffd700','#c0c0c0','#cd7f32','#888'];
@@ -11099,6 +11108,14 @@ var stats = { live: 0, scheduled: 0, completed: 0 };
       // â”€â”€ Parse score â€” game-aware multi-format â”€â”€
       // Formats: "X-Y" (simple), "11-9, 11-7, 8-11" (sets), "145/3 (20) vs 120/8 (20)" (cricket),
       //          "1-0"/"Â½-Â½" (chess), "45-38-32-28" (PUBG 4-way), "Won by X runs" (cricket text)
+      // Fix: Google Sheets auto-converts scores like "10-10" to ISO dates
+      function _fixDateScore(v) {
+        if (!v) return v;
+        var dm = v.match(/^\d{4}-(\d{2})-(\d{2})T/);
+        if (dm) return parseInt(dm[1],10) + '-' + parseInt(dm[2],10);
+        return v;
+      }
+
       var SET_GAMES = { 'TT':1, 'BM':1, 'VB':1, 'TB':1 };
       var CRICKET_GAMES = { 'CRK':1 };
       var CHESS_GAMES = { 'CH':1 };
@@ -11233,13 +11250,6 @@ var stats = { live: 0, scheduled: 0, completed: 0 };
 
         var _rawFmt = (row[_C.scoreFmt] || '').toString().trim();
         var _rawScore = (row[_C.score] || '').toString().trim();
-        // Fix: Google Sheets auto-converts scores like "10-10" to ISO dates
-        function _fixDateScore(v) {
-          if (!v) return v;
-          var dm = v.match(/^\d{4}-(\d{2})-(\d{2})T/);
-          if (dm) return parseInt(dm[1],10) + '-' + parseInt(dm[2],10);
-          return v;
-        }
         _rawFmt = _fixDateScore(_rawFmt);
         _rawScore = _fixDateScore(_rawScore);
         var score = parseScore(_rawFmt || _rawScore, parsed.gameCode);
@@ -11433,9 +11443,11 @@ var stats = { live: 0, scheduled: 0, completed: 0 };
         }
         var sc = m.score;
         var w = sc.winner;
-        // Show raw score text as-is from sheet
+        // Show raw score text as-is from sheet, with winner color
         if (m.rawDisplay) {
-          h += '<span style="font-size:0.85rem;font-weight:600;letter-spacing:0.5px">' + m.rawDisplay.replace(/</g,'&lt;').replace(/>/g,'&gt;') + '</span>';
+          var _sc = m.rawDisplay.replace(/</g,'&lt;').replace(/>/g,'&gt;');
+          var _wc = w === 'a' ? 'color:#2ecc71' : w === 'b' ? 'color:#e74c3c' : w === 'draw' ? 'color:var(--gold)' : '';
+          h += '<span style="font-size:0.85rem;font-weight:600;letter-spacing:0.5px;' + _wc + '">' + _sc + '</span>';
           h += '</div></td>';
           return h;
         }
@@ -12122,6 +12134,8 @@ var stats = { live: 0, scheduled: 0, completed: 0 };
           self.dashData.ptcDone = totalDone;
 
           self.dashData.ptcTotal = totalAll;
+
+          self.dashData._updatedGames = updatedGames;
 
           var pct = totalAll > 0 ? Math.round((totalDone / totalAll) * 100) : 0;
 
@@ -16184,11 +16198,9 @@ var GHKpi = {
   // ── 2. Completion % ──
   showCompletion: function() {
     var d = App && App.dashData ? App.dashData : {};
-    var doneGames = d._doneGames || {};
+    var updatedGames = d._updatedGames || {};
     var allGames = App._allGames || {};
-    var catMap = App._catMap || {};
-    var gameMap = App._gameMap || {};
-    var h = '<div class="ghk-hdr"><i class="fas fa-flag-checkered"></i><h3>Game Completion Status</h3><span class="ghk-count">' + (d.ptcDone||0) + '/' + (d.ptcTotal||0) + '</span><button class="ghk-close" onclick="GHKpi.close()"><i class="fas fa-xmark"></i></button></div>';
+    var h = '<div class="ghk-hdr"><i class="fas fa-flag-checkered"></i><h3>Game Completion Status</h3><span class="ghk-count">' + (d.ptcDone||0) + '/' + (d.ptcTotal||0) + ' (' + (d.ptcPct||0) + '%)</span><button class="ghk-close" onclick="GHKpi.close()"><i class="fas fa-xmark"></i></button></div>';
     h += this._filterScript('ghkTbl2');
     h += '<table class="ghk-table" id="ghkTbl2"><thead><tr><th>#</th><th>Game</th><th>Category</th><th>Segment</th><th>Status</th></tr></thead><tbody>';
     var idx = 0;
@@ -16202,23 +16214,22 @@ var GHKpi = {
         if (cats.length > 0) {
           for (var ci = 0; ci < cats.length; ci++) {
             idx++;
-            var label = g.name + ' - ' + cats[ci];
-            var key = label.toLowerCase();
-            var st = doneGames[key] ? 'done' : 'pending';
-            // Also check without category
-            if (!doneGames[key]) {
-              var key2 = (g.name + '|' + cats[ci]).toLowerCase();
-              st = doneGames[key2] ? 'done' : 'pending';
-            }
+            // Mirror the exact same lookup used by PTC tracker
+            var label = (cats.length > 1 ? g.name + ' - ' + cats[ci] : g.name).toLowerCase();
+            var fullKey = (g.name + ' - ' + cats[ci]).toLowerCase();
+            var st = updatedGames[label] || updatedGames[fullKey] || updatedGames[g.name.toLowerCase()] || 'pending';
+            var bc = st === 'done' ? 'completed' : st === 'partial' ? 'live' : 'scheduled';
+            var bl = st === 'done' ? '\u2705 Completed' : st === 'partial' ? '\ud83d\udd8a\ufe0f Partial' : '\u23f3 Pending';
             h += '<tr><td>' + idx + '</td><td style="font-weight:500">' + g.name + '</td><td>' + cats[ci] + '</td><td style="text-transform:capitalize">' + seg + '</td>';
-            h += '<td><span class="ghk-badge ' + (st==='done'?'completed':'scheduled') + '">' + (st==='done'?'✅ Completed':'⏳ Pending') + '</span></td></tr>';
+            h += '<td><span class="ghk-badge ' + bc + '">' + bl + '</span></td></tr>';
           }
         } else {
           idx++;
-          var key3 = g.name.toLowerCase();
-          var st3 = doneGames[key3] ? 'done' : 'pending';
-          h += '<tr><td>' + idx + '</td><td style="font-weight:500">' + g.name + '</td><td>—</td><td style="text-transform:capitalize">' + seg + '</td>';
-          h += '<td><span class="ghk-badge ' + (st3==='done'?'completed':'scheduled') + '">' + (st3==='done'?'✅ Completed':'⏳ Pending') + '</span></td></tr>';
+          var st3 = updatedGames[g.name.toLowerCase()] || 'pending';
+          var bc3 = st3 === 'done' ? 'completed' : st3 === 'partial' ? 'live' : 'scheduled';
+          var bl3 = st3 === 'done' ? '\u2705 Completed' : st3 === 'partial' ? '\ud83d\udd8a\ufe0f Partial' : '\u23f3 Pending';
+          h += '<tr><td>' + idx + '</td><td style="font-weight:500">' + g.name + '</td><td>\u2014</td><td style="text-transform:capitalize">' + seg + '</td>';
+          h += '<td><span class="ghk-badge ' + bc3 + '">' + bl3 + '</span></td></tr>';
         }
       }
     }
@@ -16226,7 +16237,7 @@ var GHKpi = {
     this._open(h);
   },
 
-  // ── 3. Winners ──
+    // ── 3. Winners ──
   showWinners: function() {
     var raw = App && App.dashData && App.dashData._playersRaw;
     if (!raw) { this._open('<div style="padding:2rem;text-align:center;color:var(--text-muted)">Player data not loaded yet</div>'); return; }

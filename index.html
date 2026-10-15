@@ -14600,6 +14600,7 @@ function spawnFlyingWizard() { return; /* disabled â€” chase scene handles 
 
   document.addEventListener('mousemove', function(e) {
 
+    if (!e.target || !e.target.closest) return;
     var el = e.target.closest(cards);
 
     if (!el) return;
@@ -14616,6 +14617,7 @@ function spawnFlyingWizard() { return; /* disabled â€” chase scene handles 
 
   document.addEventListener('mouseout', function(e) {
 
+    if (!e.target || !e.target.closest) return;
     var el = e.target.closest(cards);
 
     if (el) el.style.transform = '';

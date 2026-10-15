@@ -16855,7 +16855,7 @@ function openCurtain() {
   setTimeout(function() { if (overlay) overlay.classList.add('curtain-done'); }, 2200);
   // Start audio â€” this click unlocks browser autoplay
   if (typeof VoiceGuide !== 'undefined') {
-    if (VoiceGuide._bgMusic && VoiceGuide._bgMusic.paused && !VoiceGuide._muted) {
+    if (VoiceGuide._bgMusic && VoiceGuide._bgMusic.paused && !VoiceGuide._bgMuted) {
       VoiceGuide._bgMusic.play().catch(function(){});
     }
     setTimeout(function() { VoiceGuide.playForTab('dashboard', true); }, 1500);
@@ -17048,6 +17048,7 @@ var VoiceGuide = {
   _audio: null,
   _bgMusic: null,
   _muted: false,
+  _bgMuted: false,
   _bgVolume: 0.10,
   _bgDuckVolume: 0.02,
   _currentClip: null,
@@ -17079,21 +17080,25 @@ var VoiceGuide = {
     this._audio.addEventListener('ended', function() {
       self._currentClip = null;
       self._currentPriority = 0;
-      if (!self._muted) self._fadeBgTo(self._bgVolume, 2000);
+      if (!self._bgMuted) self._fadeBgTo(self._bgVolume, 2000);
       self._updateSpeakerIcon(false);
       self._playNext();
     });
     this._audio.addEventListener('pause', function() {
-      if (!self._muted) self._fadeBgTo(self._bgVolume, 1500);
+      if (!self._bgMuted) self._fadeBgTo(self._bgVolume, 1500);
       self._updateSpeakerIcon(false);
     });
+
+    // Restore mute preferences from localStorage
+    this._muted = localStorage.getItem('vg_voiceMuted') === '1';
+    this._bgMuted = localStorage.getItem('vg_bgMuted') === '1';
 
     // Speaker UI
     this._addSpeakerUI();
 
     // Start bg music on first interaction
     var startBg = function() {
-      if (self._bgMusic.paused && !self._muted) {
+      if (self._bgMusic.paused && !self._bgMuted) {
         self._bgMusic.play().catch(function(){});
       }
       document.removeEventListener('click', startBg);
@@ -17165,7 +17170,7 @@ var VoiceGuide = {
     this._audio.play().catch(function(e) { console.warn('VoiceGuide play blocked:', e); });
 
     // Start bg music if not playing
-    if (this._bgMusic && this._bgMusic.paused && !this._muted) {
+    if (this._bgMusic && this._bgMusic.paused && !this._bgMuted) {
       this._bgMusic.play().catch(function(){});
     }
   },
@@ -17229,17 +17234,35 @@ var VoiceGuide = {
   // â”€â”€ Mute toggle â”€â”€
   toggleMute: function() {
     this._muted = !this._muted;
+    localStorage.setItem('vg_voiceMuted', this._muted ? '1' : '0');
     var btn = document.getElementById('narratorMuteBtn');
     if (this._muted) {
       if (this._audio && !this._audio.paused) { this._audio.pause(); this._audio.currentTime = 0; }
-      if (this._bgMusic) { this._bgMusic.pause(); }
       this._queue = [];
-      if (btn) btn.innerHTML = '<i class="fas fa-volume-xmark"></i>';
-      if (btn) btn.title = 'Unmute Voice Guide';
+      if (btn) btn.innerHTML = '<i class="fas fa-microphone-slash"></i>';
+      if (btn) btn.title = 'Unmute Narration';
+      if (btn) btn.style.borderColor = 'rgba(231,76,60,.4)';
+    } else {
+      if (btn) btn.innerHTML = '<i class="fas fa-microphone"></i>';
+      if (btn) btn.title = 'Mute Narration';
+      if (btn) btn.style.borderColor = '';
+    }
+  },
+
+  toggleBgMusic: function() {
+    this._bgMuted = !this._bgMuted;
+    localStorage.setItem('vg_bgMuted', this._bgMuted ? '1' : '0');
+    var btn = document.getElementById('bgMusicBtn');
+    if (this._bgMuted) {
+      if (this._bgMusic) { this._bgMusic.pause(); }
+      if (btn) btn.innerHTML = '<i class="fas fa-music"></i><span style="position:absolute;width:2px;height:70%;background:#e74c3c;transform:rotate(45deg);border-radius:1px"></span>';
+      if (btn) btn.title = 'Play Background Music';
+      if (btn) btn.style.borderColor = 'rgba(231,76,60,.4)';
     } else {
       if (this._bgMusic) { this._bgMusic.play().catch(function(){}); }
-      if (btn) btn.innerHTML = '<i class="fas fa-volume-high"></i>';
-      if (btn) btn.title = 'Mute Voice Guide';
+      if (btn) btn.innerHTML = '<i class="fas fa-music"></i>';
+      if (btn) btn.title = 'Pause Background Music';
+      if (btn) btn.style.borderColor = '';
     }
   },
 
@@ -17295,7 +17318,8 @@ var VoiceGuide = {
     container.innerHTML =
       '<div class="narrator-speaking" id="narratorSpeaking" style="display:none"><div class="narrator-wave"><span></span><span></span><span></span><span></span></div></div>' +
       '<button class="narrator-btn" id="narratorReplayBtn" onclick="VoiceGuide.replay()" title="Replay narration"><i class="fas fa-rotate-right"></i></button>' +
-      '<button class="narrator-btn" id="narratorMuteBtn" onclick="VoiceGuide.toggleMute()" title="Mute Voice Guide"><i class="fas fa-volume-high"></i></button>';
+      '<button class="narrator-btn" id="bgMusicBtn" onclick="VoiceGuide.toggleBgMusic()" title="' + (this._bgMuted ? 'Play' : 'Pause') + ' Background Music" style="position:relative;display:flex;align-items:center;justify-content:center' + (this._bgMuted ? ';border-color:rgba(231,76,60,.4)' : '') + '">' + (this._bgMuted ? '<i class="fas fa-music"></i><span style="position:absolute;width:2px;height:70%;background:#e74c3c;transform:rotate(45deg);border-radius:1px"></span>' : '<i class="fas fa-music"></i>') + '</button>' +
+      '<button class="narrator-btn" id="narratorMuteBtn" onclick="VoiceGuide.toggleMute()" title="' + (this._muted ? 'Unmute' : 'Mute') + ' Narration"' + (this._muted ? ' style="border-color:rgba(231,76,60,.4)"' : '') + '>' + (this._muted ? '<i class="fas fa-microphone-slash"></i>' : '<i class="fas fa-microphone"></i>') + '</button>';
     document.body.appendChild(container);
   }
 };

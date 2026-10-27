@@ -19971,33 +19971,30 @@ var App = {
 
 
       case 'houses':
-
-
-
+        var _firstMatch = null;
         document.querySelectorAll('.house-card').forEach(function(card) {
-
-
-
-          card.style.display = card.textContent.toLowerCase().includes(t) ? '' : 'none';
-
-
-
+          var hasMatch = card.textContent.toLowerCase().includes(t);
+          card.style.display = hasMatch ? '' : 'none';
           card.querySelectorAll('.hc-member').forEach(function(m) {
-
-
-
-            m.classList.toggle('highlighted', m.textContent.toLowerCase().includes(t));
-
-
-
+            var matched = m.textContent.toLowerCase().includes(t);
+            m.classList.toggle('highlighted', matched);
+            if (matched && !_firstMatch) _firstMatch = m;
           });
-
-
-
+          // Auto-expand member section if a member matches
+          if (hasMatch) {
+            var membersDiv = card.querySelector('.hc-members');
+            if (membersDiv && !membersDiv.classList.contains('expanded')) {
+              var hasMemberMatch = card.querySelector('.hc-member.highlighted');
+              if (hasMemberMatch) membersDiv.classList.add('expanded');
+            }
+          }
         });
-
-
-
+        // Scroll to the first matched member
+        if (_firstMatch) {
+          setTimeout(function() {
+            _firstMatch.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          }, 200);
+        }
         break;
 
 
@@ -26734,24 +26731,58 @@ var stats = { total: 0, scheduled: 0, live: 0, completed: 0 };
 
           // Owl notification: players with 3+ games
 
+          // ── Game limit check: Male max 3, Female max 4 (Cricket & PUBG excluded) ──
+          var COMMON_GAMES = { 'cricket':1, 'crk':1, 'pubg':1, 'pg':1 };
+          function _inferGender(p) {
+            // Infer from category names: "Men"/"Women" prefix or "MS"/"MD"/"WS"/"WD" codes
+            var male = 0, female = 0;
+            (p.Games || []).forEach(function(g) {
+              var cat = (g.category || '').toLowerCase();
+              if (/\bmen\b|\bms\b|\bmd\b/.test(cat)) male++;
+              if (/\bwomen\b|\bws\b|\bwd\b/.test(cat)) female++;
+            });
+            return female > male ? 'F' : male > 0 ? 'M' : '';
+          }
+          function _countNonCommon(p) {
+            var seen = {};
+            (p.Games || []).forEach(function(g) {
+              var gn = (g.game || '').toLowerCase();
+              if (!COMMON_GAMES[gn]) seen[gn] = 1;
+            });
+            return Object.keys(seen).length;
+          }
+          var limitViolators = [];
+          profiles.forEach(function(p) {
+            if (!p.Games || !p.Games.length) return;
+            var gender = _inferGender(p);
+            var limit = gender === 'F' ? 4 : 3;
+            var count = _countNonCommon(p);
+            if (count > limit) {
+              limitViolators.push({ name: p.Name || p.Alias || '?', gender: gender, count: count, limit: limit, house: p.House || '' });
+            }
+          });
+          // Also keep multi-gamers for popup (4+ total games including common)
           var multiGamers = profiles.filter(function(p) { return p.Games && p.Games.length > 3; });
-
           if (multiGamers.length > 0) {
-
             multiGamers.sort(function(a,b) { return b.Games.length - a.Games.length; });
-
-            // Store for popup
-
             App._multiGameWizards = multiGamers;
-
+          }
+          // Owl Post: game limit violations
+          if (limitViolators.length > 0) {
+            limitViolators.sort(function(a,b) { return b.count - a.count; });
+            App._limitViolators = limitViolators;
+            var vNames = limitViolators.slice(0, 5).map(function(v) {
+              return v.name + ' (' + (v.gender === 'F' ? '\u2640' : '\u2642') + ' ' + v.count + '/' + v.limit + ')';
+            }).join(', ');
+            var vExtra = limitViolators.length > 5 ? ' +' + (limitViolators.length - 5) + ' more' : '';
+            OwlPost._push('\u26A0\uFE0F Game Limit Exceeded!', limitViolators.length + ' player' + (limitViolators.length > 1 ? 's' : '') + ' over limit (excl. Cricket & PUBG): ' + vNames + vExtra, '#e74c3c');
+          }
+          // Owl Post: multi-game wizards (info only)
+          if (multiGamers.length > 0) {
             var topN = multiGamers.slice(0, 5);
-
             var names = topN.map(function(p) { return p.Name + ' (' + p.Games.length + ' games)'; }).join(', ');
-
             var extra = multiGamers.length > 5 ? ' +' + (multiGamers.length - 5) + ' more' : '';
-
             OwlPost._push('\u2728 Multi-Game Wizards!', multiGamers.length + ' player' + (multiGamers.length > 1 ? 's' : '') + ' with 4+ games: ' + names + extra, '#9b59b6');
-
           }
 
 

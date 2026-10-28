@@ -26738,10 +26738,13 @@ var stats = { total: 0, scheduled: 0, live: 0, completed: 0 };
             var male = 0, female = 0;
             (p.Games || []).forEach(function(g) {
               var cat = (g.category || '').toLowerCase();
-              if (/\bmen\b|\bms\b|\bmd\b/.test(cat)) male++;
-              if (/\bwomen\b|\bws\b|\bwd\b/.test(cat)) female++;
+              var isWomen = /\bwomen\b|\bws\b|\bwd\b/.test(cat);
+              var isMen = !isWomen && /\bmen\b|\bms\b|\bmd\b/.test(cat);
+              if (isWomen) female++;
+              if (isMen) male++;
             });
-            return female > male ? 'F' : male > 0 ? 'M' : '';
+            // If ANY female category found, treat as female
+            return female > 0 ? 'F' : male > 0 ? 'M' : '';
           }
           function _countNonCommon(p) {
             var seen = {};

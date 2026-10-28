@@ -1950,11 +1950,11 @@ body::after {
 
 
 
-  background: var(--bg-glass);
+  background: rgba(255,255,255,0.1);
 
 
 
-  border: 1px solid var(--border-glass);
+  border: 1.5px solid rgba(212,160,23,0.35);
 
 
 
@@ -2482,7 +2482,7 @@ body::after {
 
 
 
-  max-width: 600px;
+  max-width: 720px;
 
 
 
@@ -2506,7 +2506,7 @@ body::after {
 
 
 
-  padding: 14px 20px 14px 48px;
+  padding: 16px 22px 16px 50px;
 
 
 
@@ -2530,7 +2530,7 @@ body::after {
 
 
 
-  font-size: 0.95rem;
+  font-size: 1.05rem;
 
 
 
@@ -32839,19 +32839,10 @@ var Quiz = {
 
     document.getElementById('quizModal').style.display = 'flex';
 
-    if (this._loggedIn) {
-
-      document.getElementById('quizLogin').style.display = 'none';
-
-      document.getElementById('quizStart').style.display = 'block';
-
-    } else {
-
-      document.getElementById('quizLogin').style.display = 'block';
-
-      document.getElementById('quizStart').style.display = 'none';
-
-    }
+    // Quiz is now open to all — no passphrase required
+    this._loggedIn = true;
+    document.getElementById('quizLogin').style.display = 'none';
+    document.getElementById('quizStart').style.display = 'block';
 
     document.getElementById('quizPlay').style.display = 'none';
 

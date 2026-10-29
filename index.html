@@ -16648,6 +16648,16 @@ body.light-theme input,body.light-theme select{background:rgba(255,253,246,.8);c
 /* KPI Card Inline Description */
 
 .stat-hint{font-size:.58rem;color:#666;line-height:1.25;margin-top:5px;text-align:center;padding:0 4px;opacity:.8}
+/* ═══ VISITOR STATS STRIP ═══ */
+.visitor-strip{display:flex;align-items:center;justify-content:center;gap:16px;padding:4px 12px;background:linear-gradient(90deg,rgba(13,11,26,.85),rgba(26,14,60,.85));border-bottom:1px solid rgba(212,160,23,.12);font-family:'Orbitron','Inter',sans-serif;font-size:.6rem;color:rgba(255,255,255,.5);letter-spacing:.5px;position:relative;overflow:hidden}
+.visitor-strip::before{content:'';position:absolute;inset:0;background:linear-gradient(90deg,transparent,rgba(212,160,23,.03) 50%,transparent);pointer-events:none}
+.vs-item{display:flex;align-items:center;gap:5px;white-space:nowrap}
+.vs-item i{font-size:.55rem;color:rgba(212,160,23,.5)}
+.vs-val{color:#d4a017;font-weight:700;font-size:.65rem;min-width:14px;text-align:center}
+.vs-dot{width:3px;height:3px;border-radius:50%;background:rgba(212,160,23,.25)}
+.vs-live{display:inline-block;width:5px;height:5px;border-radius:50%;background:#4CAF50;box-shadow:0 0 6px rgba(76,175,80,.5);animation:vsLivePulse 2s infinite;margin-right:2px}
+@keyframes vsLivePulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(.7)}}
+@media(max-width:480px){.visitor-strip{gap:10px;padding:3px 8px;font-size:.52rem}.vs-val{font-size:.58rem}.vs-item i{font-size:.5rem}}
 
 </style>
 
@@ -17461,7 +17471,14 @@ window.addEventListener('unhandledrejection', function(e) {
 
 </div>
 
-
+<!-- ═══ VISITOR STATS STRIP ═══ -->
+<div class="visitor-strip" id="visitorStrip">
+  <div class="vs-item"><span class="vs-live"></span><i class="fas fa-eye"></i> Today: <span class="vs-val" id="vsDailyVisits">0</span></div>
+  <span class="vs-dot"></span>
+  <div class="vs-item"><i class="fas fa-users"></i> Total Visits: <span class="vs-val" id="vsTotalVisits">0</span></div>
+  <span class="vs-dot"></span>
+  <div class="vs-item"><i class="fas fa-clock"></i> Session: <span class="vs-val" id="vsSessionTime">00:00</span></div>
+</div>
 
 <!-- Sound handled by VoiceGuide -->
 
@@ -30735,6 +30752,55 @@ setInterval(owlDelivery, Math.random() * 45000 + 45000);
 
 
 // ── F1: LIVE COUNTDOWN TIMER ────────────────────────────────
+
+// ═══ VISITOR STATS TRACKER ═══
+(function visitorStatsInit() {
+  var LS_KEY_TOTAL = 'opt_totalVisits';
+  var LS_KEY_DAILY = 'opt_dailyVisits';
+  var LS_KEY_DATE = 'opt_dailyDate';
+
+  // Today's date string
+  var today = new Date().toISOString().slice(0, 10);
+
+  // Total visits (all-time for this browser)
+  var total = parseInt(localStorage.getItem(LS_KEY_TOTAL) || '0', 10) + 1;
+  localStorage.setItem(LS_KEY_TOTAL, total);
+
+  // Daily visits (resets each day)
+  var storedDate = localStorage.getItem(LS_KEY_DATE) || '';
+  var daily;
+  if (storedDate === today) {
+    daily = parseInt(localStorage.getItem(LS_KEY_DAILY) || '0', 10) + 1;
+  } else {
+    daily = 1;
+    localStorage.setItem(LS_KEY_DATE, today);
+  }
+  localStorage.setItem(LS_KEY_DAILY, daily);
+
+  // Update DOM
+  var dEl = document.getElementById('vsDailyVisits');
+  var tEl = document.getElementById('vsTotalVisits');
+  var sEl = document.getElementById('vsSessionTime');
+  if (dEl) dEl.textContent = daily;
+  if (tEl) tEl.textContent = total;
+
+  // Session timer (ticks every second)
+  var sessionStart = Date.now();
+  function pad(n) { return n < 10 ? '0' + n : '' + n; }
+  setInterval(function() {
+    if (!sEl) return;
+    var elapsed = Math.floor((Date.now() - sessionStart) / 1000);
+    var mins = Math.floor(elapsed / 60);
+    var secs = elapsed % 60;
+    if (mins >= 60) {
+      var hrs = Math.floor(mins / 60);
+      mins = mins % 60;
+      sEl.textContent = hrs + ':' + pad(mins) + ':' + pad(secs);
+    } else {
+      sEl.textContent = pad(mins) + ':' + pad(secs);
+    }
+  }, 1000);
+})();
 
 // ═══ CRICKET TOURNAMENT COUNTDOWN ═══
 (function cricketCountdownInit() {

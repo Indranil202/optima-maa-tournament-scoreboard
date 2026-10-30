@@ -20840,7 +20840,15 @@ var App = {
 
 
 
-              icon: GICONS[code] || segIconMap[segKey] || 'fa-gamepad'
+              icon: GICONS[code] || segIconMap[segKey] || 'fa-gamepad',
+
+
+
+              categories: g.categories || [],
+
+
+
+              categoryCodes: g.categoryCodes || []
 
 
 
@@ -22516,7 +22524,7 @@ var stats = { live: 0, scheduled: 0, completed: 0 };
 
 
 
-        var catName = CAT_MAP[parsed.category] || parsed.category;
+        var catName = parsed.category; if (gameMeta.categoryCodes && gameMeta.categoryCodes.length) { var _ci3 = gameMeta.categoryCodes.indexOf(parsed.category); if (_ci3 >= 0 && gameMeta.categories[_ci3]) catName = gameMeta.categories[_ci3]; } else { catName = CAT_MAP[parsed.category] || parsed.category; }
 
 
 
@@ -24172,7 +24180,8 @@ var stats = { live: 0, scheduled: 0, completed: 0 };
 
                 if (!_gm) continue;
 
-                var _catName = _CMAP[_lcat] || _lcat;
+                var _catName = _lcat;
+                if (_gm.categoryCodes && _gm.categoryCodes.length) { var _ci2 = _gm.categoryCodes.indexOf(_lcat); if (_ci2 >= 0 && _gm.categories[_ci2]) _catName = _gm.categories[_ci2]; } else { _catName = _CMAP[_lcat] || _lcat; }
 
                 var _lkey = (_gm.name + ' - ' + _catName).toLowerCase();
 
@@ -25180,7 +25189,7 @@ var stats = { total: 0, scheduled: 0, live: 0, completed: 0 };
 
 
 
-            var catName = CAT_MAP[parsed.category] || parsed.category;
+            var catName = parsed.category; if (gameMeta.categoryCodes && gameMeta.categoryCodes.length) { var _ci3 = gameMeta.categoryCodes.indexOf(parsed.category); if (_ci3 >= 0 && gameMeta.categories[_ci3]) catName = gameMeta.categories[_ci3]; } else { catName = CAT_MAP[parsed.category] || parsed.category; }
 
 
 
@@ -26136,7 +26145,8 @@ var stats = { total: 0, scheduled: 0, live: 0, completed: 0 };
 
               if (!_gm) continue;
 
-              var _cn = _CM[_cat] || _cat;
+              var _cn = _cat;
+              if (_gm.categoryCodes && _gm.categoryCodes.length) { var _ci = _gm.categoryCodes.indexOf(_cat); if (_ci >= 0 && _gm.categories[_ci]) _cn = _gm.categories[_ci]; } else { _cn = _CM[_cat] || _cat; }
 
               var _dk = (_gm.name + ' - ' + _cn).toLowerCase();
 

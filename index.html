@@ -26834,9 +26834,9 @@ var stats = { total: 0, scheduled: 0, live: 0, completed: 0 };
             }
           });
           // Also keep multi-gamers for popup (4+ total games including common)
-          var multiGamers = profiles.filter(function(p) { return p.Games && p.Games.length > 3; });
+          var multiGamers = profiles.filter(function(p) { return p.Games && _countNonCommon(p) > 3; });
           if (multiGamers.length > 0) {
-            multiGamers.sort(function(a,b) { return b.Games.length - a.Games.length; });
+            multiGamers.sort(function(a,b) { return _countNonCommon(b) - _countNonCommon(a); });
             App._multiGameWizards = multiGamers;
           }
           // Owl Post: game limit violations
@@ -26852,9 +26852,9 @@ var stats = { total: 0, scheduled: 0, live: 0, completed: 0 };
           // Owl Post: multi-game wizards (info only)
           if (multiGamers.length > 0) {
             var topN = multiGamers.slice(0, 5);
-            var names = topN.map(function(p) { return p.Name + ' (' + p.Games.length + ' games)'; }).join(', ');
+            var names = topN.map(function(p) { return p.Name + ' (' + _countNonCommon(p) + ' games)'; }).join(', ');
             var extra = multiGamers.length > 5 ? ' +' + (multiGamers.length - 5) + ' more' : '';
-            OwlPost._push('\u2728 Multi-Game Wizards!', multiGamers.length + ' player' + (multiGamers.length > 1 ? 's' : '') + ' with 4+ games: ' + names + extra, '#9b59b6');
+            OwlPost._push('\u2728 Multi-Game Wizards!', multiGamers.length + ' player' + (multiGamers.length > 1 ? 's' : '') + ' with 4+ games (excl. Cricket/PUBG): ' + names + extra, '#9b59b6');
           }
 
 
@@ -35548,9 +35548,11 @@ var MultiGamePopup = {
 
         var profiles = JSON.parse(App.dashData._playersRaw || '[]');
 
-        players = profiles.filter(function(p) { return p.Games && p.Games.length > 3; });
+        var _COMMON = {'cricket':1,'crk':1,'pubg':1,'pg':1};
+        function _cntNC(p) { var s={}; (p.Games||[]).forEach(function(g){ var n=(g.game||'').toLowerCase(); if(!_COMMON[n]) s[n]=1; }); return Object.keys(s).length; }
+        players = profiles.filter(function(p) { return p.Games && _cntNC(p) > 3; });
 
-        players.sort(function(a,b) { return b.Games.length - a.Games.length; });
+        players.sort(function(a,b) { return (typeof _cntNC==='function'?_cntNC(b)-_cntNC(a):b.Games.length-a.Games.length); });
 
       } catch(e) {}
 
@@ -35568,7 +35570,7 @@ var MultiGamePopup = {
 
     var html = '<div class="gw-hdr"><div><div class="gw-title">\u2728 Multi-Game Wizards</div>';
 
-    html += '<div class="gw-subtitle">' + players.length + ' players with 4+ game participations</div>';
+    html += '<div class="gw-subtitle">' + players.length + ' players with 4+ games (excl. Cricket/PUBG)</div>';
 
     html += '</div><button class="gw-close" onclick="GamePopup.close()">&times;</button></div>';
 
@@ -35586,7 +35588,7 @@ var MultiGamePopup = {
 
       html += '<span class="mg-house" style="color:' + hc + '"><i class="fas fa-shield-halved"></i> ' + (p.House || '?') + '</span>';
 
-      html += '<span class="mg-stats">' + (p.Games||[]).length + ' games \u2022 ' + (p.TotalPoints||0) + ' pts</span>';
+      var _ncG = {}; (p.Games||[]).forEach(function(g){ var gn=(g.game||'').toLowerCase(); if(!({'cricket':1,'crk':1,'pubg':1,'pg':1})[gn]) _ncG[gn]=1; }); html += '<span class="mg-stats">' + Object.keys(_ncG).length + ' games \u2022 ' + (p.TotalPoints||0) + ' pts</span>';
 
       html += '</div>';
 

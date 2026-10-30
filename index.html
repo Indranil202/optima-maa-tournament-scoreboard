@@ -26834,7 +26834,7 @@ var stats = { total: 0, scheduled: 0, live: 0, completed: 0 };
             }
           });
           // Also keep multi-gamers for popup (4+ total games including common)
-          var multiGamers = profiles.filter(function(p) { return p.Games && _countNonCommon(p) > 3; });
+          var multiGamers = profiles.filter(function(p) { if (!p.Games) return false; var g = _inferGender(p); var lim = g === 'F' ? 4 : 3; return _countNonCommon(p) > lim; });
           if (multiGamers.length > 0) {
             multiGamers.sort(function(a,b) { return _countNonCommon(b) - _countNonCommon(a); });
             App._multiGameWizards = multiGamers;
@@ -26854,7 +26854,7 @@ var stats = { total: 0, scheduled: 0, live: 0, completed: 0 };
             var topN = multiGamers.slice(0, 5);
             var names = topN.map(function(p) { return p.Name + ' (' + _countNonCommon(p) + ' games)'; }).join(', ');
             var extra = multiGamers.length > 5 ? ' +' + (multiGamers.length - 5) + ' more' : '';
-            OwlPost._push('\u2728 Multi-Game Wizards!', multiGamers.length + ' player' + (multiGamers.length > 1 ? 's' : '') + ' with 4+ games (excl. Cricket/PUBG): ' + names + extra, '#9b59b6');
+            OwlPost._push('\u2728 Multi-Game Wizards!', multiGamers.length + ' player' + (multiGamers.length > 1 ? 's' : '') + ' exceeding game limits (excl. Cricket/PUBG): ' + names + extra, '#9b59b6');
           }
 
 
@@ -35550,7 +35550,8 @@ var MultiGamePopup = {
 
         var _COMMON = {'cricket':1,'crk':1,'pubg':1,'pg':1};
         function _cntNC(p) { var s={}; (p.Games||[]).forEach(function(g){ var n=(g.game||'').toLowerCase(); if(!_COMMON[n]) s[n]=1; }); return Object.keys(s).length; }
-        players = profiles.filter(function(p) { return p.Games && _cntNC(p) > 3; });
+        var _infG = function(pp) { var m=0,f=0; (pp.Games||[]).forEach(function(g){ var c=(g.category||'').toLowerCase(); if(/\bwomen\b|\bws\b|\bwd\b/.test(c)) f++; else if(/\bmen\b|\bms\b|\bmd\b/.test(c)) m++; }); return f>0?'F':m>0?'M':''; };
+        players = profiles.filter(function(p) { if(!p.Games) return false; var lim=_infG(p)==='F'?4:3; return _cntNC(p)>lim; });
 
         players.sort(function(a,b) { return (typeof _cntNC==='function'?_cntNC(b)-_cntNC(a):b.Games.length-a.Games.length); });
 
@@ -35570,7 +35571,7 @@ var MultiGamePopup = {
 
     var html = '<div class="gw-hdr"><div><div class="gw-title">\u2728 Multi-Game Wizards</div>';
 
-    html += '<div class="gw-subtitle">' + players.length + ' players with 4+ games (excl. Cricket/PUBG)</div>';
+    html += '<div class="gw-subtitle">' + players.length + ' players exceeding game limits (excl. Cricket/PUBG)</div>';
 
     html += '</div><button class="gw-close" onclick="GamePopup.close()">&times;</button></div>';
 

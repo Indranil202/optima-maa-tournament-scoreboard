@@ -26801,7 +26801,7 @@ var stats = { total: 0, scheduled: 0, live: 0, completed: 0 };
           // Owl notification: players with 3+ games
 
           // ── Game limit check: Male max 3, Female max 4 (Cricket & PUBG excluded) ──
-          var COMMON_GAMES = { 'cricket':1, 'crk':1, 'pubg':1, 'pg':1 };
+          var COMMON_GAMES = { 'cricket':1, 'crk':1, 'pubg':1, 'pg':1, 'tug of war':1, 'tow':1 };
           function _inferGender(p) {
             // Infer from category names: "Men"/"Women" prefix or "MS"/"MD"/"WS"/"WD" codes
             var male = 0, female = 0;
@@ -35548,7 +35548,7 @@ var MultiGamePopup = {
 
         var profiles = JSON.parse(App.dashData._playersRaw || '[]');
 
-        var _COMMON = {'cricket':1,'crk':1,'pubg':1,'pg':1};
+        var _COMMON = {'cricket':1,'crk':1,'pubg':1,'pg':1,'tug of war':1,'tow':1};
         function _cntNC(p) { var s={}; (p.Games||[]).forEach(function(g){ var n=(g.game||'').toLowerCase(); if(!_COMMON[n]) s[n]=1; }); return Object.keys(s).length; }
         var _infG = function(pp) { var m=0,f=0; (pp.Games||[]).forEach(function(g){ var c=(g.category||'').toLowerCase(); if(/\bwomen\b|\bws\b|\bwd\b/.test(c)) f++; else if(/\bmen\b|\bms\b|\bmd\b/.test(c)) m++; }); return f>0?'F':m>0?'M':''; };
         players = profiles.filter(function(p) { if(!p.Games) return false; var lim=_infG(p)==='F'?4:3; return _cntNC(p)>lim; });

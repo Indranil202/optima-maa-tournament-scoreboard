@@ -14328,6 +14328,15 @@ a, button, .nav-btn, .stat-card, .house-card, .game-card2, .ms-card, .ls-match-c
 .cc-directions:hover{transform:translateY(-1px);box-shadow:0 4px 16px rgba(76,175,80,.5);background:linear-gradient(135deg,#66BB6A,#388E3C)}
 .cc-directions i{font-size:.85rem}
 .cc-done{text-align:center;padding:16px;font-family:'Cinzel',serif;font-size:1.1rem;color:#A5D6A7;font-weight:700}
+.cc-results{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;padding:8px 0}
+.cc-result-card{display:flex;align-items:center;gap:8px;background:rgba(0,0,0,.35);border-radius:12px;padding:8px 16px;border:1px solid rgba(76,175,80,.2);backdrop-filter:blur(4px);min-width:140px}
+.cc-result-pos{font-size:1.4rem;line-height:1}
+.cc-result-house{font-family:'Cinzel',serif;font-weight:700;font-size:.85rem;letter-spacing:.5px}
+.cc-result-label{font-size:.55rem;text-transform:uppercase;letter-spacing:1.5px;opacity:.6}
+.cc-result-card.gold{border-color:rgba(241,196,15,.5);box-shadow:0 0 12px rgba(241,196,15,.15)}.cc-result-card.gold .cc-result-house{color:#f1c40f}
+.cc-result-card.silver{border-color:rgba(192,192,192,.4);box-shadow:0 0 10px rgba(192,192,192,.1)}.cc-result-card.silver .cc-result-house{color:#c0c0c0}
+.cc-result-card.bronze{border-color:rgba(205,127,50,.4)}.cc-result-card.bronze .cc-result-house{color:#cd7f32}
+.cc-result-card.fourth .cc-result-house{color:rgba(255,255,255,.6)}
 .cc-colon{font-size:1.4rem;color:rgba(76,175,80,.4);font-weight:700;align-self:center;animation:colonBlink 1s step-end infinite}
 @keyframes colonBlink{0%,100%{opacity:1}50%{opacity:.3}}
 @media(max-width:768px){#cricketCountdown{padding:14px 16px}.cc-body{flex-direction:column;align-items:stretch;gap:14px}.cc-timer{justify-content:center}.cc-venue{min-width:unset;align-items:center;text-align:center}.cc-tbox{min-width:44px;padding:6px 8px}.cc-tnum{font-size:1.3rem}.cc-title{font-size:1rem}}
@@ -17663,24 +17672,16 @@ window.addEventListener('unhandledrejection', function(e) {
       <div class="cc-header">
         <span class="cc-emoji">🏏</span>
         <div>
-          <div class="cc-title">OPTIMA Cricket Championship</div>
-          <div class="cc-date">Saturday, 31st October 2026 · 7:00 AM IST</div>
+          <div class="cc-title">OPTIMA Cricket Championship — Results</div>
+          <div class="cc-date">Saturday, 31st October 2026 · Jones Cricket Ground, Sittalapakkam</div>
         </div>
       </div>
-      <div class="cc-body">
-        <div class="cc-timer">
-          <div class="cc-tbox"><span class="cc-tnum" id="ccDays">0</span><div class="cc-tlbl">Days</div></div>
-          <span class="cc-colon">:</span>
-          <div class="cc-tbox"><span class="cc-tnum" id="ccHrs">00</span><div class="cc-tlbl">Hours</div></div>
-          <span class="cc-colon">:</span>
-          <div class="cc-tbox"><span class="cc-tnum" id="ccMins">00</span><div class="cc-tlbl">Mins</div></div>
-          <span class="cc-colon">:</span>
-          <div class="cc-tbox"><span class="cc-tnum" id="ccSecs">00</span><div class="cc-tlbl">Secs</div></div>
-        </div>
-        <div class="cc-venue">
-          <div class="cc-venue-name"><i class="fas fa-map-marker-alt"></i> Jones Cricket Ground, Sittalapakkam</div>
-          <div class="cc-venue-addr">Sittalapakkam, Tamil Nadu 600131</div>
-          <a class="cc-directions" id="ccDirectionsBtn" href="#" onclick="ccGetDirections(event)"><i class="fas fa-route"></i> Get Directions</a>
+      <div class="cc-body" style="justify-content:center">
+        <div class="cc-results">
+          <div class="cc-result-card gold"><span class="cc-result-pos">🥇</span><div><div class="cc-result-house">Hufflepuff</div><div class="cc-result-label">Champion</div></div></div>
+          <div class="cc-result-card silver"><span class="cc-result-pos">🥈</span><div><div class="cc-result-house">Gryffindor</div><div class="cc-result-label">Runner-up</div></div></div>
+          <div class="cc-result-card bronze"><span class="cc-result-pos">🥉</span><div><div class="cc-result-house">Slytherin</div><div class="cc-result-label">3rd Place</div></div></div>
+          <div class="cc-result-card fourth"><span class="cc-result-pos">4️⃣</span><div><div class="cc-result-house">Ravenclaw</div><div class="cc-result-label">4th Place</div></div></div>
         </div>
       </div>
     </div>
@@ -30813,59 +30814,7 @@ setInterval(owlDelivery, Math.random() * 45000 + 45000);
 })();
 
 // ═══ CRICKET TOURNAMENT COUNTDOWN ═══
-(function cricketCountdownInit() {
-  var TARGET = new Date('2026-10-31T07:00:00+05:30');
-  var VENUE_LAT = 12.8855156;
-  var VENUE_LNG = 80.1837473;
-  var VENUE_PLACE = 'Jones+cricket+ground,+Sittalapakkam,+Tamil+Nadu+600131';
-  function pad(n) { return n < 10 ? '0' + n : '' + n; }
-  function tick() {
-    var el = document.getElementById('cricketCountdown');
-    if (!el) return;
-    var diff = TARGET - new Date();
-    if (diff <= 0) {
-      el.querySelector('.cc-body').innerHTML = '<div class="cc-done">🏏 The Tournament Has Begun! 🎉</div>';
-      clearInterval(ccInterval);
-      return;
-    }
-    var d = Math.floor(diff / 86400000);
-    var h = Math.floor((diff % 86400000) / 3600000);
-    var m = Math.floor((diff % 3600000) / 60000);
-    var s = Math.floor((diff % 60000) / 1000);
-    var dE = document.getElementById('ccDays'), hE = document.getElementById('ccHrs'),
-        mE = document.getElementById('ccMins'), sE = document.getElementById('ccSecs');
-    if (dE) dE.textContent = d;
-    if (hE) hE.textContent = pad(h);
-    if (mE) mE.textContent = pad(m);
-    if (sE) sE.textContent = pad(s);
-  }
-  var ccInterval = setInterval(tick, 1000);
-  tick();
-  window.ccGetDirections = function(e) {
-    e.preventDefault();
-    if (navigator.geolocation) {
-      var btn = document.getElementById('ccDirectionsBtn');
-      var origHTML = btn.innerHTML;
-      btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Locating...';
-      navigator.geolocation.getCurrentPosition(
-        function(pos) {
-          var url = 'https://www.google.com/maps/dir/' +
-            pos.coords.latitude + ',' + pos.coords.longitude + '/' +
-            VENUE_LAT + ',' + VENUE_LNG;
-          window.open(url, '_blank');
-          btn.innerHTML = origHTML;
-        },
-        function() {
-          window.open('https://www.google.com/maps/dir//' + VENUE_PLACE, '_blank');
-          btn.innerHTML = origHTML;
-        },
-        { timeout: 8000 }
-      );
-    } else {
-      window.open('https://www.google.com/maps/dir//' + VENUE_PLACE, '_blank');
-    }
-  };
-})();
+// Cricket results are static — countdown removed
 
 var Countdown = {
 

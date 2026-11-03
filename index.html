@@ -14308,17 +14308,17 @@ a, button, .nav-btn, .stat-card, .house-card, .game-card2, .ms-card, .ls-match-c
 
 .cd-unit-lbl{font-size:.55rem;color:#888;text-transform:uppercase;letter-spacing:1px}
 /* ═══ CRICKET TOURNAMENT COUNTDOWN ═══ */
-#cricketCountdown{background:linear-gradient(135deg,rgba(0,80,20,.92),rgba(10,40,15,.97));border:2px solid rgba(76,175,80,.5);border-radius:16px;padding:20px 24px;margin-bottom:1.5rem;position:relative;overflow:hidden;animation:cricketGlow 3s ease-in-out infinite alternate}
-@keyframes cricketGlow{0%{box-shadow:0 0 15px rgba(76,175,80,.15),inset 0 0 30px rgba(76,175,80,.05)}100%{box-shadow:0 0 25px rgba(76,175,80,.3),inset 0 0 40px rgba(76,175,80,.1)}}
+#cricketCountdown{background:linear-gradient(135deg,rgba(20,40,100,.92),rgba(10,15,50,.97));border:2px solid rgba(100,149,237,.5);border-radius:16px;padding:20px 24px;margin-bottom:1.5rem;position:relative;overflow:hidden;animation:cricketGlow 3s ease-in-out infinite alternate}
+@keyframes cricketGlow{0%{box-shadow:0 0 15px rgba(100,149,237,.15),inset 0 0 30px rgba(100,149,237,.05)}100%{box-shadow:0 0 25px rgba(100,149,237,.3),inset 0 0 40px rgba(100,149,237,.1)}}
 #cricketCountdown::before{content:'';position:absolute;inset:0;background:url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%234CAF50' fill-opacity='0.04'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");pointer-events:none}
 .cc-header{display:flex;align-items:center;gap:10px;margin-bottom:14px}
 .cc-emoji{font-size:1.8rem;filter:drop-shadow(0 0 6px rgba(76,175,80,.4))}
-.cc-title{font-family:'Cinzel Decorative','Cinzel',serif;font-size:1.15rem;font-weight:700;color:#81C784;text-shadow:0 0 10px rgba(76,175,80,.3);letter-spacing:1px}
+.cc-title{font-family:'Cinzel Decorative','Cinzel',serif;font-size:1.15rem;font-weight:700;color:#93B5F0;text-shadow:0 0 10px rgba(100,149,237,.3);letter-spacing:1px}
 .cc-date{font-size:.75rem;color:rgba(255,255,255,.65);margin-top:2px}
 .cc-body{display:flex;align-items:center;gap:20px;flex-wrap:wrap}
 .cc-timer{display:flex;gap:8px}
-.cc-tbox{text-align:center;background:rgba(0,0,0,.35);border:1px solid rgba(76,175,80,.25);border-radius:10px;padding:8px 12px;min-width:52px;backdrop-filter:blur(4px)}
-.cc-tnum{font-size:1.6rem;font-weight:800;color:#A5D6A7;font-family:'Orbitron','Courier New',monospace;line-height:1;display:block;text-shadow:0 0 8px rgba(76,175,80,.4)}
+.cc-tbox{text-align:center;background:rgba(0,0,0,.35);border:1px solid rgba(100,149,237,.25);border-radius:10px;padding:8px 12px;min-width:52px;backdrop-filter:blur(4px)}
+.cc-tnum{font-size:1.6rem;font-weight:800;color:#93B5F0;font-family:'Orbitron','Courier New',monospace;line-height:1;display:block;text-shadow:0 0 8px rgba(100,149,237,.4)}
 .cc-tlbl{font-size:.5rem;color:rgba(255,255,255,.45);text-transform:uppercase;letter-spacing:1.5px;margin-top:4px}
 .cc-venue{flex:1;min-width:200px;display:flex;flex-direction:column;gap:8px}
 .cc-venue-name{font-size:.85rem;color:#fff;font-weight:600;display:flex;align-items:center;gap:6px}
@@ -14337,7 +14337,7 @@ a, button, .nav-btn, .stat-card, .house-card, .game-card2, .ms-card, .ls-match-c
 .cc-result-card.silver{border-color:rgba(192,192,192,.4);box-shadow:0 0 10px rgba(192,192,192,.1)}.cc-result-card.silver .cc-result-house{color:#c0c0c0}
 .cc-result-card.bronze{border-color:rgba(205,127,50,.4)}.cc-result-card.bronze .cc-result-house{color:#cd7f32}
 .cc-result-card.fourth .cc-result-house{color:rgba(255,255,255,.6)}
-.cc-colon{font-size:1.4rem;color:rgba(76,175,80,.4);font-weight:700;align-self:center;animation:colonBlink 1s step-end infinite}
+.cc-colon{font-size:1.4rem;color:rgba(100,149,237,.4);font-weight:700;align-self:center;animation:colonBlink 1s step-end infinite}
 @keyframes colonBlink{0%,100%{opacity:1}50%{opacity:.3}}
 @media(max-width:768px){#cricketCountdown{padding:14px 16px}.cc-body{flex-direction:column;align-items:stretch;gap:14px}.cc-results{gap:8px}.cc-result-card{min-width:calc(50% - 8px);padding:6px 10px;flex:1 1 calc(50% - 8px)}.cc-result-pos{font-size:1.2rem}.cc-result-house{font-size:.78rem}.cc-result-label{font-size:.5rem}.cc-timer{justify-content:center}.cc-venue{min-width:unset;align-items:center;text-align:center}.cc-tbox{min-width:44px;padding:6px 8px}.cc-tnum{font-size:1.3rem}.cc-title{font-size:1rem}.cc-emoji{font-size:1.5rem}}
 @media(max-width:480px){#cricketCountdown{padding:10px 12px;margin-bottom:1rem}.cc-results{gap:6px}.cc-result-card{min-width:calc(50% - 6px);padding:5px 8px;border-radius:8px;gap:6px}.cc-result-pos{font-size:1rem}.cc-result-house{font-size:.7rem;letter-spacing:0}.cc-result-label{font-size:.45rem;letter-spacing:1px}.cc-title{font-size:.85rem}.cc-emoji{font-size:1.3rem}.cc-date{font-size:.65rem}.cc-timer{gap:5px}.cc-tbox{min-width:38px;padding:5px 6px;border-radius:8px}.cc-tnum{font-size:1.1rem}.cc-tlbl{font-size:.45rem}.cc-directions{font-size:.72rem;padding:7px 14px}}
@@ -16448,6 +16448,8 @@ body.light-theme input,body.light-theme select{background:rgba(255,253,246,.8);c
 
 
 
+
+
 /* Diagnostic Bar */
 
 .diag-bar{position:fixed;bottom:0;left:0;right:0;background:rgba(13,11,26,.97);backdrop-filter:blur(20px);border-top:1px solid rgba(255,255,255,.08);padding:6px 16px;display:flex;gap:12px;align-items:center;z-index:99998;font-size:.65rem;font-family:monospace;overflow-x:auto;flex-wrap:nowrap}
@@ -17311,15 +17313,10 @@ window.addEventListener('unhandledrejection', function(e) {
 
 
   <!-- Harry Potter Character -->
-
   <div class="hero-wizard">
-
     <video class="wizard-video" autoplay loop muted playsinline>
-
       <source src="assets/characters/F1.webm" type="video/webm">
-
     </video>
-
   </div>
 
 
@@ -17670,18 +17667,24 @@ window.addEventListener('unhandledrejection', function(e) {
     <!-- ═══ CRICKET TOURNAMENT COUNTDOWN ═══ -->
     <div id="cricketCountdown">
       <div class="cc-header">
-        <span class="cc-emoji">🏏</span>
+        <span class="cc-emoji">🏐</span>
         <div>
-          <div class="cc-title">OPTIMA Cricket Championship — Results</div>
-          <div class="cc-date">Saturday, 31st October 2026 · Jones Cricket Ground, Sittalapakkam</div>
+          <div class="cc-title">OPTIMA Volleyball Finals</div>
+          <div class="cc-date">Tuesday, 4th November 2026 · 2:00 PM IST onwards</div>
         </div>
       </div>
       <div class="cc-body" style="justify-content:center">
-        <div class="cc-results">
-          <div class="cc-result-card gold"><span class="cc-result-pos">🥇</span><div><div class="cc-result-house">Hufflepuff</div><div class="cc-result-label">Champion</div></div></div>
-          <div class="cc-result-card silver"><span class="cc-result-pos">🥈</span><div><div class="cc-result-house">Gryffindor</div><div class="cc-result-label">Runner-up</div></div></div>
-          <div class="cc-result-card bronze"><span class="cc-result-pos">🥉</span><div><div class="cc-result-house">Slytherin</div><div class="cc-result-label">3rd Place</div></div></div>
-          <div class="cc-result-card fourth"><span class="cc-result-pos">4️⃣</span><div><div class="cc-result-house">Ravenclaw</div><div class="cc-result-label">4th Place</div></div></div>
+        <div class="cc-timer">
+          <div class="cc-tbox"><span class="cc-tnum" id="ccDays">0</span><div class="cc-tlbl">Days</div></div>
+          <span class="cc-colon">:</span>
+          <div class="cc-tbox"><span class="cc-tnum" id="ccHrs">00</span><div class="cc-tlbl">Hours</div></div>
+          <span class="cc-colon">:</span>
+          <div class="cc-tbox"><span class="cc-tnum" id="ccMins">00</span><div class="cc-tlbl">Mins</div></div>
+          <span class="cc-colon">:</span>
+          <div class="cc-tbox"><span class="cc-tnum" id="ccSecs">00</span><div class="cc-tlbl">Secs</div></div>
+        </div>
+        <div class="cc-venue">
+          <div class="cc-venue-name" style="font-size:1rem;color:#A5D6A7"><i class="fas fa-fire"></i> 3rd Place Match &amp; Grand Final</div>
         </div>
       </div>
     </div>
@@ -30814,7 +30817,37 @@ setInterval(owlDelivery, Math.random() * 45000 + 45000);
 })();
 
 // ═══ CRICKET TOURNAMENT COUNTDOWN ═══
-// Cricket results are static — countdown removed
+
+
+
+// ═══ VOLLEYBALL FINALS COUNTDOWN ═══
+(function volleyballCountdownInit() {
+  var TARGET = new Date('2026-11-04T14:00:00+05:30');
+  function pad(n) { return n < 10 ? '0' + n : '' + n; }
+  function tick() {
+    var el = document.getElementById('cricketCountdown');
+    if (!el) return;
+    var diff = TARGET - new Date();
+    if (diff <= 0) {
+      var body = el.querySelector('.cc-body');
+      if (body) body.innerHTML = '<div class="cc-done" style="color:#93B5F0">🏐 The Finals Have Begun! 🔥</div>';
+      clearInterval(vbInterval);
+      return;
+    }
+    var d = Math.floor(diff / 86400000);
+    var h = Math.floor((diff % 86400000) / 3600000);
+    var m = Math.floor((diff % 3600000) / 60000);
+    var s = Math.floor((diff % 60000) / 1000);
+    var dE = document.getElementById('ccDays'), hE = document.getElementById('ccHrs'),
+        mE = document.getElementById('ccMins'), sE = document.getElementById('ccSecs');
+    if (dE) dE.textContent = d;
+    if (hE) hE.textContent = pad(h);
+    if (mE) mE.textContent = pad(m);
+    if (sE) sE.textContent = pad(s);
+  }
+  var vbInterval = setInterval(tick, 1000);
+  tick();
+})();
 
 var Countdown = {
 

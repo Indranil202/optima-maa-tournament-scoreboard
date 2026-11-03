@@ -14310,6 +14310,7 @@ a, button, .nav-btn, .stat-card, .house-card, .game-card2, .ms-card, .ls-match-c
 /* ═══ CRICKET TOURNAMENT COUNTDOWN ═══ */
 #cricketCountdown{background:linear-gradient(135deg,rgba(20,40,100,.92),rgba(10,15,50,.97));border:2px solid rgba(100,149,237,.5);border-radius:16px;padding:20px 24px;margin-bottom:1.5rem;position:relative;overflow:hidden;animation:cricketGlow 3s ease-in-out infinite alternate}
 @keyframes cricketGlow{0%{box-shadow:0 0 15px rgba(100,149,237,.15),inset 0 0 30px rgba(100,149,237,.05)}100%{box-shadow:0 0 25px rgba(100,149,237,.3),inset 0 0 40px rgba(100,149,237,.1)}}
+@keyframes hogwartsGlow{0%{box-shadow:0 0 15px rgba(186,85,211,.15),inset 0 0 30px rgba(186,85,211,.05)}100%{box-shadow:0 0 25px rgba(186,85,211,.3),inset 0 0 40px rgba(186,85,211,.1)}}
 @keyframes diwaliGlow{0%{box-shadow:0 0 15px rgba(255,165,0,.15),inset 0 0 30px rgba(255,165,0,.05)}100%{box-shadow:0 0 25px rgba(255,165,0,.3),inset 0 0 40px rgba(255,165,0,.1)}}
 #cricketCountdown::before{content:'';position:absolute;inset:0;background:url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%234CAF50' fill-opacity='0.04'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");pointer-events:none}
 .cc-header{display:flex;align-items:center;gap:10px;margin-bottom:14px}
@@ -17666,6 +17667,34 @@ window.addEventListener('unhandledrejection', function(e) {
 
 
     <!-- ═══ CRICKET TOURNAMENT COUNTDOWN ═══ -->
+    <!-- ═══ OPTIMA HOGWARTS 2026 — GRAND CELEBRATION ═══ -->
+    <div id="hogwartsReveal" style="background:linear-gradient(135deg,rgba(80,0,80,.92),rgba(30,0,50,.97));border:2px solid rgba(186,85,211,.5);border-radius:16px;padding:20px 24px;margin-bottom:1.2rem;position:relative;overflow:hidden;animation:hogwartsGlow 3s ease-in-out infinite alternate">
+      <div class="cc-header">
+        <span class="cc-emoji">⚡</span>
+        <div>
+          <div class="cc-title" style="color:#DDA0DD;font-size:1.25rem">OPTIMA Hogwarts 2026</div>
+          <div class="cc-date" style="color:rgba(255,255,255,.7)">Our Biggest Celebration of the Year!</div>
+        </div>
+      </div>
+      <div class="cc-body" style="justify-content:center;flex-direction:column;align-items:center;gap:14px">
+        <div style="text-align:center;color:#E8D5F5;font-size:.9rem;font-weight:600"><i class="fas fa-calendar-star" style="color:#DDA0DD"></i> The date is revealed — <span style="color:#FFD700;font-size:1.05rem;font-weight:800">4th December 2026</span></div>
+        <div class="cc-timer">
+          <div class="cc-tbox" style="border-color:rgba(186,85,211,.25)"><span class="cc-tnum" id="hwDays" style="color:#DDA0DD;text-shadow:0 0 8px rgba(186,85,211,.4)">0</span><div class="cc-tlbl">Days</div></div>
+          <span class="cc-colon" style="color:rgba(186,85,211,.4)">:</span>
+          <div class="cc-tbox" style="border-color:rgba(186,85,211,.25)"><span class="cc-tnum" id="hwHrs" style="color:#DDA0DD;text-shadow:0 0 8px rgba(186,85,211,.4)">00</span><div class="cc-tlbl">Hours</div></div>
+          <span class="cc-colon" style="color:rgba(186,85,211,.4)">:</span>
+          <div class="cc-tbox" style="border-color:rgba(186,85,211,.25)"><span class="cc-tnum" id="hwMins" style="color:#DDA0DD;text-shadow:0 0 8px rgba(186,85,211,.4)">00</span><div class="cc-tlbl">Mins</div></div>
+          <span class="cc-colon" style="color:rgba(186,85,211,.4)">:</span>
+          <div class="cc-tbox" style="border-color:rgba(186,85,211,.25)"><span class="cc-tnum" id="hwSecs" style="color:#DDA0DD;text-shadow:0 0 8px rgba(186,85,211,.4)">00</span><div class="cc-tlbl">Secs</div></div>
+        </div>
+        <div style="display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin-top:4px">
+          <span style="background:rgba(255,215,0,.08);border:1px solid rgba(255,215,0,.25);border-radius:20px;padding:5px 14px;font-size:.72rem;color:rgba(255,215,0,.8)"><i class="fas fa-location-dot"></i> Venue — Coming Soon</span>
+          <span style="background:rgba(255,215,0,.08);border:1px solid rgba(255,215,0,.25);border-radius:20px;padding:5px 14px;font-size:.72rem;color:rgba(255,215,0,.8)"><i class="fas fa-shirt"></i> Dress Code — Coming Soon</span>
+          <span style="background:rgba(255,215,0,.08);border:1px solid rgba(255,215,0,.25);border-radius:20px;padding:5px 14px;font-size:.72rem;color:rgba(255,215,0,.8)"><i class="fas fa-envelope-open-text"></i> RSVP — Coming Soon</span>
+        </div>
+      </div>
+    </div>
+
     <div id="cricketCountdown">
       <div class="cc-header">
         <span class="cc-emoji">🏐</span>
@@ -30847,6 +30876,35 @@ setInterval(owlDelivery, Math.random() * 45000 + 45000);
 // ═══ CRICKET TOURNAMENT COUNTDOWN ═══
 
 
+
+// ═══ OPTIMA HOGWARTS 2026 COUNTDOWN ═══
+(function hogwartsCountdownInit() {
+  var TARGET = new Date('2026-12-04T08:00:00+05:30');
+  function pad(n) { return n < 10 ? '0' + n : '' + n; }
+  function tick() {
+    var el = document.getElementById('hogwartsReveal');
+    if (!el) return;
+    var diff = TARGET - new Date();
+    if (diff <= 0) {
+      var timer = el.querySelector('.cc-timer');
+      if (timer) timer.innerHTML = '<div class="cc-done" style="color:#DDA0DD">⚡ The Celebration Day Is Here! 🎉</div>';
+      clearInterval(hwInterval);
+      return;
+    }
+    var d = Math.floor(diff / 86400000);
+    var h = Math.floor((diff % 86400000) / 3600000);
+    var m = Math.floor((diff % 3600000) / 60000);
+    var s = Math.floor((diff % 60000) / 1000);
+    var dE = document.getElementById('hwDays'), hE = document.getElementById('hwHrs'),
+        mE = document.getElementById('hwMins'), sE = document.getElementById('hwSecs');
+    if (dE) dE.textContent = d;
+    if (hE) hE.textContent = pad(h);
+    if (mE) mE.textContent = pad(m);
+    if (sE) sE.textContent = pad(s);
+  }
+  var hwInterval = setInterval(tick, 1000);
+  tick();
+})();
 
 // ═══ VOLLEYBALL FINALS COUNTDOWN ═══
 (function volleyballCountdownInit() {

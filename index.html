@@ -14310,8 +14310,9 @@ a, button, .nav-btn, .stat-card, .house-card, .game-card2, .ms-card, .ls-match-c
 /* ═══ CRICKET TOURNAMENT COUNTDOWN ═══ */
 #cricketCountdown{background:linear-gradient(135deg,rgba(20,40,100,.92),rgba(10,15,50,.97));border:2px solid rgba(100,149,237,.5);border-radius:16px;padding:20px 24px;margin-bottom:1.5rem;position:relative;overflow:hidden;animation:cricketGlow 3s ease-in-out infinite alternate}
 @keyframes cricketGlow{0%{box-shadow:0 0 15px rgba(100,149,237,.15),inset 0 0 30px rgba(100,149,237,.05)}100%{box-shadow:0 0 25px rgba(100,149,237,.3),inset 0 0 40px rgba(100,149,237,.1)}}
+@keyframes badmintonGlow{0%{box-shadow:0 0 15px rgba(0,191,255,.15),inset 0 0 30px rgba(0,191,255,.05)}100%{box-shadow:0 0 25px rgba(0,191,255,.3),inset 0 0 40px rgba(0,191,255,.1)}}
+@keyframes footballGlow{0%{box-shadow:0 0 15px rgba(50,205,50,.15),inset 0 0 30px rgba(50,205,50,.05)}100%{box-shadow:0 0 25px rgba(50,205,50,.3),inset 0 0 40px rgba(50,205,50,.1)}}
 @keyframes hogwartsGlow{0%{box-shadow:0 0 15px rgba(186,85,211,.15),inset 0 0 30px rgba(186,85,211,.05)}100%{box-shadow:0 0 25px rgba(186,85,211,.3),inset 0 0 40px rgba(186,85,211,.1)}}
-@keyframes diwaliGlow{0%{box-shadow:0 0 15px rgba(255,165,0,.15),inset 0 0 30px rgba(255,165,0,.05)}100%{box-shadow:0 0 25px rgba(255,165,0,.3),inset 0 0 40px rgba(255,165,0,.1)}}
 #cricketCountdown::before{content:'';position:absolute;inset:0;background:url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%234CAF50' fill-opacity='0.04'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");pointer-events:none}
 .cc-header{display:flex;align-items:center;gap:10px;margin-bottom:14px}
 .cc-emoji{font-size:1.8rem;filter:drop-shadow(0 0 6px rgba(76,175,80,.4))}
@@ -17695,65 +17696,67 @@ window.addEventListener('unhandledrejection', function(e) {
       </div>
     </div>
 
-    <div id="cricketCountdown">
+    <!-- ═══ FOOTBALL BANNER ═══ -->
+    <div id="footballBanner" style="background:linear-gradient(135deg,rgba(0,60,0,.92),rgba(0,30,0,.97));border:2px solid rgba(50,205,50,.5);border-radius:16px;padding:20px 24px;margin-bottom:1.2rem;position:relative;overflow:hidden;animation:footballGlow 3s ease-in-out infinite alternate">
       <div class="cc-header">
-        <span class="cc-emoji">🏐</span>
+        <span class="cc-emoji">⚽</span>
         <div>
-          <div class="cc-title">OPTIMA Volleyball Finals</div>
-          <div class="cc-date">Tuesday, 4th November 2026 · 2:00 PM IST onwards</div>
+          <div class="cc-title" style="color:#50C878">OPTIMA Football Championship</div>
+          <div class="cc-date">Starting Wednesday, 12th November 2026 · 2:00 — 4:00 PM IST</div>
         </div>
       </div>
-      <div class="cc-body" style="justify-content:center">
+      <div class="cc-body" style="justify-content:center;flex-direction:column;align-items:center;gap:12px">
         <div class="cc-timer">
-          <div class="cc-tbox"><span class="cc-tnum" id="ccDays">0</span><div class="cc-tlbl">Days</div></div>
-          <span class="cc-colon">:</span>
-          <div class="cc-tbox"><span class="cc-tnum" id="ccHrs">00</span><div class="cc-tlbl">Hours</div></div>
-          <span class="cc-colon">:</span>
-          <div class="cc-tbox"><span class="cc-tnum" id="ccMins">00</span><div class="cc-tlbl">Mins</div></div>
-          <span class="cc-colon">:</span>
-          <div class="cc-tbox"><span class="cc-tnum" id="ccSecs">00</span><div class="cc-tlbl">Secs</div></div>
+          <div class="cc-tbox" style="border-color:rgba(50,205,50,.25)"><span class="cc-tnum" id="fbDays" style="color:#50C878;text-shadow:0 0 8px rgba(50,205,50,.4)">0</span><div class="cc-tlbl">Days</div></div>
+          <span class="cc-colon" style="color:rgba(50,205,50,.4)">:</span>
+          <div class="cc-tbox" style="border-color:rgba(50,205,50,.25)"><span class="cc-tnum" id="fbHrs" style="color:#50C878;text-shadow:0 0 8px rgba(50,205,50,.4)">00</span><div class="cc-tlbl">Hours</div></div>
+          <span class="cc-colon" style="color:rgba(50,205,50,.4)">:</span>
+          <div class="cc-tbox" style="border-color:rgba(50,205,50,.25)"><span class="cc-tnum" id="fbMins" style="color:#50C878;text-shadow:0 0 8px rgba(50,205,50,.4)">00</span><div class="cc-tlbl">Mins</div></div>
+          <span class="cc-colon" style="color:rgba(50,205,50,.4)">:</span>
+          <div class="cc-tbox" style="border-color:rgba(50,205,50,.25)"><span class="cc-tnum" id="fbSecs" style="color:#50C878;text-shadow:0 0 8px rgba(50,205,50,.4)">00</span><div class="cc-tlbl">Secs</div></div>
         </div>
-        <div class="cc-venue" style="min-width:unset">
-          <div style="display:flex;flex-wrap:wrap;gap:10px;justify-content:center">
-            <div class="cc-result-card" style="border-color:rgba(100,149,237,.4);min-width:auto;padding:8px 14px">
-              <span class="cc-result-pos">🥉</span>
-              <div><div class="cc-result-house" style="color:#93B5F0">3rd Place Match</div><div class="cc-result-label">3:00 — 4:00 PM · Volleyball Ground</div></div>
-            </div>
-            <div class="cc-result-card" style="border-color:rgba(255,215,0,.4);min-width:auto;padding:8px 14px">
-              <span class="cc-result-pos">🏆</span>
-              <div><div class="cc-result-house" style="color:#FFD700">Grand Final</div><div class="cc-result-label">4:00 — 5:00 PM · Volleyball Ground</div></div>
-            </div>
-          </div>
+        <div style="display:flex;flex-wrap:wrap;gap:10px;justify-content:center">
+          <span style="background:rgba(50,205,50,.08);border:1px solid rgba(50,205,50,.25);border-radius:20px;padding:5px 14px;font-size:.78rem;color:rgba(50,205,50,.9)"><i class="fas fa-location-dot"></i> TRIL Football Turf</span>
+          <span style="background:rgba(50,205,50,.08);border:1px solid rgba(50,205,50,.25);border-radius:20px;padding:5px 14px;font-size:.78rem;color:rgba(50,205,50,.9)"><i class="fas fa-clock"></i> 2:00 — 4:00 PM Daily</span>
         </div>
       </div>
     </div>
 
-    <!-- ═══ DIWALI + TUG OF WAR BANNER ═══ -->
-    <div id="diwaliBanner" style="background:linear-gradient(135deg,rgba(120,40,0,.92),rgba(60,15,0,.97));border:2px solid rgba(255,165,0,.5);border-radius:16px;padding:18px 24px;margin-bottom:1.5rem;position:relative;overflow:hidden;animation:diwaliGlow 3s ease-in-out infinite alternate">
+    <!-- ═══ VOLLEYBALL POSTPONED ═══ -->
+    <div style="background:linear-gradient(135deg,rgba(40,40,60,.92),rgba(20,20,35,.97));border:2px solid rgba(150,150,180,.3);border-radius:16px;padding:16px 24px;margin-bottom:1.2rem;position:relative;overflow:hidden">
       <div class="cc-header">
-        <span class="cc-emoji">🪔</span>
+        <span class="cc-emoji">🏐</span>
         <div>
-          <div class="cc-title" style="color:#FFD700">Diwali Celebration &amp; Tug of War</div>
-          <div class="cc-date">Tuesday, 4th November 2026 · OPTIMA Inhouse Event</div>
-        </div>
-      </div>
-      <div class="cc-body" style="justify-content:center;flex-direction:column;align-items:center;gap:12px">
-        <div style="display:flex;flex-wrap:wrap;gap:12px;justify-content:center">
-          <div class="cc-result-card" style="border-color:rgba(255,165,0,.4);min-width:auto;padding:8px 16px">
-            <span class="cc-result-pos">🪢</span>
-            <div><div class="cc-result-house" style="color:#FFD700">Tug of War</div><div class="cc-result-label">2:00 — 3:00 PM · Today</div></div>
-          </div>
-          <div class="cc-result-card" style="border-color:rgba(255,165,0,.4);min-width:auto;padding:8px 16px">
-            <span class="cc-result-pos">🎆</span>
-            <div><div class="cc-result-house" style="color:#FFD700">Diwali Celebration</div><div class="cc-result-label">Festival of Lights</div></div>
-          </div>
-        </div>
-        <div style="text-align:center;padding:8px 16px;background:rgba(255,215,0,.08);border:1px dashed rgba(255,215,0,.3);border-radius:10px;max-width:500px">
-          <div style="font-size:.85rem;color:#FFD700;font-weight:700"><i class="fas fa-shirt"></i> Traditional Wear Day!</div>
-          <div style="font-size:.75rem;color:rgba(255,255,255,.7);margin-top:4px">Everyone is requested to come in traditional attire to celebrate Diwali together 🎉</div>
+          <div class="cc-title" style="color:rgba(255,255,255,.5);font-size:1rem"><s>OPTIMA Volleyball Finals</s></div>
+          <div class="cc-date" style="color:rgba(255,180,0,.9);font-weight:700"><i class="fas fa-triangle-exclamation"></i> Postponed — New date will be announced soon</div>
         </div>
       </div>
     </div>
+
+    <!-- ═══ BADMINTON BANNER ═══ -->
+    <div id="badmintonBanner" style="background:linear-gradient(135deg,rgba(0,40,80,.92),rgba(0,15,40,.97));border:2px solid rgba(0,191,255,.5);border-radius:16px;padding:20px 24px;margin-bottom:1.2rem;position:relative;overflow:hidden;animation:badmintonGlow 3s ease-in-out infinite alternate">
+      <div class="cc-header">
+        <span class="cc-emoji">🏸</span>
+        <div>
+          <div class="cc-title" style="color:#00BFFF">OPTIMA Badminton Championship</div>
+          <div class="cc-date">Friday, 21st November 2026 · Be Ready!</div>
+        </div>
+      </div>
+      <div class="cc-body" style="justify-content:center;flex-direction:column;align-items:center;gap:12px">
+        <div class="cc-timer">
+          <div class="cc-tbox" style="border-color:rgba(0,191,255,.25)"><span class="cc-tnum" id="bmDays" style="color:#00BFFF;text-shadow:0 0 8px rgba(0,191,255,.4)">0</span><div class="cc-tlbl">Days</div></div>
+          <span class="cc-colon" style="color:rgba(0,191,255,.4)">:</span>
+          <div class="cc-tbox" style="border-color:rgba(0,191,255,.25)"><span class="cc-tnum" id="bmHrs" style="color:#00BFFF;text-shadow:0 0 8px rgba(0,191,255,.4)">00</span><div class="cc-tlbl">Hours</div></div>
+          <span class="cc-colon" style="color:rgba(0,191,255,.4)">:</span>
+          <div class="cc-tbox" style="border-color:rgba(0,191,255,.25)"><span class="cc-tnum" id="bmMins" style="color:#00BFFF;text-shadow:0 0 8px rgba(0,191,255,.4)">00</span><div class="cc-tlbl">Mins</div></div>
+          <span class="cc-colon" style="color:rgba(0,191,255,.4)">:</span>
+          <div class="cc-tbox" style="border-color:rgba(0,191,255,.25)"><span class="cc-tnum" id="bmSecs" style="color:#00BFFF;text-shadow:0 0 8px rgba(0,191,255,.4)">00</span><div class="cc-tlbl">Secs</div></div>
+        </div>
+        <div style="font-size:.85rem;color:rgba(255,255,255,.7);font-weight:600"><i class="fas fa-bolt" style="color:#FFD700"></i> Sharpen your racquets, wizards!</div>
+      </div>
+    </div>
+
+
 
         <div id="cdBanner" style="display:none">
 
@@ -30915,32 +30918,61 @@ setInterval(owlDelivery, Math.random() * 45000 + 45000);
   tick();
 })();
 
-// ═══ VOLLEYBALL FINALS COUNTDOWN ═══
-(function volleyballCountdownInit() {
-  var TARGET = new Date('2026-11-04T14:00:00+05:30');
+// ═══ FOOTBALL CHAMPIONSHIP COUNTDOWN ═══
+(function footballCountdownInit() {
+  var TARGET = new Date('2026-11-12T14:00:00+05:30');
   function pad(n) { return n < 10 ? '0' + n : '' + n; }
   function tick() {
-    var el = document.getElementById('cricketCountdown');
+    var el = document.getElementById('footballBanner');
     if (!el) return;
     var diff = TARGET - new Date();
     if (diff <= 0) {
-      var body = el.querySelector('.cc-body');
-      if (body) body.innerHTML = '<div class="cc-done" style="color:#93B5F0">🏐 The Finals Have Begun! 🔥</div>';
-      clearInterval(vbInterval);
+      var timer = el.querySelector('.cc-timer');
+      if (timer) timer.innerHTML = '<div class="cc-done" style="color:#50C878">⚽ The Championship Has Begun! 🔥</div>';
+      clearInterval(fbInterval);
       return;
     }
     var d = Math.floor(diff / 86400000);
     var h = Math.floor((diff % 86400000) / 3600000);
     var m = Math.floor((diff % 3600000) / 60000);
     var s = Math.floor((diff % 60000) / 1000);
-    var dE = document.getElementById('ccDays'), hE = document.getElementById('ccHrs'),
-        mE = document.getElementById('ccMins'), sE = document.getElementById('ccSecs');
+    var dE = document.getElementById('fbDays'), hE = document.getElementById('fbHrs'),
+        mE = document.getElementById('fbMins'), sE = document.getElementById('fbSecs');
     if (dE) dE.textContent = d;
     if (hE) hE.textContent = pad(h);
     if (mE) mE.textContent = pad(m);
     if (sE) sE.textContent = pad(s);
   }
-  var vbInterval = setInterval(tick, 1000);
+  var fbInterval = setInterval(tick, 1000);
+  tick();
+})();
+
+// ═══ BADMINTON CHAMPIONSHIP COUNTDOWN ═══
+(function badmintonCountdownInit() {
+  var TARGET = new Date('2026-11-21T08:00:00+05:30');
+  function pad(n) { return n < 10 ? '0' + n : '' + n; }
+  function tick() {
+    var el = document.getElementById('badmintonBanner');
+    if (!el) return;
+    var diff = TARGET - new Date();
+    if (diff <= 0) {
+      var timer = el.querySelector('.cc-timer');
+      if (timer) timer.innerHTML = '<div class="cc-done" style="color:#00BFFF">🏸 The Championship Is Here! 🔥</div>';
+      clearInterval(bmInterval);
+      return;
+    }
+    var d = Math.floor(diff / 86400000);
+    var h = Math.floor((diff % 86400000) / 3600000);
+    var m = Math.floor((diff % 3600000) / 60000);
+    var s = Math.floor((diff % 60000) / 1000);
+    var dE = document.getElementById('bmDays'), hE = document.getElementById('bmHrs'),
+        mE = document.getElementById('bmMins'), sE = document.getElementById('bmSecs');
+    if (dE) dE.textContent = d;
+    if (hE) hE.textContent = pad(h);
+    if (mE) mE.textContent = pad(m);
+    if (sE) sE.textContent = pad(s);
+  }
+  var bmInterval = setInterval(tick, 1000);
   tick();
 })();
 

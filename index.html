@@ -24316,6 +24316,16 @@ var stats = { live: 0, scheduled: 0, completed: 0 };
 
 
 
+          // Manual game status overrides
+          var _ms2 = {
+            'tug of war': 'done', 'tug of war - men/women team game': 'done',
+            'football - men team game': 'partial',
+            'basketball - men/women team game': 'partial'
+          };
+          Object.keys(_ms2).forEach(function(k) {
+            if (!updatedGames[k]) updatedGames[k] = _ms2[k];
+          });
+
           var totalAll = 0, totalDone = 0;
 
 

@@ -26237,17 +26237,7 @@ var stats = { total: 0, scheduled: 0, live: 0, completed: 0 };
 
         } catch(e) {}
 
-        // Manual game status overrides
-          var _ms2 = {
-            'tug of war': 'done', 'tug of war - men/women team game': 'done',
-            'football - men team game': 'partial',
-            'basketball - men/women team game': 'partial'
-          };
-          Object.keys(_ms2).forEach(function(k) {
-            if (!updatedGames[k]) updatedGames[k] = _ms2[k];
-          });
-
-          // Also check Live Scores for in-progress games (matches played but not yet in Rankings)
+        // Also check Live Scores for in-progress games (matches played but not yet in Rankings)
 
         try {
 
